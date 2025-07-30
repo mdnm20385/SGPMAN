@@ -1,0 +1,101 @@
+{
+  "menu": {
+    "dashboard": "Dashboard",
+    "design": "Design",
+    "inicio": "Administrador",
+    "inicio.listauser": "Lista de usuários",
+    "inicio.senha": "Alterar senha",
+    "inicio.permissao": "Acessos dos usuários",
+    "inicio.senhasss": "Mudar senhas",
+    "inicio.relatoriosd":"Relatórios dos processos",
+
+
+    "juntas": "Pessoal",
+    "juntas.listaProcesso": "Pacientes",
+    "juntas.vendas": "Vendas",
+    "juntas.menu": "Acessos",
+    "juntas.fact": "Teste Venda",
+
+    "cadastro": "cadastro",
+    "cadastro.produto": "Produto",
+    "cadastro.servico": "Serviço",
+    "cadastro.cliente": "Clientes",
+    "cadastro.fnc": "Fornecedores",
+
+
+
+
+    "pessoal": "Ficha",
+    "pessoal.ucFichaMilitar": "Ficha Militar ",
+
+
+    "parametrizacao": "Parametrização",
+     "parametrizacao.TipoPerfil/:45": "Tipo de Perfil ",
+     "parametrizacao.listaorgao": "Órgão",
+    "parametrizacao.listadirecao": "Direcção/Unidade",
+    "parametrizacao.configurao": "Configução",
+       "parametrizacao.configurao.TipoPerfil/:45": "Tipo de Perfil ",
+
+    "extensions": "Extensions",
+    "sessions": "Sessions"
+  },
+  "validations": {
+    "required": "Este campo é obrigatório",
+    "minlength": "Deve ter pelo menos {{number}} carácteres",
+    "maxlength": "Esse valor deve ser menor than {{number}} carácteres",
+    "min": "Este valor deve ser superior {{number}}",
+    "max": "Este valor deve ser menor que {{number}}",
+    "exist": "O(a) {{value}} existe",
+    "inconsistent": "Inconsistência com {{value}}",
+    "invalid_email": "Invalid email"
+  },
+  "paginator": {
+    "items_per_page_label": "itens por página:",
+    "next_page_label": "Próxima página",
+    "previous_page_label": "Página anterior",
+    "first_page_label": "Primeira página",
+    "last_page_label": "Última página",
+    "range_page_label_1": "sem registro",
+    "range_page_label_2": "{{startIndex}} - {{endIndex}} de {{length}}"
+  },
+  "table_kitchen_sink": {
+    "position": "Posição",
+    "name": "Nome",
+    "weight": "Peso",
+    "symbol": "símbolo",
+    "gender": "Gênero",
+    "mobile": "Celular",
+    "tele": "Telefone",
+    "birthday": "Aniversário",
+    "city": "Cidade",
+    "address": "Address",
+    "website": "Website",
+    "company": "Companhia",
+    "email": "Email",
+    "operation": "Operaç~zo",
+    "edit": "Editar",
+    "delete": "Apagar",
+    "confirm_delete": "Confirmar exclusão?",
+    "ok": "Ok",
+    "close": "Fechar"
+  },
+  "profile": "Perfil",
+  "edit_profile": "Editar Perfil",
+  "logout": "sair",
+  "login": "Conecte-se",
+  "login_title": "Bem vindo de volta",
+  "have_no_account": "Don't have an account",
+  "create_one_account": "Clique aqui para criar uma",
+  "please_enter": "Please enter",
+  "username": "Nome de usuário",
+  "password": "Senha",
+  "confirm_password": "Confirme sua senha",
+  "remember_me": "Lembrar a senha",
+  "register": "Criar conta",
+       "save":"Salvar",
+  "register_welcome": "Bem-vindo",
+  "register_title": "Leva apenas alguns segundos para recuperar sua senha",
+  "read_and_agree": "Li e concordo com os termos de serviço",
+  "have_an_account": "Já me lembrei da senha",
+  "restore_defaults": "Restaurar padrões"
+}

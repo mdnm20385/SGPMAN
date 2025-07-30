@@ -1,0 +1,108 @@
+{
+  "menu": [
+    {
+      "route": "dashboard",
+      "name": "dashboard",
+      "type": "link",
+      "icon": "dashboard"
+    },
+    {
+      "route": "juntas",
+      "name": "juntas",
+      "type": "sub",
+      "icon": "book",
+      "children": [
+        {
+          "route": "menu",
+          "name": "menu",
+          "type": "link"
+        }
+      ],
+      "permissions": {
+        "except": "GUEST"
+      }
+    },
+
+
+    {
+      "route": "pessoal",
+      "name": "pessoal",
+      "type": "sub",
+      "icon": "book",
+      "children": [
+        {
+          "route": "ucFichaMilitar",
+          "name": "ucFichaMilitar",
+          "type": "link"
+        }
+      ],
+      "permissions": {
+        "except": "GUEST"
+      }
+    },
+    {
+      "route": "parametrizacao",
+      "name": "parametrizacao",
+      "type": "sub",
+      "icon": "book",
+      "children": [
+        {
+          "route": "configurao",
+          "name": "configurao",
+          "type": "sub",
+          "icon": "subject",
+          "children": [
+            {
+              "route": "TipoPerfil/:45",
+              "name": "TipoPerfil/:45",
+              "type": "link"
+            }
+          ]
+        },
+        {
+          "route": "listaorgao",
+          "name": "listaorgao",
+          "type": "link"
+        },
+        {
+          "route": "listadirecao",
+          "name": "listadirecao",
+          "type": "link"
+        }
+      ]
+    }
+    ,
+    {
+      "route": "inicio",
+      "name": "inicio",
+      "type": "sub",
+      "icon": "person",
+      "children": [
+        {
+          "route": "senha",
+          "name": "senha",
+          "type": "link"
+
+        },
+        {
+          "route": "listauser",
+          "name": "listauser",
+          "type": "link"
+        },
+        {
+          "route": "senhasss",
+          "name": "senhasss",
+          "type": "link"
+        },
+        {
+          "route":"relatoriosd",
+          "name":"relatoriosd",
+          "type": "link"
+        }
+      ],
+      "permissions": {
+        "except": "GUEST"
+      }
+    }
+   ]
+}

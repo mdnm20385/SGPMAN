@@ -1,0 +1,12 @@
+  <h1 mat-dialog-title>Escolha um Produto</h1>
+    <div mat-dialog-content>
+      <!-- Adicione aqui a lógica para listar e selecionar produtos -->
+      <mat-list>
+        <mat-list-item *ngFor="let product of products" (click)="selectProduct(product)">
+          {{ product }}
+        </mat-list-item>
+      </mat-list>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-button (click)="onCancel()">Cancelar</button>
+    </div>

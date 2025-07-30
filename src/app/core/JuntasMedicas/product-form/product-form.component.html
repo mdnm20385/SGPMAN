@@ -1,0 +1,951 @@
+<div class="frm-ft-container">
+  <form [formGroup]="productForm" class="frm-ft-form" [ngClass]="'state-' + formState" (ngSubmit)="onSubmit()">
+
+    <!-- Header Section -->
+    <div class="form-header">
+      <button
+        mat-icon-button
+        class="config-button"
+        [disabled]="formState === 'insert' || formState === 'update'"
+        (click)="openConfigModal()"
+        matTooltip="Configurações - Produto">
+        <mat-icon>settings</mat-icon>
+      </button>
+      <h2 class="form-title">Gestão de Produtos</h2>
+
+      <!-- State indicator -->
+      <span class="state-indicator" [ngClass]="'state-' + formState">
+        {{ getFormStateLabel() }}
+      </span>
+    </div>
+
+    <!-- Action buttons section -->
+    <div class="action-buttons">
+      <button
+        mat-raised-button
+        class="action-button new-button"
+        (click)="onNewClick()"
+        [disabled]="formState === 'insert'"
+        matTooltip="Novo produto">
+        <mat-icon>add</mat-icon>
+        Novo
+      </button>
+
+      <button
+        mat-raised-button
+        class="action-button edit-button"
+        (click)="onEditClick()"
+        [disabled]="formState === 'update' || !isProductLoaded"
+        matTooltip="Editar produto atual">
+        <mat-icon>edit</mat-icon>
+        Editar
+      </button>
+
+      <button
+        mat-raised-button
+        class="action-button cancel-button"
+        (click)="onCancelClick()"
+        [disabled]="formState === 'cancel'"
+        matTooltip="Cancelar alterações">
+        <mat-icon>cancel</mat-icon>
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        class="action-button save-button"
+        [disabled]="!canPerformActions() || productForm.invalid"
+        matTooltip="Salvar alterações"
+        type="submit">
+        <mat-icon>save</mat-icon>
+        Salvar
+      </button>
+    </div>
+
+    <!-- Main Form Content -->
+    <div class="form-content">
+
+      <!-- Primary Information Section -->
+      <div class="primary-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <mat-icon>inventory_2</mat-icon>
+            Informações Principais do Produto
+          </h2>
+        </div>
+
+           <div class="container-fluid">
+          <!-- Row principal com campos de formulário e foto -->
+          <div class="row">
+            <!-- Coluna dos campos do formulário - col-sm-10 -->
+            <div class="col-sm-10">
+              <div class="row">
+                <!-- Referência -->
+                <div class="col-sm-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Referência</mat-label>
+                    <button mat-icon-button matPrefix
+                            class="search-button client-search"
+                            (click)="searchProductModal('Referenc,Descricao,Ststamp')"
+                            type="button"
+                            [disabled]="!canPerformActions()">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <input matInput
+                           formControlName="referenc"
+                           placeholder="Código único do produto"
+                           [disabled]="!canPerformActions()"/>
+                    <button mat-icon-button matSuffix
+                            class="search-button document-search"
+                            (click)="onSearchClick('Referenc,Descricao,Ststamp')"
+                            type="button"
+                            [disabled]="formState !== 'cancel'">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                    <mat-hint>Código de identificação do produto</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Descrição -->
+                <div class="col-sm-6">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Nome completo do produto</mat-label>
+                    <button mat-icon-button matPrefix
+                            class="search-button client-search"
+                            (click)="searchProductModal('Referenc,Descricao,Ststamp')"
+                            type="button"
+                            [disabled]="!canPerformActions()">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <input matInput
+                           formControlName="descricao"
+                           placeholder="Nome completo do produto"
+                           [disabled]="!canPerformActions()"/>
+                    <button mat-icon-button matSuffix
+                            class="search-button document-search"
+                            (click)="onSearchClick('Descricao,Referenc,Ststamp')"
+                            type="button"
+                            [disabled]="formState !== 'cancel'">
+                      <mat-icon>search</mat-icon>
+                    </button>
+                    <mat-hint>Nome completo do produto</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Unidade -->
+                <div class="col-sm-2">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Unidade</mat-label>
+                    <input matInput formControlName="unidade" placeholder="UN, KG, L" [disabled]="!canPerformActions()">
+                    <mat-icon matSuffix>straighten</mat-icon>
+                    <mat-hint>Unidade de medida</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Família -->
+                <div class="col-sm-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Família</mat-label>
+                    <input matInput formControlName="familia" placeholder="Categoria principal" [disabled]="!canPerformActions()">
+                    <mat-icon matSuffix>category</mat-icon>
+                    <mat-hint>Categoria do produto</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Subfamília -->
+                <div class="col-sm-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Subfamília</mat-label>
+                    <input matInput formControlName="subfamilia" placeholder="Subcategoria" [disabled]="!canPerformActions()">
+                    <mat-icon matSuffix>subdirectory_arrow_right</mat-icon>
+                    <mat-hint>Subcategoria do produto</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Marca -->
+                <div class="col-sm-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Marca</mat-label>
+                    <input matInput formControlName="marca" placeholder="Marca comercial" [disabled]="!canPerformActions()">
+                    <mat-icon matSuffix>branding_watermark</mat-icon>
+                    <mat-hint>Marca do produto</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Modelo -->
+                <div class="col-sm-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Modelo</mat-label>
+                    <input matInput formControlName="modelo" placeholder="Modelo específico" [disabled]="!canPerformActions()">
+                    <mat-icon matSuffix>model_training</mat-icon>
+                    <mat-hint>Modelo do produto</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Código de Barras -->
+                <div class="col-sm-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Código de Barras</mat-label>
+                    <input matInput formControlName="codigoBarras" placeholder="EAN, UPC, etc." [disabled]="!canPerformActions()">
+                    <mat-icon matSuffix>qr_code</mat-icon>
+                    <mat-hint>Código de barras principal</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Cor -->
+                <div class="col-sm-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Cor</mat-label>
+                    <input matInput formControlName="cor" placeholder="Cor do produto" [disabled]="!canPerformActions()">
+                    <mat-icon matSuffix>palette</mat-icon>
+                    <mat-hint>Cor principal</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Tamanho -->
+                <div class="col-sm-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Tamanho</mat-label>
+                    <input matInput formControlName="tamanho" placeholder="Tamanho" [disabled]="!canPerformActions()">
+                    <mat-icon matSuffix>height</mat-icon>
+                    <mat-hint>Tamanho do produto</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Peso -->
+                <div class="col-sm-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Peso (Kg)</mat-label>
+                    <input matInput
+                           formControlName="peso"
+                           type="number"
+                           step="0.01"
+                           placeholder="0.00"
+                           [disabled]="!canPerformActions()">
+                    <mat-icon matSuffix>monitor_weight</mat-icon>
+                    <mat-hint>Peso unitário em Kg</mat-hint>
+                  </mat-form-field>
+                </div>
+
+                <!-- Volume -->
+                <div class="col-sm-4">
+                  <mat-form-field appearance="outline" class="w-100">
+                    <mat-label>Volume</mat-label>
+                    <input matInput
+                           formControlName="volume"
+                           type="number"
+                           step="0.01"
+                           placeholder="0.00"
+                           [disabled]="!canPerformActions()">
+                    <mat-icon matSuffix>view_in_ar</mat-icon>
+                    <mat-hint>Volume unitário</mat-hint>
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+
+            <!-- Coluna da foto do produto - col-sm-2 -->
+            <div class="col-sm-2">
+              <div class="photo-section">
+                <h5 class="photo-title">
+                  <mat-icon>photo_camera</mat-icon>
+                  Foto
+                </h5>
+
+                <div class="photo-container">
+                  <!-- Preview da imagem -->
+                  <div class="photo-preview" [class.has-photo]="productPhoto">
+                    <div *ngIf="!productPhoto" class="no-photo-placeholder">
+                      <mat-icon>image</mat-icon>
+                      <span>Sem foto</span>
+                    </div>
+
+                    <img *ngIf="productPhoto"
+                         [src]="productPhoto"
+                         alt="Foto do produto"
+                         class="product-image">
+                  </div>
+
+                  <!-- Ações da foto -->
+                  <div class="photo-actions">
+                    <button mat-mini-fab
+                            color="primary"
+                            type="button"
+                            (click)="openPhotoCapture()"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="{{ productPhoto ? 'Alterar Foto' : 'Adicionar Foto' }}">
+                      <mat-icon>{{ productPhoto ? 'edit' : 'add_a_photo' }}</mat-icon>
+                    </button>
+
+                    <button mat-mini-fab
+                            color="warn"
+                            type="button"
+                            (click)="removePhoto()"
+                            [disabled]="!canPerformActions() || !productPhoto"
+                            *ngIf="productPhoto"
+                            matTooltip="Remover Foto">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Produto Ativo -->
+          <div class="row">
+            <div class="col-sm-12">
+              <mat-checkbox formControlName="activo" color="primary" [disabled]="!canPerformActions()">
+                <mat-icon class="checkbox-icon">check_circle</mat-icon>
+                Produto Ativo
+              </mat-checkbox>
+            </div>
+          </div>
+
+          <!-- Observações -->
+          <div class="row">
+            <div class="col-sm-12">
+              <mat-form-field appearance="outline" class="w-100">
+                <mat-label>Observações</mat-label>
+                <textarea matInput
+                          formControlName="obs"
+                          rows="3"
+                          placeholder="Observações adicionais sobre o produto"
+                          [disabled]="!canPerformActions()"></textarea>
+                <mat-icon matSuffix>notes</mat-icon>
+                <mat-hint>Informações complementares</mat-hint>
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs Section -->
+      <div class="tabs-section">
+        <mat-tab-group class="custom-tab-group" dynamicHeight>
+
+          <!-- Preços Tab -->
+          <mat-tab label="Preços">
+            <div class="tab-content">
+              <!-- Grid Section -->
+              <div class="grid-section">
+                <div class="section-header-with-actions">
+                  <h3 class="subsection-title">
+                    <mat-icon>monetization_on</mat-icon>
+                    Preços de Venda e Compra
+                  </h3>
+                  <div class="grid-actions">
+                    <button mat-raised-button
+                            class="grid-action-button add-button"
+                            type="button"
+                            (click)="addStprecos()"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Adicionar preço">
+                      <mat-icon>add_circle</mat-icon>
+                      Adicionar Preço
+                    </button>
+                    <button mat-raised-button
+                            class="grid-action-button delete-button"
+                            type="button"
+                            (click)="deleteStprecos()"
+                            matTooltip="Excluir preço selecionado"
+                            [disabled]="!canPerformActions() || selectedStprecosIndex === null">
+                      <mat-icon>remove_circle</mat-icon>
+                      Remover Preço
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid-container" formArrayName="stprecos">
+                  <table mat-table [dataSource]="stprecosDataSource" class="products-table">
+
+                    <!-- IVA Incluído Column -->
+                    <ng-container matColumnDef="ivaInc">
+                      <th mat-header-cell *matHeaderCellDef class="checkbox-header">
+                        <mat-icon>check_box</mat-icon>
+                        IVA Incl.
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="checkbox-cell">
+                        <mat-checkbox formControlName="ivaInc" color="primary"
+                                      [disabled]="!canPerformActions()"></mat-checkbox>
+                      </td>
+                    </ng-container>
+
+                    <!-- Preço Venda Produto Column -->
+                    <ng-container matColumnDef="precoVendaProduto">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>sell</mat-icon>
+                        Preço Venda
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input"
+                               formControlName="precoVendaProduto"
+                               type="number"
+                               step="0.01"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Preço Venda Embalagem Column -->
+                    <ng-container matColumnDef="precoVendaEmbalagem">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>inventory</mat-icon>
+                        Preço Embalagem
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input"
+                               formControlName="precoVendaEmbalagem"
+                               type="number"
+                               step="0.01"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Desconto Embalagem Column -->
+                    <ng-container matColumnDef="descEmbalagem">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>percent</mat-icon>
+                        Desc. Embalagem
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input"
+                               formControlName="descEmbalagem"
+                               type="number"
+                               step="0.01"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Centro de Custo Column -->
+                    <ng-container matColumnDef="centroCusto">
+                      <th mat-header-cell *matHeaderCellDef class="text-header">
+                        <mat-icon>account_balance</mat-icon>
+                        Centro Custo
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="text-cell">
+                        <input class="table-input"
+                               formControlName="centroCusto"
+                               placeholder="Centro de custo"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Preço Compra Column -->
+                    <ng-container matColumnDef="precoCompra">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>shopping_cart</mat-icon>
+                        Preço Compra
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input"
+                               formControlName="precoCompra"
+                               type="number"
+                               step="0.01"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Moeda Column -->
+                    <ng-container matColumnDef="moeda">
+                      <th mat-header-cell *matHeaderCellDef class="text-header">
+                        <mat-icon>monetization_on</mat-icon>
+                        Moeda
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="text-cell">
+                        <mat-select formControlName="moeda" [disabled]="!canPerformActions()">
+                          <mat-option value="MZN">MZN</mat-option>
+                          <mat-option value="USD">USD</mat-option>
+                          <mat-option value="EUR">EUR</mat-option>
+                        </mat-select>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="stprecosColumns" class="products-header-row"></tr>
+                    <tr mat-row
+                        *matRowDef="let row; let i = index; columns: stprecosColumns;"
+                        [class.selected-row]="selectedStprecosIndex === i"
+                        (click)="selectStprecosRow(i)"
+                        class="products-row"></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Composição Tab -->
+          <mat-tab label="Composição">
+            <div class="tab-content">
+              <!-- Grid Section -->
+              <div class="grid-section">
+                <div class="section-header-with-actions">
+                  <h3 class="subsection-title">
+                    <mat-icon>build_circle</mat-icon>
+                    Composição do Produto
+                  </h3>
+                  <div class="grid-actions">
+                    <button mat-raised-button
+                            class="grid-action-button add-button"
+                            type="button"
+                            (click)="addComposicao()"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Adicionar componente">
+                      <mat-icon>add_circle</mat-icon>
+                      Adicionar Componente
+                    </button>
+                    <button mat-raised-button
+                            class="grid-action-button delete-button"
+                            type="button"
+                            (click)="deleteComposicao()"
+                            matTooltip="Excluir componente selecionado"
+                            [disabled]="!canPerformActions() || selectedComposicaoIndex === null">
+                      <mat-icon>remove_circle</mat-icon>
+                      Remover Componente
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid-container" formArrayName="stcp">
+                  <table mat-table [dataSource]="composicaoDataSource" class="products-table">
+
+                    <!-- Referência Column -->
+                    <ng-container matColumnDef="referencia">
+                      <th mat-header-cell *matHeaderCellDef class="ref-header">
+                        <mat-icon>tag</mat-icon>
+                        Referência
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="ref-cell">
+                        <div class="input-with-search">
+                          <input class="table-input"
+                                 formControlName="referencia"
+                                 placeholder="Código"
+                                 [disabled]="!canPerformActions()">
+                          <button mat-icon-button color="primary" type="button"
+                                  [disabled]="!canPerformActions()"
+                                  class="search-icon-button">
+                            <mat-icon>search</mat-icon>
+                          </button>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <!-- Descrição Column -->
+                    <ng-container matColumnDef="descricao">
+                      <th mat-header-cell *matHeaderCellDef class="desc-header">
+                        <mat-icon>description</mat-icon>
+                        Descrição
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="desc-cell">
+                        <input class="table-input"
+                               formControlName="descricao"
+                               placeholder="Descrição"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Quantidade Column -->
+                    <ng-container matColumnDef="quantidade">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>numbers</mat-icon>
+                        Quantidade
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input"
+                               formControlName="quantidade"
+                               type="number"
+                               step="0.01"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Preço Column -->
+                    <ng-container matColumnDef="preco">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>attach_money</mat-icon>
+                        Preço
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input"
+                               formControlName="preco"
+                               type="number"
+                               step="0.01"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Serviço Column -->
+                    <ng-container matColumnDef="servico">
+                      <th mat-header-cell *matHeaderCellDef class="checkbox-header">
+                        <mat-icon>room_service</mat-icon>
+                        Serviço
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="checkbox-cell">
+                        <mat-checkbox formControlName="servico" color="primary"
+                                      [disabled]="!canPerformActions()"></mat-checkbox>
+                      </td>
+                    </ng-container>
+
+                    <!-- Total Column -->
+                    <ng-container matColumnDef="total">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>calculate</mat-icon>
+                        Total
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input readonly-input"
+                               formControlName="total"
+                               readonly>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="composicaoColumns" class="products-header-row"></tr>
+                    <tr mat-row
+                        *matRowDef="let row; let i = index; columns: composicaoColumns;"
+                        [class.selected-row]="selectedComposicaoIndex === i"
+                        (click)="selectComposicaoRow(i)"
+                        class="products-row"></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Localização Tab -->
+          <mat-tab label="Localização">
+            <div class="tab-content">
+              <!-- Grid Section -->
+              <div class="grid-section">
+                <div class="section-header-with-actions">
+                  <h3 class="subsection-title">
+                    <mat-icon>warehouse</mat-icon>
+                    Localização por Armazém
+                  </h3>
+                  <div class="grid-actions">
+                    <button mat-raised-button
+                            class="grid-action-button add-button"
+                            type="button"
+                            (click)="addLocalizacao()"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Adicionar localização">
+                      <mat-icon>add_circle</mat-icon>
+                      Adicionar Localização
+                    </button>
+                    <button mat-raised-button
+                            class="grid-action-button delete-button"
+                            type="button"
+                            (click)="deleteLocalizacao()"
+                            matTooltip="Excluir localização selecionada"
+                            [disabled]="!canPerformActions() || selectedLocalizacaoIndex === null">
+                      <mat-icon>remove_circle</mat-icon>
+                      Remover Localização
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid-container" formArrayName="starm">
+                  <table mat-table [dataSource]="localizacaoDataSource" class="products-table">
+
+                    <!-- Armazém Column -->
+                    <ng-container matColumnDef="armazem">
+                      <th mat-header-cell *matHeaderCellDef class="text-header">
+                        <mat-icon>warehouse</mat-icon>
+                        Armazém
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="text-cell">
+                        <input class="table-input"
+                               formControlName="armazem"
+                               placeholder="Código do armazém"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Endereço Column -->
+                    <ng-container matColumnDef="endereco">
+                      <th mat-header-cell *matHeaderCellDef class="text-header">
+                        <mat-icon>location_on</mat-icon>
+                        Endereço/Localização
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="text-cell">
+                        <input class="table-input"
+                               formControlName="endereco"
+                               placeholder="Localização específica"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Stock Column -->
+                    <ng-container matColumnDef="stock">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>inventory_2</mat-icon>
+                        Stock
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input"
+                               formControlName="stock"
+                               type="number"
+                               step="0.01"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="localizacaoColumns" class="products-header-row"></tr>
+                    <tr mat-row
+                        *matRowDef="let row; let i = index; columns: localizacaoColumns;"
+                        [class.selected-row]="selectedLocalizacaoIndex === i"
+                        (click)="selectLocalizacaoRow(i)"
+                        class="products-row"></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Stock Tab -->
+          <mat-tab label="Stock">
+            <div class="tab-content">
+              <!-- Grid Section -->
+              <div class="grid-section">
+                <div class="section-header-with-actions">
+                  <h3 class="subsection-title">
+                    <mat-icon>inventory_2</mat-icon>
+                    Controle de Stock por Lote
+                  </h3>
+                  <div class="grid-actions">
+                    <button mat-raised-button
+                            class="grid-action-button add-button"
+                            type="button"
+                            (click)="addStock()"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Adicionar stock">
+                      <mat-icon>add_circle</mat-icon>
+                      Adicionar Stock
+                    </button>
+                    <button mat-raised-button
+                            class="grid-action-button delete-button"
+                            type="button"
+                            (click)="deleteStock()"
+                            matTooltip="Excluir stock selecionado"
+                            [disabled]="!canPerformActions() || selectedStockIndex === null">
+                      <mat-icon>remove_circle</mat-icon>
+                      Remover Stock
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid-container" formArrayName="stl">
+                  <table mat-table [dataSource]="stockDataSource" class="products-table">
+
+                    <!-- Armazém Column -->
+                    <ng-container matColumnDef="armazem">
+                      <th mat-header-cell *matHeaderCellDef class="text-header">
+                        <mat-icon>warehouse</mat-icon>
+                        Armazém
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="text-cell">
+                        <input class="table-input"
+                               formControlName="armazem"
+                               placeholder="Código do armazém"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Lote Column -->
+                    <ng-container matColumnDef="lote">
+                      <th mat-header-cell *matHeaderCellDef class="text-header">
+                        <mat-icon>batch_prediction</mat-icon>
+                        Lote
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="text-cell">
+                        <input class="table-input"
+                               formControlName="lote"
+                               placeholder="Número do lote"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Validade Column -->
+                    <ng-container matColumnDef="valide">
+                      <th mat-header-cell *matHeaderCellDef class="date-header">
+                        <mat-icon>event</mat-icon>
+                        Validade
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="date-cell">
+                        <mat-form-field appearance="outline" class="table-datepicker">
+                          <input matInput
+                                 [matDatepicker]="picker"
+                                 formControlName="valide"
+                                 [disabled]="!canPerformActions()">
+                          <mat-datepicker-toggle matSuffix [for]="picker" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+                          <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                      </td>
+                    </ng-container>
+
+                    <!-- Stock Column -->
+                    <ng-container matColumnDef="stock">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>inventory_2</mat-icon>
+                        Quantidade
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input"
+                               formControlName="stock"
+                               type="number"
+                               step="0.01"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="stockColumns" class="products-header-row"></tr>
+                    <tr mat-row
+                        *matRowDef="let row; let i = index; columns: stockColumns;"
+                        [class.selected-row]="selectedStockIndex === i"
+                        (click)="selectStockRow(i)"
+                        class="products-row"></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Fornecedores Tab -->
+          <mat-tab label="Fornecedores">
+            <div class="tab-content">
+              <!-- Grid Section -->
+              <div class="grid-section">
+                <div class="section-header-with-actions">
+                  <h3 class="subsection-title">
+                    <mat-icon>business</mat-icon>
+                    Fornecedores do Produto
+                  </h3>
+                  <div class="grid-actions">
+                    <button mat-raised-button
+                            class="grid-action-button add-button"
+                            type="button"
+                            (click)="addFornecedor()"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Adicionar fornecedor">
+                      <mat-icon>add_circle</mat-icon>
+                      Adicionar Fornecedor
+                    </button>
+                    <button mat-raised-button
+                            class="grid-action-button delete-button"
+                            type="button"
+                            (click)="deleteFornecedor()"
+                            matTooltip="Excluir fornecedor selecionado"
+                            [disabled]="!canPerformActions() || selectedFornecedorIndex === null">
+                      <mat-icon>remove_circle</mat-icon>
+                      Remover Fornecedor
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid-container" formArrayName="stFnc">
+                  <table mat-table [dataSource]="fornecedoresDataSource" class="products-table">
+
+                    <!-- Fornecedor Column -->
+                    <ng-container matColumnDef="fornecedor">
+                      <th mat-header-cell *matHeaderCellDef class="text-header">
+                        <mat-icon>business</mat-icon>
+                        Fornecedor
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="text-cell">
+                        <div class="input-with-search">
+                          <input class="table-input"
+                                 formControlName="fornecedor"
+                                 placeholder="Nome do fornecedor"
+                                 [disabled]="!canPerformActions()">
+                          <button mat-icon-button color="primary" type="button"
+                                  [disabled]="!canPerformActions()"
+                                  class="search-icon-button">
+                            <mat-icon>search</mat-icon>
+                          </button>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <!-- Contato Column -->
+                    <ng-container matColumnDef="contato">
+                      <th mat-header-cell *matHeaderCellDef class="text-header">
+                        <mat-icon>person</mat-icon>
+                        Contato
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="text-cell">
+                        <input class="table-input"
+                               formControlName="contato"
+                               placeholder="Nome do contato"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Email Column -->
+                    <ng-container matColumnDef="email">
+                      <th mat-header-cell *matHeaderCellDef class="text-header">
+                        <mat-icon>email</mat-icon>
+                        Email
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="text-cell">
+                        <input class="table-input"
+                               formControlName="email"
+                               type="email"
+                               placeholder="email@exemplo.com"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Telefone Column -->
+                    <ng-container matColumnDef="telefone">
+                      <th mat-header-cell *matHeaderCellDef class="text-header">
+                        <mat-icon>phone</mat-icon>
+                        Telefone
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="text-cell">
+                        <input class="table-input"
+                               formControlName="telefone"
+                               placeholder="+258 XX XXX XXXX"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Status Column -->
+                    <ng-container matColumnDef="status">
+                      <th mat-header-cell *matHeaderCellDef class="text-header">
+                        <mat-icon>toggle_on</mat-icon>
+                        Status
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="text-cell">
+                        <mat-select formControlName="status" [disabled]="!canPerformActions()">
+                          <mat-option value="ativo">Ativo</mat-option>
+                          <mat-option value="inativo">Inativo</mat-option>
+                        </mat-select>
+                      </td>
+                    </ng-container>
+
+                    <!-- Principal Column -->
+                    <ng-container matColumnDef="principal">
+                      <th mat-header-cell *matHeaderCellDef class="checkbox-header">
+                        <mat-icon>star</mat-icon>
+                        Principal
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="checkbox-cell">
+                        <mat-checkbox formControlName="principal" color="primary"
+                                      [disabled]="!canPerformActions()"></mat-checkbox>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="fornecedorColumns" class="products-header-row"></tr>
+                    <tr mat-row
+                        *matRowDef="let row; let i = index; columns: fornecedorColumns;"
+                        [class.selected-row]="selectedFornecedorIndex === i"
+                        (click)="selectFornecedorRow(i)"
+                        class="products-row"></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+        </mat-tab-group>
+      </div>
+    </div>
+  </form>
+</div>

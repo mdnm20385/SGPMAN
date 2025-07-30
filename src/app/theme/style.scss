@@ -1,0 +1,58 @@
+@use 'style/reboot';
+@use 'style/colors';
+@use 'style/scrollbar';
+
+.scrollbar-thin {
+  @include scrollbar.thin();
+}
+
+.scrollbar-none {
+  @include scrollbar.none();
+}
+
+@media (width <= 720px) {
+  .hide-small {
+    display: none !important;
+  }
+
+  .show-small {
+    display: block !important;
+  }
+}
+
+.mat-mdc-tab-group {
+  .mat-mdc-tab {
+    background-color: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 20px; /* Bordas totalmente arredondadas */
+    margin-right: 2px;
+    transition: all 0.3s ease;
+    text-transform: uppercase; /* Texto em maiúsculas */
+
+    &:hover {
+      background-color: #e3f2fd;
+    }
+  }
+
+  .mat-mdc-tab.mdc-tab--active {
+    background-color: #ffffff !important; /* Fundo branco limpo */
+    color: #4a90e2 !important; /* Texto azul para boa legibilidade */
+    border: 1px solid #4a90e2 !important; /* Borda azul suave */
+    border-bottom: none !important; /* Remove a linha por baixo */
+    border-radius: 20px 20px 0 0; /* Arredonda apenas o topo */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil para destaque */
+    position: relative;
+    z-index: 1; /* Para ficar acima do conteúdo */
+    text-transform: uppercase; /* Texto em maiúsculas */
+  }
+
+  .mat-mdc-tab-header {
+    border-bottom: none;
+  }
+
+  .mat-mdc-tab-body-wrapper {
+    border: 1px solid #ddd;
+    border-radius: 0 0 8px 8px; /* Arredondar apenas a parte inferior do conteúdo */
+    margin-top: -1px; /* Conecta com a aba ativa */
+  }
+}

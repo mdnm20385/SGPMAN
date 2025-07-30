@@ -1,0 +1,941 @@
+<div class="frm-ft-container">
+  <form [formGroup]="frmFtForm" class="frm-ft-form"
+   [ngClass]="'state-' + formState" (ngSubmit)="onSubmit()">
+
+    <!-- Header Section -->
+    <div class="form-header">
+      <button
+        mat-icon-button
+        class="config-button"
+        [disabled]="formState === 'insert' || formState === 'update'"
+        (click)="openConfigModal()"
+        matTooltip="Configurações - Selecionar Tipo de Documento">
+        <mat-icon>settings</mat-icon>
+      </button>
+      <h2 class="form-title">{{ displayTitle }}</h2>
+
+      <!-- State indicator -->
+      <span class="state-indicator" [ngClass]="'state-' + formState">
+        {{ getFormStateLabel() }}
+      </span>
+    </div>
+
+    <!-- Update the action buttons section -->
+    <div class="action-buttons">
+      <button
+        mat-raised-button
+        class="action-button new-button"
+        (click)="onNew()"
+        [disabled]="formState === 'insert'"
+        matTooltip="Novo registro">
+        <mat-icon>add</mat-icon>
+        Novo
+      </button>
+
+     <button
+  mat-raised-button
+  class="action-button edit-button"
+  (click)="onEdit()"
+  [disabled]="formState === 'update' || !Tdoc || !isDocumentLoaded"
+  matTooltip="Editar registro atual">
+  <mat-icon>edit</mat-icon>
+  Editar
+</button>
+
+      <button
+        mat-raised-button
+        class="action-button cancel-button"
+        (click)="onCancel()"
+        [disabled]="formState === 'cancel'"
+        matTooltip="Cancelar alterações">
+        <mat-icon>cancel</mat-icon>
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        class="action-button save-button"
+        [disabled]="!canPerformActions() || frmFtForm.invalid"
+        matTooltip="Salvar alterações">
+        <mat-icon>save</mat-icon>
+        Salvar
+      </button>
+    </div>
+
+    <!-- Main Form Content -->
+    <div class="form-content">
+
+      <!-- Primary Information Section -->
+      <div class="primary-section">
+        <div class="section-header">
+          <h2 class="section-title">
+            <mat-icon>info</mat-icon>
+            Informações Principais
+          </h2>
+        </div>
+        <div class="form-grid">
+          <!-- Primeira linha: Cliente/Nome e Nº Documento -->
+          <div class="form-group">
+            <mat-form-field appearance="outline" class="client-field">
+              <mat-label>Cliente/Nome</mat-label>
+              <button mat-icon-button matPrefix
+                      class="search-button client-search"
+                      (click)="getestudante('nome,no,clstamp')"
+                      type="button"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <input matInput
+                     formControlName="nome"
+                     placeholder="Selecione ou digite o nome do cliente"
+                     [disabled]="!canPerformActions()"/>
+              <button mat-icon-button matSuffix
+                      class="search-button document-search"
+                      (click)="onSearchClick('Nome,Numero,Factstamp,Data')"
+                      type="button"
+                      [disabled]="formState !== 'cancel'">
+                <mat-icon>search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>Nº Documento</mat-label>
+              <button mat-icon-button matPrefix
+                      class="search-button client-search"
+                      (click)="getestudante('no,nome,clstamp')"
+                      type="button"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <input matInput
+                     formControlName="numero"
+                     placeholder="Número automático"
+                     [disabled]="!canPerformActions()">
+              <button mat-icon-button matSuffix
+                      class="search-button document-search"
+                      (click)="onSearchClick('Numero,Nome,Factstamp,Data')"
+                      type="button"
+                      [disabled]="formState !== 'cancel'">
+                <mat-icon>search</mat-icon>
+              </button>
+              <mat-hint>Número único do documento</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <!-- Segunda linha: Data de Emissão, Data de Validade, Moeda de Venda, Moeda de Câmbio -->
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>Data de Emissão</mat-label>
+              <input matInput [matDatepicker]="dataEmissao" formControlName="data" [disabled]="!canPerformActions()">
+              <mat-datepicker-toggle matSuffix [for]="dataEmissao" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+              <mat-datepicker #dataEmissao [disabled]="!canPerformActions()"></mat-datepicker>
+              <mat-hint>Data de criação do documento</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>Data de Validade</mat-label>
+              <input matInput [matDatepicker]="dataValidade" formControlName="dataven" [disabled]="!canPerformActions()">
+              <mat-datepicker-toggle matSuffix [for]="dataValidade" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+              <mat-datepicker #dataValidade [disabled]="!canPerformActions()"></mat-datepicker>
+              <mat-hint>Validade do documento</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <!-- <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>Moeda de Venda</mat-label>
+              <input matInput formControlName="moeda"
+              placeholder="MZN" [disabled]="!canPerformActions()">
+              <mat-icon matSuffix>monetization_on</mat-icon>
+              <mat-hint>Moeda principal</mat-hint>
+            </mat-form-field>
+          </div> -->
+
+         <div class="form-group">
+  <mat-form-field appearance="outline">
+    <mat-label>Moeda de Venda</mat-label>
+    <button mat-icon-button matPrefix
+            class="search-button client-search"
+            (click)="onSearchGenericClick(
+              'moeda,descricao,moedasstamp',
+              'Moedas',
+              'Descrição,Código',
+              '1=1',
+              {'moeda': 'moeda'}
+            )"
+            type="button"
+            [disabled]="!canPerformActions()">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <input matInput
+           formControlName="moeda"
+           placeholder="MZN"
+           [disabled]="!canPerformActions()">
+    <button mat-icon-button matSuffix
+            class="search-button document-search"
+            type="button"
+            [disabled]="true">
+      <mat-icon>monetization_on</mat-icon>
+    </button>
+  </mat-form-field>
+</div>
+
+
+         <div class="form-group">
+  <mat-form-field appearance="outline">
+    <mat-label>Moeda de Câmbio</mat-label>
+    <button mat-icon-button matPrefix
+            class="search-button client-search"
+            (click)="onSearchGenericClick(
+              'moeda,descricao,moedasstamp',
+              'Moedas',
+              'Descrição,Código',
+              '1=1',
+              {'moeda': 'moeda2'}
+            )"
+            type="button"
+            [disabled]="!canPerformActions()">
+      <mat-icon>more_vert</mat-icon>
+    </button>
+    <input matInput
+           formControlName="moeda2"
+           placeholder="ex: USD, EUR..."
+           [disabled]="!canPerformActions()">
+    <button mat-icon-button matSuffix
+            class="search-button document-search"
+            type="button"
+            [disabled]="true">
+      <mat-icon>currency_exchange</mat-icon>
+    </button>
+  </mat-form-field>
+</div>
+
+<!--
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>Moeda de Câmbio</mat-label>
+              <input matInput formControlName="moeda2"
+               placeholder="USD, EUR" [disabled]="!canPerformActions()">
+              <mat-icon matSuffix>currency_exchange</mat-icon>
+              <mat-hint>Moeda secundária</mat-hint>
+            </mat-form-field>
+          </div> -->
+
+          <!-- Terceira linha: Taxa de Câmbio e Nº do Contrato -->
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>Taxa de Câmbio</mat-label>
+              <input matInput
+                     formControlName="cambiousd"
+                     type="number"
+                     placeholder="0.00"
+                     [disabled]="!canPerformActions()">
+              <mat-icon matSuffix>calculate</mat-icon>
+              <mat-hint>Taxa atual de conversão</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <div class="form-group">
+            <mat-form-field appearance="outline">
+              <mat-label>Nº do Contrato</mat-label>
+              <input matInput formControlName="numinterno" placeholder="Referência interna" [disabled]="!canPerformActions()">
+              <mat-icon matSuffix>assignment</mat-icon>
+              <mat-hint>Número de referência interna</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs Section -->
+      <div class="tabs-section">
+        <mat-tab-group class="custom-tab-group" dynamicHeight>
+
+          <!-- Dados Gerais Tab -->
+          <mat-tab label="Dados Gerais">
+            <div class="tab-content">
+
+              <!-- Discount Section -->
+              <div class="discount-section">
+                <h3 class="subsection-title">
+                  <mat-icon>percent</mat-icon>
+                  Descontos
+                </h3>
+                <div class="discount-fields">
+                  <mat-form-field appearance="outline">
+                    <mat-label>Valor do Desconto</mat-label>
+                    <input matInput type="number" placeholder="0.00" [disabled]="!canPerformActions()">
+                    <span matTextPrefix>MT </span>
+                    <mat-icon matSuffix>money_off</mat-icon>
+                  </mat-form-field>
+                  <mat-form-field appearance="outline">
+                    <mat-label>% do Desconto</mat-label>
+                    <input matInput type="number" placeholder="0" min="0" max="100" [disabled]="!canPerformActions()">
+                    <span matTextSuffix>%</span>
+                    <mat-icon matSuffix>percent</mat-icon>
+                  </mat-form-field>
+                </div>
+              </div>
+
+              <!-- Products Grid -->
+              <div class="products-section">
+                <div class="section-header-with-actions">
+                  <h3 class="subsection-title">
+                    <mat-icon>inventory</mat-icon>
+                    Produtos/Serviços
+                  </h3>
+                  <div class="grid-actions">
+                    <button mat-raised-button
+                            class="grid-action-button add-button"
+                            type="button"
+                            (click)="adicionarfacttl()"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Adicionar linha">
+                      <mat-icon>add_circle</mat-icon>
+                      Adicionar Item
+                    </button>
+                    <button mat-raised-button
+                            class="grid-action-button delete-button"
+                            type="button"
+                            (click)="deleteGridRow()"
+                            matTooltip="Excluir linha selecionada"
+                            [disabled]="!canPerformActions() || selectedGridIndex === null">
+                      <mat-icon>remove_circle</mat-icon>
+                      Remover Item
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid-container" formArrayName="factl">
+                  <table mat-table [dataSource]="gridDataSource" class="products-table">
+
+                    <!-- Reference Column -->
+                    <ng-container matColumnDef="ref">
+                      <th mat-header-cell *matHeaderCellDef class="ref-header">
+                        <mat-icon>tag</mat-icon>
+                        Referência
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="ref-cell">
+                        <div class="input-with-search">
+                          <input class="table-input"
+                                 formControlName="ref"
+                                 placeholder="Código"
+                                 id="ref-{{i}}"
+                                 (input)="onKeyPressdesref($event,i)"
+                                 [disabled]="!canPerformActions()">
+                          <button mat-icon-button
+                                  color="primary"
+                                  type="button"
+                                  (click)="getprodu('referenc,descricao,ststamp',i)"
+                                  class="search-icon-button"
+                                  [disabled]="!canPerformActions()">
+                            <mat-icon>search</mat-icon>
+                          </button>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <!-- Description Column -->
+                    <ng-container matColumnDef="descricao">
+                      <th mat-header-cell *matHeaderCellDef class="desc-header">
+                        <mat-icon>description</mat-icon>
+                        Descrição
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="desc-cell">
+                        <div class="input-with-search">
+                          <input class="table-input"
+                                 formControlName="descricao"
+                                 placeholder="Descrição do produto"
+                                 id="descricao-{{i}}"
+                                 (input)="onKeyPressdesref($event,i)"
+                                 [disabled]="!canPerformActions()">
+                          <button mat-icon-button
+                                  color="primary"
+                                  type="button"
+                                  (click)="getprodu('descricao,referenc,ststamp',i)"
+                                  class="search-icon-button"
+                                  [disabled]="!canPerformActions()">
+                            <mat-icon>search</mat-icon>
+                          </button>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <!-- IVA Included Column -->
+                    <ng-container matColumnDef="ivainc">
+                      <th mat-header-cell *matHeaderCellDef class="checkbox-header">
+                        <mat-icon>check_box</mat-icon>
+                        IVA Incl.
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="checkbox-cell">
+                        <mat-checkbox formControlName="ivainc"
+                                      color="primary"
+                                      (change)="onKeyPress($event, i)"
+                                      [disabled]="!canPerformActions()"></mat-checkbox>
+                      </td>
+                    </ng-container>
+
+                    <!-- Quantity Column -->
+                    <ng-container matColumnDef="quant">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>format_list_numbered</mat-icon>
+                        Quantidade
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input"
+                               formControlName="quant"
+                               type="number"
+                               placeholder="1"
+                               id="quant-{{i}}"
+                               (input)="onKeyPress($event,i)"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Price Column -->
+                    <ng-container matColumnDef="preco">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>attach_money</mat-icon>
+                        Preço
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input"
+                               formControlName="preco"
+                               type="number"
+                               placeholder="0.00"
+                               id="preco-{{i}}"
+                               (input)="onKeyPress($event,i)"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <!-- Service Column -->
+                    <ng-container matColumnDef="servico">
+                      <th mat-header-cell *matHeaderCellDef class="checkbox-header">
+                        <mat-icon>room_service</mat-icon>
+                        Serviço
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="checkbox-cell">
+                        <mat-checkbox formControlName="servico"
+                                      color="primary"
+                                      [disabled]="!canPerformActions()"></mat-checkbox>
+                      </td>
+                    </ng-container>
+
+                    <!-- IVA Percentage Column -->
+                    <ng-container matColumnDef="txiva">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>receipt</mat-icon>
+                        IVA (%)
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <div class="autocomplete-container">
+                          <input type="number"
+                                 class="table-input number-input iva-input"
+                                 [matAutocomplete]="ivaAutocomplete"
+                                 formControlName="txiva"
+                                 (input)="onTxivaInputChange($event, i)"
+                                 min="0" max="99"
+                                 placeholder="16"
+                                 [disabled]="!canPerformActions()">
+                          <span class="input-suffix">%</span>
+                          <mat-autocomplete #ivaAutocomplete="matAutocomplete">
+                            <mat-option *ngFor="let item of txivaOptionss"
+                                       [value]="item.descricao"
+                                       (onSelectionChange)="settabiva(item,i)">
+                              {{ item.descricao }}%
+                            </mat-option>
+                          </mat-autocomplete>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <!-- IVA Value Column -->
+                    <ng-container matColumnDef="valival">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>money</mat-icon>
+                        Valor IVA
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input readonly-input"
+                               formControlName="valival"
+                               type="number"
+                               readonly>
+                      </td>
+                    </ng-container>
+
+                    <!-- Subtotal Column -->
+                    <ng-container matColumnDef="subtotall">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>calculate</mat-icon>
+                        Subtotal
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input readonly-input"
+                               formControlName="subtotall"
+                               readonly>
+                      </td>
+                    </ng-container>
+
+                    <!-- Total Column -->
+                    <ng-container matColumnDef="totall">
+                      <th mat-header-cell *matHeaderCellDef class="number-header">
+                        <mat-icon>payments</mat-icon>
+                        Total
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="number-cell">
+                        <input class="table-input number-input readonly-input"
+                               formControlName="totall"
+                               readonly>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="gridColumns" class="products-header-row"></tr>
+                    <tr mat-row
+                        *matRowDef="let row; let i = index; columns: gridColumns;"
+                        [class.selected-row]="selectedGridIndex === i"
+                        (click)="selectGridRow(i)"
+                        class="products-row"></tr>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Summary Section -->
+              <div class="summary-section">
+                <div class="totals-card">
+                  <h3 class="totals-title">
+                    <mat-icon>summarize</mat-icon>
+                    Resumo Financeiro
+                  </h3>
+                  <div class="totals-grid">
+                    <div class="total-item">
+                      <label>Subtotal</label>
+                      <mat-form-field appearance="outline" class="total-field">
+                        <input matInput formControlName="subtotal" readonly>
+                        <span matTextPrefix>MT </span>
+                      </mat-form-field>
+                    </div>
+                    <div class="total-item">
+                      <label>Total IVA</label>
+                      <mat-form-field appearance="outline" class="total-field">
+                        <input matInput formControlName="totaliva" readonly>
+                        <span matTextPrefix>MT </span>
+                      </mat-form-field>
+                    </div>
+                    <div class="total-item total-final">
+                      <label>Total Geral</label>
+                      <mat-form-field appearance="outline" class="total-field total-field-final">
+                        <input matInput formControlName="total" readonly>
+                        <span matTextPrefix>MT </span>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </mat-tab>
+
+          <!-- Dados de Tesouraria Tab -->
+          <mat-tab label="Dados de Tesouraria" *ngIf="visibilidadeFormasp">
+            <div class="tab-content">
+              <div class="treasury-section">
+                <div class="section-header-with-actions">
+                  <h3 class="subsection-title">
+                    <mat-icon>account_balance</mat-icon>
+                    Formas de Pagamento
+                  </h3>
+                  <div class="grid-actions">
+                    <button mat-raised-button
+                            class="grid-action-button add-button"
+                            type="button"
+                            (click)="addTesouraria()"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Adicionar linha">
+                      <mat-icon>add_circle</mat-icon>
+                      Adicionar Pagamento
+                    </button>
+                    <button mat-raised-button
+                            class="grid-action-button delete-button"
+                            type="button"
+                            (click)="deleteTesouraria()"
+                            matTooltip="Excluir linha selecionada"
+                            [disabled]="!canPerformActions() || selectedTesourariaIndex === null">
+                      <mat-icon>remove_circle</mat-icon>
+                      Remover Pagamento
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid-container" formArrayName="formasp">
+                  <table mat-table [dataSource]="tesourariaDataSource" class="treasury-table">
+
+                    <ng-container matColumnDef="titulo">
+                      <th mat-header-cell *matHeaderCellDef class="treasury-header">
+                        <mat-icon>payment</mat-icon>
+                        Tipo de Movimento
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="treasury-cell">
+                        <div class="input-with-search">
+                          <input class="table-input"
+                                 formControlName="titulo"
+                                 readonly>
+                          <button mat-icon-button
+                                  color="primary"
+                                  type="button"
+                                  (click)="getTipoMovimento(i,'descricao,codigo')"
+                                  [disabled]="!canPerformActions()">
+                            <mat-icon>search</mat-icon>
+                          </button>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="numtitulo">
+                      <th mat-header-cell *matHeaderCellDef class="treasury-header">
+                        <mat-icon>confirmation_number</mat-icon>
+                        Nº Cheque/Ref
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="treasury-cell">
+                        <input class="table-input"
+                               formControlName="numtitulo"
+                               placeholder="Número"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="contatesoura">
+                      <th mat-header-cell *matHeaderCellDef class="treasury-header">
+                        <mat-icon>account_balance_wallet</mat-icon>
+                        Conta
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="treasury-cell">
+                        <div class="input-with-search">
+                          <input class="table-input"
+                                 formControlName="contatesoura"
+                                 readonly>
+                          <button mat-icon-button
+                                  color="primary"
+                                  type="button"
+                                  (click)="getContaTesouraria(i,'contas,sigla,codigo,contasstamp')"
+                                  [disabled]="!canPerformActions()">
+                            <mat-icon>search</mat-icon>
+                          </button>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="dcheque">
+                      <th mat-header-cell *matHeaderCellDef class="treasury-header">
+                        <mat-icon>date_range</mat-icon>
+                        Data
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="treasury-cell">
+                        <input class="table-input date-input"
+                               formControlName="dcheque"
+                               type="date"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="valor">
+                      <th mat-header-cell *matHeaderCellDef class="treasury-header">
+                        <mat-icon>attach_money</mat-icon>
+                        Valor
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="treasury-cell">
+                        <div class="input-with-prefix">
+                          <span class="input-prefix">MT</span>
+                          <input class="table-input number-input"
+                                 formControlName="valor"
+                                 type="number"
+                                 placeholder="0.00"
+                                 [disabled]="!canPerformActions()">
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="moeda">
+                      <th mat-header-cell *matHeaderCellDef class="treasury-header">
+                        <mat-icon>monetization_on</mat-icon>
+                        Moeda
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="treasury-cell">
+                        <input class="table-input"
+                               formControlName="moeda"
+                               placeholder="MZN"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="tesourariaColumns" class="treasury-header-row"></tr>
+                    <tr mat-row *matRowDef="let row; let i = index; columns: tesourariaColumns;"
+                        [class.selected-row]="selectedTesourariaIndex === i"
+                        (click)="selectTesouraria(i)" class="treasury-row"></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Entregas Tab -->
+          <mat-tab label="Entregas">
+            <div class="tab-content">
+              <div class="delivery-container">
+                <div class="delivery-header">
+                  <h3 class="delivery-title">
+                    <mat-icon>local_shipping</mat-icon>
+                    Configurações de Entrega
+                  </h3>
+                </div>
+
+                <div class="delivery-content">
+                  <div class="delivery-main">
+                    <!-- Options Section -->
+                    <div class="delivery-section">
+                      <h4 class="section-subtitle">
+                        <mat-icon>tune</mat-icon>
+                        Opções de Entrega
+                      </h4>
+                      <div class="options-group">
+                        <mat-checkbox formControlName="entrega"
+                                      class="delivery-checkbox"
+                                      [disabled]="!canPerformActions()">
+                          Entrega a domicílio
+                        </mat-checkbox>
+                        <mat-checkbox class="delivery-checkbox"
+                                      [disabled]="!canPerformActions()">
+                          Enviar notificação por email
+                        </mat-checkbox>
+                      </div>
+                    </div>
+
+                    <!-- Dates Section -->
+                    <div class="delivery-section">
+                      <h4 class="section-subtitle">
+                        <mat-icon>schedule</mat-icon>
+                        Datas de Movimentação
+                      </h4>
+                      <div class="dates-grid">
+                        <mat-form-field appearance="outline">
+                          <mat-label>Data de Partida</mat-label>
+                          <input matInput [matDatepicker]="dataPartida" formControlName="datapartida" [disabled]="!canPerformActions()">
+                          <mat-datepicker-toggle matSuffix [for]="dataPartida" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+                          <mat-datepicker #dataPartida [disabled]="!canPerformActions()"></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                          <mat-label>Data de Entrega</mat-label>
+                          <input matInput [matDatepicker]="dataEntrega" formControlName="dataentrega" [disabled]="!canPerformActions()">
+                          <mat-datepicker-toggle matSuffix [for]="dataEntrega" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+                          <mat-datepicker #dataEntrega [disabled]="!canPerformActions()"></mat-datepicker>
+                        </mat-form-field>
+                      </div>
+                    </div>
+
+                    <!-- Locations Section -->
+                    <div class="delivery-section">
+                      <h4 class="section-subtitle">
+                        <mat-icon>place</mat-icon>
+                        Localizações
+                      </h4>
+                      <div class="locations-grid">
+                        <mat-form-field appearance="outline">
+                          <mat-label>Local de Partida</mat-label>
+                          <input matInput formControlName="localpartida" placeholder="Endereço de origem" [disabled]="!canPerformActions()">
+                          <mat-icon matSuffix>my_location</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                          <mat-label>Local de Entrega</mat-label>
+                          <input matInput formControlName="localentrega" placeholder="Endereço de destino" [disabled]="!canPerformActions()">
+                          <mat-icon matSuffix>location_on</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="full-width">
+                          <mat-label>País</mat-label>
+                          <input matInput formControlName="pais" placeholder="País de destino" [disabled]="!canPerformActions()">
+                          <mat-icon matSuffix>flag</mat-icon>
+                        </mat-form-field>
+                      </div>
+                    </div>
+
+                    <!-- Contact Section -->
+                    <div class="delivery-section">
+                      <h4 class="section-subtitle">
+                        <mat-icon>contact_phone</mat-icon>
+                        Informações de Contato
+                      </h4>
+                      <div class="contact-grid">
+                        <mat-form-field appearance="outline" class="full-width">
+                          <mat-label>Pessoa de Contacto</mat-label>
+                          <input matInput formControlName="pcontacto" placeholder="Nome do responsável" [disabled]="!canPerformActions()">
+                          <mat-icon matSuffix>person</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                          <mat-label>Telefone</mat-label>
+                          <input matInput formControlName="cell" placeholder="+258 XX XXX XXXX" [disabled]="!canPerformActions()">
+                          <mat-icon matSuffix>phone</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                          <mat-label>Email</mat-label>
+                          <input matInput formControlName="mail" type="email" placeholder="email@exemplo.com" [disabled]="!canPerformActions()">
+                          <mat-icon matSuffix>email</mat-icon>
+                        </mat-form-field>
+                      </div>
+                    </div>
+
+                    <!-- Additional Info Section -->
+                    <div class="delivery-section">
+                      <h4 class="section-subtitle">
+                        <mat-icon>info</mat-icon>
+                        Informações Adicionais
+                      </h4>
+                      <div class="additional-grid">
+                        <mat-form-field appearance="outline">
+                          <mat-label>Departamento</mat-label>
+                          <input matInput formControlName="departamento" placeholder="Departamento responsável" [disabled]="!canPerformActions()">
+                          <mat-icon matSuffix>business</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline">
+                          <mat-label>Motorista</mat-label>
+                          <input matInput formControlName="motorista" placeholder="Nome do motorista" [disabled]="!canPerformActions()">
+                          <mat-icon matSuffix>drive_eta</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field appearance="outline" class="full-width">
+                          <mat-label>Matrícula do Veículo</mat-label>
+                          <input matInput formControlName="matricula" placeholder="AAA-000-AA" [disabled]="!canPerformActions()">
+                          <mat-icon matSuffix>directions_car</mat-icon>
+                        </mat-form-field>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Observations Section -->
+                  <div class="delivery-notes">
+                    <div class="notes-section">
+                      <h4 class="section-subtitle">
+                        <mat-icon>note_alt</mat-icon>
+                        Observações da Entrega
+                      </h4>
+                      <mat-form-field appearance="outline" class="notes-field">
+                        <mat-label>Observações e Instruções Especiais</mat-label>
+                        <textarea matInput
+                                  formControlName="obs"
+                                  rows="15"
+                                  placeholder="Digite aqui observações sobre a entrega, instruções especiais, cuidados necessários, horários preferenciais, etc."
+                                  [disabled]="!canPerformActions()"></textarea>
+                        <mat-hint>Use este espaço para detalhar informações importantes sobre a entrega</mat-hint>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+          <!-- Anexos Tab -->
+          <mat-tab label="Anexos">
+            <div class="tab-content">
+              <div class="attachments-section">
+                <div class="section-header-with-actions">
+                  <h3 class="subsection-title">
+                    <mat-icon>attach_file</mat-icon>
+                    Documentos Anexos
+                  </h3>
+                  <div class="grid-actions">
+                    <button mat-raised-button
+                            class="grid-action-button add-button"
+                            type="button"
+                            (click)="addAnexo()"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Adicionar linha">
+                      <mat-icon>add_circle</mat-icon>
+                      Adicionar Anexo
+                    </button>
+                    <button mat-raised-button
+                            class="grid-action-button delete-button"
+                            type="button"
+                            (click)="deleteAnexo()"
+                            matTooltip="Excluir linha selecionada"
+                            [disabled]="!canPerformActions() || selectedAnexoIndex === null">
+                      <mat-icon>remove_circle</mat-icon>
+                      Remover Anexo
+                    </button>
+                  </div>
+                </div>
+
+                <div class="grid-container" formArrayName="factanexo">
+                  <table mat-table [dataSource]="anexosDataSource" class="attachments-table">
+
+                    <ng-container matColumnDef="documento">
+                      <th mat-header-cell *matHeaderCellDef class="attachment-header">
+                        <mat-icon>description</mat-icon>
+                        Tipo de Documento
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="attachment-cell">
+                        <input class="table-input"
+                               formControlName="documento"
+                               placeholder="Ex: Contrato, Recibo"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="descricao">
+                      <th mat-header-cell *matHeaderCellDef class="attachment-header">
+                        <mat-icon>edit_note</mat-icon>
+                        Descrição
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="attachment-cell">
+                        <input class="table-input"
+                               formControlName="descricao"
+                               placeholder="Descrição do documento"
+                               [disabled]="!canPerformActions()">
+                      </td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="ficheiro">
+                      <th mat-header-cell *matHeaderCellDef class="attachment-header">
+                        <mat-icon>cloud_upload</mat-icon>
+                        Arquivo
+                      </th>
+                      <td mat-cell *matCellDef="let row; let i = index" [formGroupName]="i" class="attachment-cell">
+                        <div class="file-upload-container">
+                          <input type="file"
+                                 (change)="onFileSelected($event, i)"
+                                 class="file-input"
+                                 #fileInput
+                                 style="display: none;"
+                                 [disabled]="!canPerformActions()">
+                          <button mat-stroked-button
+                                  type="button"
+                                  (click)="fileInput.click()"
+                                  class="file-button"
+                                  [disabled]="!canPerformActions()">
+                            <mat-icon>upload_file</mat-icon>
+                            Escolher Arquivo
+                          </button>
+                          <span *ngIf="anexosFormArray.at(i).get('ficheiroNome')?.value"
+                                class="file-name">
+                            <mat-icon>check_circle</mat-icon>
+                            {{ anexosFormArray.at(i).get('ficheiroNome')?.value }}
+                          </span>
+                        </div>
+                      </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="anexosColumns" class="attachments-header-row"></tr>
+                    <tr mat-row *matRowDef="let row; let i = index; columns: anexosColumns;"
+                        [class.selected-row]="selectedAnexoIndex === i"
+                        (click)="selectAnexo(i)" class="attachments-row"></tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </mat-tab>
+
+        </mat-tab-group>
+      </div>
+    </div>
+  </form>
+</div>

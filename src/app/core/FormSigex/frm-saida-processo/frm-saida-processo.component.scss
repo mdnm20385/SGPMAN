@@ -1,0 +1,38 @@
+
+
+
+
+.demo-full-width {
+  width: 100%;
+}
+.modal {
+   background: whitesmoke;
+}
+
+#btnright{
+
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  align-items: center;
+  >form{
+    width: 40%;
+  }
+
+}
+
+.row-hover:hover {
+  background-color: #f5f5f5; /* Change this to your desired hover color */
+}
+
+
+.Header1{
+
+
+  background-color:  rgb(1, 35, 57);
+   z-index: 999;
+   // position: fixed;
+ }
+
+

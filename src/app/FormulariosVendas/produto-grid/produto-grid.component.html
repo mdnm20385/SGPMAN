@@ -1,0 +1,24 @@
+<table border="1" width="100%" style="margin-top: 1rem">
+  <thead>
+    <tr>
+      <th>Nome</th>
+      <th>Preço</th>
+      <th>Quantidade</th>
+      <th>Subtotal</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let p of produtos">
+      <td>{{ p.nome }}</td>
+      <td>{{ p.preco | number:'1.2-2' }}</td>
+      <td>{{ p.quantidade }}</td>
+      <td>{{ p.preco * p.quantidade | number:'1.2-2' }}</td>
+      <td><button (click)="removerProduto(p.id)">Remover</button></td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="text-align: right; font-weight: bold; margin-top: 1rem">
+  Total: {{ total | number:'1.2-2' }}
+</div>

@@ -1,0 +1,21 @@
+<div class="dialog-wrapper">
+  <h1 class="title">
+    Você está prestes a ser desconectado
+    <!-- You're about to be logged out -->
+  </h1>
+  <div class="message">
+    <p>Esta sessão parece não estar ativa.
+      <!-- This station does not seem to be active. -->
+
+    </p>
+    <p>
+      Você será desconectado em <strong> {{ count }} segundos</strong>
+      <!-- You'll be logged out in <strong> {{ count }} seconds</strong> -->
+    </p>
+  </div>
+
+  <button (click)="restartCountdown()" mat-raised-button color="primary">
+    <!-- Stay Logged In -->
+    Manter-se conectado
+  </button>
+</div>

@@ -1,0 +1,195 @@
+<!-- venda.component.html -->
+
+
+
+  <h2>Registrar Venda</h2>
+
+
+
+  <form [formGroup]="vendaForm" class="form-field-full">
+
+     <div class="row">
+ <mat-form-field   class="col-sm-5">
+      <mat-label>Cliente</mat-label>
+      <mat-select formControlName="clienteId" required>
+        <mat-option value="">Selecione um cliente</mat-option>
+        <mat-option *ngFor="let c of clientes" [value]="c.id">{{ c.nome }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+     <mat-form-field  class="col-sm-4">
+      <mat-label>Centro de Custo</mat-label>
+       <mat-select formControlName="centroCusto" required (change)="onsexoselect($event)">
+        <mat-option value="">Selecione um Centro de Custo</mat-option>
+        <mat-option *ngFor="let c of ccu" [value]="c.ccustamp">{{ c.ccusto }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+      <!-- <div class="col-sm-4">
+
+        <mat-form-field class="w-full">
+  <mat-label>Centro de Custo</mat-label>
+  <mtx-select
+    [items]="ccu"
+    bindLabel="ccusto"
+    bindValue="ccusto"
+    [hideSelected]="true"
+    [placeholder]="'Selecione um Centro de Custo'"
+    (change)="onsexoselect($event)"
+    (clear)="onClear()"
+    formControlName="centroCusto"
+  >
+  </mtx-select>
+</mat-form-field>
+                </div> -->
+    <mat-form-field  class="col-sm-3">
+      <mat-label>Data da Venda</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="dataVenda" required>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+
+
+
+
+              </div>
+
+  </form>
+
+
+
+  <hr />
+
+  <!-- Seção de Produtos -->
+  <h3>Adicionar Produto</h3>
+<div class="row">
+     <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Nome do Produto</mat-label>
+          <mtx-select [items]="produtosDisponiveis" [(ngModel)]="produtoSelecionado"
+            [hideSelected]="true"
+            bindLabel="nome" (change)="onselectPatChange($event)"
+            >
+          </mtx-select>
+        </mat-form-field>
+      </div>
+  <mat-form-field class="col-sm-3">
+    <mat-label>Preço</mat-label>
+    <input matInput type="number" [(ngModel)]="produtoTemp.preco" [disabled]="!produtoTemp.servico">
+  </mat-form-field>
+
+  <mat-form-field class="col-sm-3">
+    <mat-label>Quantidade</mat-label>
+    <input matInput type="number" [(ngModel)]="produtoTemp.quantidade" min="1">
+  </mat-form-field>
+
+<div class="display: flex;gap: 12px;">
+  <button mat-raised-button color="primary" type="button" style="height: 55px; margin-right: 12px;"
+    (click)="produtoEditandoId ? salvarEdicaoProduto() : adicionarProduto()">
+    {{ produtoEditandoId ? 'Salvar' : 'Adicionar' }}
+    <mat-icon>add</mat-icon>
+  </button>
+
+  <button *ngIf="produtoEditandoId" mat-raised-button color="warn"
+   type="button" style="height: 55px;" (click)="cancelarEdicao()">
+    Cancelar
+  </button>
+</div>
+</div>
+
+<h3>Produtos no pedido:</h3>
+<table mat-table [dataSource]="produtosSelecionados" class="mat-elevation-z2 full-width">
+
+ <!-- Nome do Produto -->
+<ng-container matColumnDef="nome">
+  <th mat-header-cell *matHeaderCellDef style="width: 40%;">Produto</th>
+  <td mat-cell *matCellDef="let p">
+    <ng-container *ngIf="!p.editando || !p.servico; else editarNome">
+      {{ p.nome }}
+    </ng-container>
+    <ng-template #editarNome>
+      <input matInput type="text" [(ngModel)]="p.nome" style="width: 100%;" />
+    </ng-template>
+  </td>
+  <td mat-footer-cell *matFooterCellDef><strong>Total</strong></td>
+</ng-container>
+
+<!-- Preço -->
+<ng-container matColumnDef="preco">
+  <th mat-header-cell *matHeaderCellDef>Preço</th>
+  <td mat-cell *matCellDef="let p">
+    <ng-container *ngIf="!p.editando || !p.servico; else editarPreco">
+      MZN {{ p.preco.toFixed(2) }}
+    </ng-container>
+    <ng-template #editarPreco>
+      <input matInput type="number" [(ngModel)]="p.preco" min="0" step="0.01" style="width: 80px;" />
+    </ng-template>
+  </td>
+  <td mat-footer-cell *matFooterCellDef></td>
+</ng-container>
+
+  <!-- Quantidade -->
+
+ <ng-container matColumnDef="quantidade">
+  <th mat-header-cell *matHeaderCellDef>Quantidade</th>
+  <td mat-cell *matCellDef="let p">
+    <ng-container *ngIf="!p.editando; else editarQuantidade">
+      {{ p.quantidade }}
+    </ng-container>
+    <ng-template #editarQuantidade>
+      <input matInput type="number" [(ngModel)]="p.quantidade" min="1" style="width: 60px;" />
+    </ng-template>
+  </td>
+  <td mat-footer-cell *matFooterCellDef>{{ totalQuantidade }}</td>
+</ng-container>
+
+  <!-- Total -->
+  <ng-container matColumnDef="total">
+    <th mat-header-cell *matHeaderCellDef>Total</th>
+    <td mat-cell *matCellDef="let p">MZN {{ (p.preco * p.quantidade).toFixed(2) }}</td>
+    <td mat-footer-cell *matFooterCellDef>MZN {{ totalGeral.toFixed(2) }}</td>
+  </ng-container>
+
+  <!-- Ações -->
+
+<!-- Ações -->
+<ng-container matColumnDef="acoes">
+  <th mat-header-cell *matHeaderCellDef class="text-right">Ações</th>
+  <td mat-cell *matCellDef="let p" class="text-right">
+    <ng-container *ngIf="!p.editando; else modoEdicao">
+      <button mat-icon-button color="primary" (click)="p.editando = true; $event.stopPropagation()">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="removerProduto(p.id); $event.stopPropagation()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </ng-container>
+    <ng-template #modoEdicao>
+      <button mat-icon-button color="primary"
+       (click)="salvarEdicao(); p.editando = false; $event.stopPropagation()">
+        <mat-icon>check</mat-icon>
+      </button>
+      <button mat-icon-button (click)="p.editando = false; $event.stopPropagation()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </ng-template>
+  </td>
+  <td mat-footer-cell *matFooterCellDef></td>
+</ng-container>
+
+
+
+  <!-- Linhas -->
+  <tr mat-header-row *matHeaderRowDef="displayedColumns" ></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="onRowClick(row)"></tr>
+  <tr mat-footer-row *matFooterRowDef="displayedColumns"></tr>
+</table>
+
+<!-- Botão Finalizar Pedido -->
+
+<div style="display: flex; justify-content: flex-end; margin-top: 16px;">
+  <button mat-raised-button color="accent" (click)="finalizarPedido()">Finalizar Pedido</button>
+</div>
+
+
+

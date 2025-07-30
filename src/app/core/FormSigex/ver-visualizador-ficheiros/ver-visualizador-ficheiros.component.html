@@ -1,0 +1,43 @@
+
+
+<div id="modal" class="modal">
+  <div mat-dialog-actions align="end">
+
+    <button mat-raised-button mat-dialog-close color="warn" (click)="dialogRef.close()"> <mat-icon matSuffix>close</mat-icon></button>
+
+  </div>
+  <mat-dialog-content>
+    <ng-container *ngIf="isLoading$ | async; else notloading">
+      <div class="progress progress-modal">
+        <div
+          class="
+            progress-bar progress-bar-striped progress-bar-animated
+            bg-primary
+          "
+          role="progressbar"
+          style="width: 100%"
+          aria-valuenow="100"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        ></div>
+      </div>
+    </ng-container>
+    <ng-template #notloading>
+      <iframe
+        *ngIf="src"
+        [src]="src"
+        width="100%"
+        height="1000"
+        webkitallowfullscreen
+        mozallowfullscreen
+        allowfullscreen
+      ></iframe>
+    </ng-template>
+  </mat-dialog-content>
+
+</div>
+
+
+
+
+

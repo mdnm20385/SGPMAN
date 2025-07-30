@@ -1,0 +1,105 @@
+.fact-modal-container {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  width: 100%; /* Ocupa toda a largura do dispositivo */
+  max-height: 80vh; /* Define a altura máxima como 80% da altura da viewport */
+  overflow-y: auto; /* Adiciona scroll vertical se o conteúdo exceder a altura máxima */
+  position: relative; /* Necessário para posicionar o botão Close */
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #d32f2f;
+  color: #ffffff;
+  border-radius: 50%; /* Forma circular */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.close-button:hover {
+  background-color: #b71c1c;
+}
+
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #333333;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+mat-form-field {
+  width: 100%; /* Faz os campos ocuparem todo o espaço disponível */
+}
+
+.actions-container {
+  display: flex;
+  justify-content: flex-end; /* Alinha os botões à direita */
+  gap: 10px; /* Adiciona espaçamento entre os botões */
+  margin-top: 15px; /* Espaçamento superior */
+  margin-bottom: 15px; /* Espaçamento inferior */
+}
+
+mat-tab-group {
+  margin-top: 20px;
+}
+
+mat-tab {
+  padding: 10px;
+}
+
+table {
+  width: 100%; /* Faz as tabelas ocuparem todo o espaço disponível */
+}
+
+button.mat-raised-button {
+  background-color: #1976d2;
+  color: #ffffff;
+}
+
+button.mat-raised-button.color-warn {
+  background-color: #d32f2f;
+  color: #ffffff;
+}
+
+button.mat-raised-button:hover {
+  background-color: #1565c0;
+}
+
+button.mat-raised-button.color-warn:hover {
+  background-color: #b71c1c;
+}
+
+button.mat-icon-button {
+  color: #d32f2f;
+}
+
+button.mat-icon-button:hover {
+  color: #b71c1c;
+}
+
+.mat-row:hover {
+  background-color: #f5f5f5; /* Destaque ao passar o mouse sobre uma linha */
+  cursor: pointer;
+}
+
+.selected {
+  background-color: #e0f7fa; /* Cor de fundo para a linha selecionada */
+  cursor: pointer;
+}

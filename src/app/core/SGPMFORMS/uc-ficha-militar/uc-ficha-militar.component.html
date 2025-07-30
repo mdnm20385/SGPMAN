@@ -1,0 +1,1354 @@
+<div class="ficha-militar-container">
+  <form [formGroup]="fichaForm" class="ficha-militar-form"
+   [ngClass]="'state-' + formState" (ngSubmit)="onSubmit()">
+
+    <!-- Header Section -->
+    <div class="form-header">
+      <h2 class="form-title">{{ displayTitle }}</h2>
+      <!-- State indicator -->
+      <span class="state-indicator" [ngClass]="'state-' + formState">
+        {{ getFormStateLabel() }}
+      </span>
+    </div>
+
+    <!-- Action buttons section -->
+    <div class="action-buttons">
+      <button
+        mat-raised-button
+        class="action-button new-button"
+        (click)="onNew()"
+        [disabled]="formState === 'insert'"
+        matTooltip="Novo registro">
+        <mat-icon>add</mat-icon>
+        Novo
+      </button>
+
+      <button
+        mat-raised-button
+        class="action-button edit-button"
+        (click)="onEdit()"
+        [disabled]="formState === 'update' || !isDocumentLoaded"
+        matTooltip="Editar registro atual">
+        <mat-icon>edit</mat-icon>
+        Editar
+      </button>
+
+      <button
+        mat-raised-button
+        class="action-button cancel-button"
+        (click)="onCancel()"
+        [disabled]="formState === 'cancel'"
+        matTooltip="Cancelar alterações">
+        <mat-icon>cancel</mat-icon>
+        Cancelar
+      </button>
+
+      <button
+        mat-raised-button
+        class="action-button save-button"
+        [disabled]="!canPerformActions() || fichaForm.invalid"
+        matTooltip="Salvar alterações">
+        <mat-icon>save</mat-icon>
+        Salvar
+      </button>
+    </div>
+
+    <!-- Main Form Content -->
+    <div class="form-content">
+
+      <!-- Campos Principais (sempre visíveis) -->
+      <div class="main-fields-section">
+        <div class="section-header">
+          <h3 class="section-title">
+            <mat-icon>badge</mat-icon>
+            Dados Principais
+          </h3>
+        </div>
+
+        <div class="main-fields-grid">
+
+          <!-- NIM - Campo col-sm-3 -->
+          <div class="form-group field-nim">
+            <mat-form-field appearance="outline">
+              <mat-label>NIM</mat-label>
+              <button mat-icon-button matPrefix
+                      class="search-button client-search"
+                      (click)="getMilitar('nim,nome,milstamp')"
+                      type="button"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <input matInput formControlName="nim" type="number" [disabled]="!canPerformActions()">
+              <button mat-icon-button matSuffix
+                      class="search-button document-search"
+                      (click)="onMilitarSearchClick('nim,nome,milstamp')"
+                      type="button"
+                      [disabled]="formState !== 'cancel'">
+                <mat-icon>search</mat-icon>
+              </button>
+              <mat-hint>Número único de identificação militar</mat-hint>
+            </mat-form-field>
+          </div>
+
+          <!-- Nome - Campo com maior espaço disponível -->
+          <div class="form-group field-nome">
+            <mat-form-field appearance="outline">
+              <mat-label>Nome Completo</mat-label>
+              <button mat-icon-button matPrefix
+                      class="search-button client-search"
+                      (click)="getMilitar('nome,nim,milstamp')"
+                      type="button"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <input matInput formControlName="nome" [disabled]="!canPerformActions()">
+              <button mat-icon-button matSuffix
+                      class="search-button document-search"
+                      (click)="onMilitarSearchClick('nome,nim,milstamp')"
+                      type="button"
+                      [disabled]="formState !== 'cancel'">
+                <mat-icon>search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <!-- Situação - Campo col-sm-3 -->
+          <div class="form-group field-situacao">
+            <mat-form-field appearance="outline">
+              <mat-label>Situação Atual</mat-label>
+              <mat-select formControlName="situacaoAtual" [disabled]="!canPerformActions()">
+                <mat-option value="Ativo">Ativo</mat-option>
+                <mat-option value="Licença">Em Licença</mat-option>
+                <mat-option value="Missão">Em Missão</mat-option>
+                <mat-option value="Formação">Em Formação</mat-option>
+                <mat-option value="Reforma">Reformado</mat-option>
+                <mat-option value="Reserva">Na Reserva</mat-option>
+                <mat-option value="Disponibilidade">Em Disponibilidade</mat-option>
+                <mat-option value="Suspenso">Suspenso</mat-option>
+                <mat-option value="Transferido">Transferido</mat-option>
+              </mat-select>
+              <mat-icon matSuffix>assignment_ind</mat-icon>
+              <mat-hint>Situação militar atual</mat-hint>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <!-- Tab Group -->
+      <mat-tab-group class="custom-tab-group" dynamicHeight>
+
+        <!-- Tab 1: Dados Pessoais -->
+        <mat-tab label="Dados Pessoais">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>person</mat-icon>
+                Informações Pessoais
+              </h3>
+            </div>
+
+            <div class="row">
+              <!-- Coluna principal dos dados - col-sm-10 -->
+              <div class="col-sm-10">
+                <div class="form-grid">
+                  <!-- Primeira linha -->
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Data de Nascimento</mat-label>
+                      <input matInput [matDatepicker]="nascData" formControlName="nascData" [disabled]="!canPerformActions()">
+                      <mat-datepicker-toggle matSuffix [for]="nascData" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+                      <mat-datepicker #nascData [disabled]="!canPerformActions()"></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Sexo</mat-label>
+                      <mat-select formControlName="sexo" [disabled]="!canPerformActions()">
+                        <mat-option value="M">Masculino</mat-option>
+                        <mat-option value="F">Feminino</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <!-- Segunda linha -->
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Grupo Sanguíneo</mat-label>
+                      <mat-select formControlName="grupSangue" [disabled]="!canPerformActions()">
+                        <mat-option value="A+">A+</mat-option>
+                        <mat-option value="A-">A-</mat-option>
+                        <mat-option value="B+">B+</mat-option>
+                        <mat-option value="B-">B-</mat-option>
+                        <mat-option value="AB+">AB+</mat-option>
+                        <mat-option value="AB-">AB-</mat-option>
+                        <mat-option value="O+">O+</mat-option>
+                        <mat-option value="O-">O-</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Nacionalidade</mat-label>
+                      <input matInput formControlName="nacional" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </div>
+
+                  <!-- Terceira linha -->
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Pai</mat-label>
+                      <input matInput formControlName="pai" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Mãe</mat-label>
+                      <input matInput formControlName="mae" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </div>
+
+                  <!-- Quarta linha -->
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Estado Civil</mat-label>
+                      <mat-select formControlName="estCivil" [disabled]="!canPerformActions()">
+                        <mat-option value="Solteiro(a)">Solteiro(a)</mat-option>
+                        <mat-option value="Casado(a)">Casado(a)</mat-option>
+                        <mat-option value="Divorciado(a)">Divorciado(a)</mat-option>
+                        <mat-option value="Viúvo(a)">Viúvo(a)</mat-option>
+                        <mat-option value="União de Facto">União de Facto</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Cônjuge</mat-label>
+                      <input matInput formControlName="conjuge" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </div>
+
+                  <!-- Quinta linha -->
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Data de Casamento</mat-label>
+                      <input matInput [matDatepicker]="dataCasamento" formControlName="dataCasamento" [disabled]="!canPerformActions()">
+                      <mat-datepicker-toggle matSuffix [for]="dataCasamento" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+                      <mat-datepicker #dataCasamento [disabled]="!canPerformActions()"></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Número de Filhos</mat-label>
+                      <input matInput formControlName="numFilhos" type="number" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </div>
+
+                  <!-- Sexta linha -->
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Habilitações Literárias</mat-label>
+                      <input matInput formControlName="habiLite" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Ramo</mat-label>
+                      <input matInput formControlName="ramo" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Coluna da foto do militar - col-sm-2 -->
+              <div class="col-sm-2">
+                <div class="photo-section">
+                  <h5 class="photo-title">
+                    <mat-icon>photo_camera</mat-icon>
+                    Foto do Militar
+                  </h5>
+
+                  <div class="photo-container">
+                    <!-- Preview da imagem -->
+                    <div class="photo-preview" [class.has-photo]="militarPhoto">
+                      <div *ngIf="!militarPhoto" class="no-photo-placeholder">
+                        <mat-icon>person</mat-icon>
+                        <span>Sem foto</span>
+                      </div>
+
+                      <img *ngIf="militarPhoto"
+                           [src]="militarPhoto"
+                           alt="Foto do militar"
+                           class="militar-image">
+                    </div>
+
+                    <!-- Ações da foto -->
+                    <div class="photo-actions">
+                      <button mat-mini-fab
+                              color="primary"
+                              type="button"
+                              (click)="openPhotoCapture()"
+                              [disabled]="!canPerformActions()"
+                              matTooltip="{{ militarPhoto ? 'Alterar Foto' : 'Adicionar Foto' }}">
+                        <mat-icon>{{ militarPhoto ? 'edit' : 'add_a_photo' }}</mat-icon>
+                      </button>
+
+                      <button mat-mini-fab
+                              color="warn"
+                              type="button"
+                              (click)="removePhoto()"
+                              [disabled]="!canPerformActions() || !militarPhoto"
+                              *ngIf="militarPhoto"
+                              matTooltip="Remover Foto">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 2: Dados de Nascimento -->
+        <mat-tab label="Local de Nascimento">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>place</mat-icon>
+                Informações de Nascimento
+              </h3>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>País de Nascimento</mat-label>
+                  <input matInput formControlName="nascPais" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Província de Nascimento</mat-label>
+                  <input matInput formControlName="nascProv" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Distrito de Nascimento</mat-label>
+                  <input matInput formControlName="nascDist" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Posto Administrativo de Nascimento</mat-label>
+                  <input matInput formControlName="nascPosto" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Localidade de Nascimento</mat-label>
+                  <input matInput formControlName="nascLocal" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Povoação</mat-label>
+                  <input matInput formControlName="nascPov" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 3: Dados de Residência -->
+        <mat-tab label="Residência">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>home</mat-icon>
+                Informações de Residência
+              </h3>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Província de Residência</mat-label>
+                  <input matInput formControlName="resProv" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Distrito de Residência</mat-label>
+                  <input matInput formControlName="resDist" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Posto Administrativo</mat-label>
+                  <input matInput formControlName="resPosto" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Localidade</mat-label>
+                  <input matInput formControlName="resLocalidade" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Bairro</mat-label>
+                  <input matInput formControlName="resBairro" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Quarteirão</mat-label>
+                  <input matInput formControlName="resQuarteirao" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Avenida/Rua</mat-label>
+                  <input matInput formControlName="resAvenida" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Número da Casa</mat-label>
+                  <input matInput formControlName="numCasa" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 4: Incorporação -->
+        <mat-tab label="Incorporação">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>military_tech</mat-icon>
+                Dados de Incorporação
+              </h3>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>País de Incorporação</mat-label>
+                  <input matInput formControlName="incPais" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Província de Incorporação</mat-label>
+                  <input matInput formControlName="incProv" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Distrito de Incorporação</mat-label>
+                  <input matInput formControlName="incDist" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Posto Administrativo</mat-label>
+                  <input matInput formControlName="incPosto" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Localidade</mat-label>
+                  <input matInput formControlName="incLocal" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Data de Incorporação</mat-label>
+                  <input matInput [matDatepicker]="incData" formControlName="incData" [disabled]="!canPerformActions()">
+                  <mat-datepicker-toggle matSuffix [for]="incData" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+                  <mat-datepicker #incData [disabled]="!canPerformActions()"></mat-datepicker>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 5: Treino Militar -->
+        <mat-tab label="Treino">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>fitness_center</mat-icon>
+                Informações de Treino
+              </h3>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Início do Treino</mat-label>
+                  <input matInput [matDatepicker]="inicioTreino" formControlName="inicioTreino" [disabled]="!canPerformActions()">
+                  <mat-datepicker-toggle matSuffix [for]="inicioTreino" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+                  <mat-datepicker #inicioTreino [disabled]="!canPerformActions()"></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Término do Treino</mat-label>
+                  <input matInput [matDatepicker]="terminoTreino" formControlName="terminoTreino" [disabled]="!canPerformActions()">
+                  <mat-datepicker-toggle matSuffix [for]="terminoTreino" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+                  <mat-datepicker #terminoTreino [disabled]="!canPerformActions()"></mat-datepicker>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Duração do Treino</mat-label>
+                  <input matInput formControlName="duracaoTreino" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Centro de Treino</mat-label>
+                  <input matInput formControlName="centroTreino" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Curso de Treino</mat-label>
+                  <input matInput formControlName="cursoTreino" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Especialidade Adquirida</mat-label>
+                  <input matInput formControlName="adquirEspecial" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 6: Dados Médicos -->
+        <mat-tab label="Dados Médicos">
+          <div class="tab-content" formGroupName="milMed">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>medical_services</mat-icon>
+                Informações Médicas
+              </h3>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Altura (cm)</mat-label>
+                  <input matInput formControlName="altura" type="number" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Peso (kg)</mat-label>
+                  <input matInput formControlName="peso" type="number" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Braço (cm)</mat-label>
+                  <input matInput formControlName="braco" type="number" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Cabeça (cm)</mat-label>
+                  <input matInput formControlName="cabeca" type="number" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Pescoço (cm)</mat-label>
+                  <input matInput formControlName="pescoco" type="number" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Peito (cm)</mat-label>
+                  <input matInput formControlName="peito" type="number" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Cintura (cm)</mat-label>
+                  <input matInput formControlName="cintura" type="number" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Ancas (cm)</mat-label>
+                  <input matInput formControlName="ancas" type="number" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Entrepernas (cm)</mat-label>
+                  <input matInput formControlName="entrepernas" type="number" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Calçado (nº)</mat-label>
+                  <input matInput formControlName="calcado" type="number" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Ombros (cm)</mat-label>
+                  <input matInput formControlName="ombros" type="number" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 7: Salário -->
+        <mat-tab label="Dados Salariais">
+          <div class="tab-content" formGroupName="milSalario">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>payments</mat-icon>
+                Informações Salariais
+              </h3>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <mat-checkbox formControlName="uCerimonial" [disabled]="!canPerformActions()">
+                  Uniforme Cerimonial
+                </mat-checkbox>
+              </div>
+
+              <div class="form-group">
+                <mat-checkbox formControlName="saudeMilitar" [disabled]="!canPerformActions()">
+                  Saúde Militar
+                </mat-checkbox>
+              </div>
+
+              <div class="form-group">
+                <mat-checkbox formControlName="recebePatente" [disabled]="!canPerformActions()">
+                  Recebe por Patente
+                </mat-checkbox>
+              </div>
+
+              <div class="form-group">
+                <mat-checkbox formControlName="recebeSqtc" [disabled]="!canPerformActions()">
+                  Recebe SQTC
+                </mat-checkbox>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Escalão</mat-label>
+                  <input matInput formControlName="escalao" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>SQTC</mat-label>
+                  <input matInput formControlName="sQTC" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nível Salarial</mat-label>
+                  <input matInput formControlName="nivelSalarial" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Nome do Banco</mat-label>
+                  <input matInput formControlName="nomeBanco" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Número da Conta</mat-label>
+                  <input matInput formControlName="nrConta" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>NIB</mat-label>
+                  <input matInput formControlName="nib" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+              <div class="form-group form-group-full">
+                <mat-form-field appearance="outline">
+                  <mat-label>Observações</mat-label>
+                  <textarea matInput formControlName="obs" rows="3" [disabled]="!canPerformActions()"></textarea>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 8: Agregados Familiares -->
+        <mat-tab label="Agregados Familiares">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>family_restroom</mat-icon>
+                Agregados Familiares
+              </h3>
+              <button mat-raised-button color="primary"
+                      (click)="adicionarAgregado()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Agregado
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="agreDataSource" class="data-table">
+                <!-- Nome Column -->
+                <ng-container matColumnDef="nome">
+                  <th mat-header-cell *matHeaderCellDef>Nome</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(agreFormArray.at(i)).get('nome')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Grau Column -->
+                <ng-container matColumnDef="grau">
+                  <th mat-header-cell *matHeaderCellDef>Grau de Parentesco</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(agreFormArray.at(i)).get('grau')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Data Nascimento Column -->
+                <ng-container matColumnDef="nascData">
+                  <th mat-header-cell *matHeaderCellDef>Data de Nascimento</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(agreFormArray.at(i)).get('nascData')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Telefone Column -->
+                <ng-container matColumnDef="telefone">
+                  <th mat-header-cell *matHeaderCellDef>Telefone</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(agreFormArray.at(i)).get('telefone')" type="number" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button color="warn"
+                            (click)="removerAgregado(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Remover">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="agreColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: agreColumns; let i = index"
+                    [class.selected]="selectedAgreIndex === i"
+                    (click)="selectAgregado(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 9: Condecorações -->
+        <mat-tab label="Condecorações">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>military_tech</mat-icon>
+                Condecorações e Galardões
+              </h3>
+              <button mat-raised-button color="primary"
+                      (click)="adicionarCondecoracoes()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Condecoração
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="condeDataSource" class="data-table">
+                <!-- Galardão Column -->
+                <ng-container matColumnDef="galardoa">
+                  <th mat-header-cell *matHeaderCellDef>Galardão</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(condeFormArray.at(i)).get('galardoa')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Espécie Column -->
+                <ng-container matColumnDef="especie">
+                  <th mat-header-cell *matHeaderCellDef>Espécie</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(condeFormArray.at(i)).get('especie')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Grau da Medalha Column -->
+                <ng-container matColumnDef="grauMedalha">
+                  <th mat-header-cell *matHeaderCellDef>Grau da Medalha</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(condeFormArray.at(i)).get('grauMedalha')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Data de Galardoação Column -->
+                <ng-container matColumnDef="dataGalardoacao">
+                  <th mat-header-cell *matHeaderCellDef>Data de Galardoação</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(condeFormArray.at(i)).get('dataGalardoacao')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button color="warn"
+                            (click)="removerCondecoracoes(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Remover">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="condeColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: condeColumns; let i = index"
+                    [class.selected]="selectedCondeIndex === i"
+                    (click)="selectCondecoracoes(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 10: Documentos -->
+        <mat-tab label="Documentos">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>description</mat-icon>
+                Documentos de Identificação
+              </h3>
+              <button mat-raised-button color="primary"
+                      (click)="adicionarDocumento()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Documento
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="docDataSource" class="data-table">
+                <!-- Tipo de Documento Column -->
+                <ng-container matColumnDef="tipoDocumento">
+                  <th mat-header-cell *matHeaderCellDef>Tipo de Documento</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(docFormArray.at(i)).get('tipoDocumento')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Número do Documento Column -->
+                <ng-container matColumnDef="numeroDoc">
+                  <th mat-header-cell *matHeaderCellDef>Número</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(docFormArray.at(i)).get('numeroDoc')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Local de Emissão Column -->
+                <ng-container matColumnDef="localemissao">
+                  <th mat-header-cell *matHeaderCellDef>Local de Emissão</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(docFormArray.at(i)).get('localemissao')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Data de Emissão Column -->
+                <ng-container matColumnDef="dataemissao">
+                  <th mat-header-cell *matHeaderCellDef>Data de Emissão</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(docFormArray.at(i)).get('dataemissao')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button color="warn"
+                            (click)="removerDocumento(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Remover">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="docColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: docColumns; let i = index"
+                    [class.selected]="selectedDocIndex === i"
+                    (click)="selectDocumento(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 11: Emails -->
+        <mat-tab label="Emails">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>email</mat-icon>
+                Endereços de Email
+              </h3>
+              <button mat-raised-button color="primary"
+                      (click)="adicionarEmail()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Email
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="emailDataSource" class="data-table">
+                <!-- Email Column -->
+                <ng-container matColumnDef="email">
+                  <th mat-header-cell *matHeaderCellDef>Email</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(emailFormArray.at(i)).get('email')"
+                             type="email" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button color="warn"
+                            (click)="removerEmail(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Remover">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="emailColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: emailColumns; let i = index"
+                    [class.selected]="selectedEmailIndex === i"
+                    (click)="selectEmail(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 12: Telefones -->
+        <mat-tab label="Telefones">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>phone</mat-icon>
+                Números de Telefone
+              </h3>
+              <button mat-raised-button color="primary"
+                      (click)="adicionarTelefone()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Telefone
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="telefoneDataSource" class="data-table">
+                <!-- Número Column -->
+                <ng-container matColumnDef="numero">
+                  <th mat-header-cell *matHeaderCellDef>Número</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(telefoneFormArray.at(i)).get('numero')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Tipo Column -->
+                <ng-container matColumnDef="tipo">
+                  <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <mat-select [formControl]="$any(telefoneFormArray.at(i)).get('tipo')" [disabled]="!canPerformActions()">
+                        <mat-option value="Pessoal">Pessoal</mat-option>
+                        <mat-option value="Profissional">Profissional</mat-option>
+                        <mat-option value="Emergência">Emergência</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button color="warn"
+                            (click)="removerTelefone(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Remover">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="telefoneColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: telefoneColumns; let i = index"
+                    [class.selected]="selectedTelefoneIndex === i"
+                    (click)="selectTelefone(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 13: Formação -->
+        <mat-tab label="Formação">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>school</mat-icon>
+                Formação Acadêmica
+              </h3>
+              <button mat-raised-button color="primary"
+                      (click)="adicionarFormacao()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Formação
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="forDataSource" class="data-table">
+                <!-- Curso Column -->
+                <ng-container matColumnDef="curso">
+                  <th mat-header-cell *matHeaderCellDef>Curso</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(forFormArray.at(i)).get('curso')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Instituição Column -->
+                <ng-container matColumnDef="instituicao">
+                  <th mat-header-cell *matHeaderCellDef>Instituição</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(forFormArray.at(i)).get('instituicao')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Data Início Column -->
+                <ng-container matColumnDef="dataInicio">
+                  <th mat-header-cell *matHeaderCellDef>Data de Início</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(forFormArray.at(i)).get('dataInicio')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Data Término Column -->
+                <ng-container matColumnDef="dataTermino">
+                  <th mat-header-cell *matHeaderCellDef>Data de Término</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(forFormArray.at(i)).get('dataTermino')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button color="warn"
+                            (click)="removerFormacao(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Remover">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="forColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: forColumns; let i = index"
+                    [class.selected]="selectedForIndex === i"
+                    (click)="selectFormacao(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 14: Línguas -->
+        <mat-tab label="Línguas">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>translate</mat-icon>
+                Conhecimento de Línguas
+              </h3>
+              <button mat-raised-button color="primary"
+                      (click)="adicionarLingua()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Língua
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="linguaDataSource" class="data-table">
+                <!-- Língua Column -->
+                <ng-container matColumnDef="lingua">
+                  <th mat-header-cell *matHeaderCellDef>Língua</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(linguaFormArray.at(i)).get('lingua')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Fala Column -->
+                <ng-container matColumnDef="fala">
+                  <th mat-header-cell *matHeaderCellDef>Fala</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <mat-select [formControl]="$any(linguaFormArray.at(i)).get('fala')" [disabled]="!canPerformActions()">
+                        <mat-option value="Básico">Básico</mat-option>
+                        <mat-option value="Intermediário">Intermediário</mat-option>
+                        <mat-option value="Avançado">Avançado</mat-option>
+                        <mat-option value="Nativo">Nativo</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Leitura Column -->
+                <ng-container matColumnDef="leitura">
+                  <th mat-header-cell *matHeaderCellDef>Leitura</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <mat-select [formControl]="$any(linguaFormArray.at(i)).get('leitura')" [disabled]="!canPerformActions()">
+                        <mat-option value="Básico">Básico</mat-option>
+                        <mat-option value="Intermediário">Intermediário</mat-option>
+                        <mat-option value="Avançado">Avançado</mat-option>
+                        <mat-option value="Nativo">Nativo</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Escrita Column -->
+                <ng-container matColumnDef="escrita">
+                  <th mat-header-cell *matHeaderCellDef>Escrita</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <mat-select [formControl]="$any(linguaFormArray.at(i)).get('escrita')" [disabled]="!canPerformActions()">
+                        <mat-option value="Básico">Básico</mat-option>
+                        <mat-option value="Intermediário">Intermediário</mat-option>
+                        <mat-option value="Avançado">Avançado</mat-option>
+                        <mat-option value="Nativo">Nativo</mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Materna Column -->
+                <ng-container matColumnDef="materna">
+                  <th mat-header-cell *matHeaderCellDef>Materna</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-checkbox [formControl]="$any(linguaFormArray.at(i)).get('materna')" [disabled]="!canPerformActions()">
+                    </mat-checkbox>
+                  </td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button color="warn"
+                            (click)="removerLingua(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Remover">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="linguaColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: linguaColumns; let i = index"
+                    [class.selected]="selectedLinguaIndex === i"
+                    (click)="selectLingua(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 15: Situações -->
+        <mat-tab label="Situações">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>assignment</mat-icon>
+                Situações Militares
+              </h3>
+              <button mat-raised-button color="primary"
+                      (click)="adicionarSituacao()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Situação
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="sitDataSource" class="data-table">
+                <!-- Situação Column -->
+                <ng-container matColumnDef="situacao">
+                  <th mat-header-cell *matHeaderCellDef>Situação</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(sitFormArray.at(i)).get('situacao')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Data OS Column -->
+                <ng-container matColumnDef="dataOS">
+                  <th mat-header-cell *matHeaderCellDef>Data da OS</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(sitFormArray.at(i)).get('dataOS')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Número OS Column -->
+                <ng-container matColumnDef="numOS">
+                  <th mat-header-cell *matHeaderCellDef>Nº OS</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(sitFormArray.at(i)).get('numOS')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button color="warn"
+                            (click)="removerSituacao(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Remover">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="sitColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: sitColumns; let i = index"
+                    [class.selected]="selectedSitIndex === i"
+                    (click)="selectSituacao(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+      </mat-tab-group>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,27 @@
+
+
+
+
+.demo-full-width {
+  width: 100%;
+}
+.modal {
+   background: whitesmoke;
+}
+
+#btnright{
+
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  align-items: center;
+  >form{
+    width: 40%;
+  }
+
+}
+
+
+
+

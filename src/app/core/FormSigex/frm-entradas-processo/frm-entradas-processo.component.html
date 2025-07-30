@@ -1,0 +1,421 @@
+
+
+
+<div id="modal" class="modal">
+  <div mat-dialog-actions align="end">
+
+    <button mat-raised-button mat-dialog-close color="warn" (click)="dialogRef.close()"> <mat-icon matSuffix>close</mat-icon></button>
+
+  </div>
+  <mat-dialog-content>
+    <div class="row">
+      <div class="col-sm-12">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Registo de entradas de Correspondências (Todos os campos com * são de preenchimento obrigatórios)</mat-card-title>
+          </mat-card-header>
+
+          <mat-card-content>
+            <mat-dialog-actions  align="end">
+              <button mat-raised-button color="primary" type="button" (click)="SetarCombos()"><mat-icon>refresh</mat-icon>Refresh</button>
+            </mat-dialog-actions>
+            <form [formGroup]="registerForm" class="form-field-full" (ngSubmit)="Salvar()">
+              <div class="row">
+                <mat-form-field  class="col-sm-8">
+                  <mat-label>Nome Completo(*)</mat-label>
+                  <input matInput
+                  formControlName="firstName" readonly="true">
+                </mat-form-field>
+                <mat-form-field class="col-sm-4">
+                  <mat-label>Estado da junta(*)</mat-label>
+                  <input matInput [readonly]="true"
+                  formControlName="alterou">
+                </mat-form-field>
+              </div>
+              <br/>
+              <mat-tab-group>
+                <mat-tab label="DADOS GERAIS">
+                <br/>
+
+                   <div class="row">
+                    <div class="col-sm-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Estado de homologação(*)</mat-label>
+                        <mtx-select [items]="EstadoTramitacao"
+                          bindLabel="descricao" [loading]="loading"
+                           bindValue="descricao" autofocus
+                          [(ngModel)]="selectedestadoe" formControlName="estadotramitatww"
+                           [hideSelected]="true"
+                           (change)="onEstadotramitacaChange($event)"
+                          (clear)="ClearEstadotramitaca()">
+                        </mtx-select>
+                      </mat-form-field>
+                    </div>
+                    <div class="col-sm-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Grau de Confidencialidade</mat-label>
+                        <mtx-select [items]="GrauConfidencialidade"
+                          bindLabel="descricao" [loading]="loading" [hideSelected]="true" formControlName="grauconf"
+                          (change)="ongrauClassifiChange($event)"
+                          (clear)="CleargrauClassifiC()">
+                        </mtx-select>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col-sm-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Grau de urgencia</mat-label>
+                        <mtx-select [items]="GrauUrgencia"
+                          bindLabel="descricao" [loading]="loading" [hideSelected]="true"
+                          formControlName="nvlUrgencias" (change)="onnvlUrgenciaChange($event)"
+                          (clear)="Clearnivelurgencia()"
+                          >
+                        </mtx-select>
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col-sm-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Proveniência (*)</mat-label>
+                        <mtx-select [items]="selectProveneniencia"
+                          bindLabel="descricao" [loading]="loading" [hideSelected]="true"
+                          formControlName="proveniencia1"
+                          (change)="onselectprovenienciaChange($event)" (clear)="Clearproveniencia()">
+                        </mtx-select>
+                      </mat-form-field>
+                    </div>
+                     <div class="col-sm-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Província de Proveniência(*)</mat-label>
+                        <mtx-select [items]="selectProvProveneniencia"
+                          bindLabel="descricao" [loading]="loading" [hideSelected]="true"
+                          formControlName="provProveniencia1"
+                          (change)="onselectprovprovenienciaChange($event)"
+
+                          (clear)="Clearprovproveniencia()"
+                          >
+                        </mtx-select>
+                      </mat-form-field>
+                    </div>
+
+
+
+                    <div class="col-sm-4">
+                      <mat-form-field class="w-full">
+                        <mat-label>Tipo de documento</mat-label>
+                        <mtx-select [items]="selectespecie" formControlName="especieclas"
+                          bindLabel="descricao" [loading]="loading"  [hideSelected]="true"
+                           (change)="onEspecieChange($event)" (clear)="Cleartipo()"
+                          >
+                        </mtx-select>
+                      </mat-form-field>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-sm-4">
+                      <mat-form-field>
+                        <mat-label>Data de documento</mat-label>
+                        <input matInput [matDatepicker]="picker2"
+                         placeholder="Data de documento" formControlName="dataEntrada">
+                        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                        <mat-datepicker #picker2></mat-datepicker>
+                      </mat-form-field>
+                    </div>
+                <div class="col-sm-4">
+                  <mat-form-field>
+                    <mat-label>Remetente</mat-label>
+                    <input matInput placeholder="Quem está a remeter este documento?..."
+                    formControlName="remetente" >
+                    <mat-icon matSuffix>person</mat-icon>
+                  </mat-form-field>
+                </div>
+
+                <div class="col-sm-4">
+                  <mat-form-field>
+                    <mat-label>Nº de Documento</mat-label>
+                    <input matInput placeholder="Número de entrada" type="number"
+                    formControlName="numeroEntrada" >
+                  </mat-form-field>
+                </div>
+                  </div>
+                </mat-tab>
+
+                <mat-tab label="PROCEDÊNCIA">
+
+<mat-card>
+  <mat-card-header>
+
+    <mat-card-title>Procedência</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+<div class="row">
+  <div class="col-sm-6">
+    <mat-form-field class="w-full">
+      <mat-label>Órgão de Procedência</mat-label>
+      <mtx-select [items]="selectorgaoprocede"  formControlName="orgaoproce1"
+        bindLabel="descricao" [loading]="loading" [hideSelected]="true"
+        (change)="onSelectorgaoprocendiaChange($event)"
+        (clear)="ClearDirecoesrocede()"
+        >
+      </mtx-select>
+    </mat-form-field>
+  </div>
+  <div class="col-sm-6">
+    <mat-form-field class="w-full">
+      <mat-label>Direcção de Procedência</mat-label>
+      <mtx-select [items]="selectdirecoesproced" formControlName="direcaoproce1" [hideSelected]="true"
+        bindLabel="descricao" [loading]="loading" (change)="onDirecaoprocendiaChange($event)"
+        (clear)="CleardireccaoProce()"
+        >
+      </mtx-select>
+    </mat-form-field>
+  </div>
+</div>
+  </mat-card-content>
+</mat-card>
+                </mat-tab>
+                <mat-tab label="OUTROS DADOS">
+<br>
+                  <div class="row">
+
+                    <div class="col-sm-4">
+                      <mat-form-field>
+                        <mat-label>Qtd Folhas</mat-label>
+                        <input matInput placeholder="Qtd Folhas" type="number"
+                        formControlName="qtdFolhas">
+                      </mat-form-field>
+                    </div>
+
+                    <div class="col-sm-4">
+                      <mat-form-field>
+                        <mat-label>Qtd Anexos</mat-label>
+                        <input matInput placeholder="Qtd Anexos" type="number"
+                        formControlName="qtdAnexo">
+                      </mat-form-field>
+                    </div>
+                    <div class="col-sm-4">
+                      <mat-form-field>
+                        <mat-label>Qtd Exemplares</mat-label>
+                        <input matInput placeholder="Qtd Exemplares" type="number"
+                        formControlName="qtdExemplares">
+                      </mat-form-field>
+                    </div>
+
+
+                    </div>
+
+
+                  <div class="row">
+                    <mat-form-field  class="col-sm-12">
+                      <mat-label>Despacho</mat-label>
+                      <textarea matInput placeholder="Introduza o texto do Despacho se existir..."
+                      formControlName="despacho"></textarea>
+                    </mat-form-field>
+                    <mat-form-field  class="col-sm-12">
+                      <mat-label>Endereço</mat-label>
+                      <textarea matInput placeholder="introduz algum Endereço se existir ..."
+                      formControlName="endereco"></textarea>
+                    </mat-form-field>
+                  </div>
+                </mat-tab>
+                <div *ngIf="isLoadingProcesso;then contentsf else other_contentsf">
+
+                </div>
+                <ng-template #contentsf>
+
+                  <mat-tab label="SAÍDAS">
+
+                    <mat-card>
+                      <mat-card-content>
+
+                    <div class="row">
+
+                      <div id="btnright">
+                        <form >
+
+                          <div class="row demo-full-width">
+                            <div class="col-sm-6 ">
+                              <mat-form-field appearance="outline" class="demo-full-width">
+                                <input matInput   matInput  readonly="true"  placeholder="Clica no botão + ou tecla F2 para adicionar saída!"
+                                />
+                                <button matSuffix mat-raised-button color="accent" style="height: 35px;"
+                                class="m-x-4"  mat-raised-button color="primary"
+                                (click)="AddNew()"  type="button" class="btnpesquisa">
+                                <mat-icon class="chevron">add</mat-icon>
+                                </button>
+                              </mat-form-field>
+                          </div>
+                            <div class="col-sm-6 ">
+                              <mat-form-field class="m-x-4 example-full-width" appearance="outline">
+                                <input matInput
+                                 placeholder="Filtragem através do Órgão/Direcção"
+                                 class="inputpesquisa" (keyup)="busca($event)"
+
+                                 #input/>
+
+                                       <button matSuffix mat-raised-button color="accent" style="height: 35px;"
+                                 class="btnpesquisa">
+                                    <mat-icon class='search-icon' color="primary" matSuffix>search</mat-icon>
+                                </button>
+
+                              </mat-form-field>
+                            </div>
+
+                        </div>
+
+
+                        </form>
+                      </div>
+
+                      <mtx-grid [data]="listdestinatario"
+                      [columns]="columnsDestinatarios1"
+                      [loading]="isLoadingdesti"
+                      [pageOnFront]="false"
+                      [loading]="isLoadingdesti"
+                      [columnResizable]="columnResizabledesti"
+                      [showToolbar]="showToolbardesti"
+                      [toolbarTitle]="'Todas as saídas feitas'"
+                      [columnHideable]="columnHideabledesti"
+                      [columnSortable]="columnSortabledesti"
+                      [columnPinnable]="columnPinnabledesti"
+                      [pageOnFront]="showPaginatordesti"
+                      [showPaginator]="showPaginatordesti"
+                      [pageOnFront]="showPaginatordesti"
+                      [showPaginator]="showPaginatordesti"
+                      [rowHover]="true"
+                      [length]="totalRecordsdest"
+                      [pageSize]="5"
+                      [pageIndex]="0"
+                      [pageSizeOptions]="[5, 10, 15]"
+                      >
+                    </mtx-grid>
+
+
+           </div>
+
+
+                      </mat-card-content>
+                    </mat-card>
+
+                  </mat-tab>
+              </ng-template>
+              <ng-template #other_contentsf>
+
+              </ng-template>
+
+
+                <mat-tab label="ANEXO">
+                  <br>
+                  <div *ngIf="isLoadingProcesso;then content else other_content">
+
+                  </div>
+                  <ng-template #content>
+
+                      <div id="btnright">
+                        <form   style="width: 50%;">
+                            <mat-form-field class="m-x-4 example-full-width" appearance="outline">
+                                <input matInput   matInput [(ngModel)]="query.q" name="q"
+                                 placeholder="Filtragem através do nome do ficheiro"
+                                 class="inputpesquisa"/>
+                                <button matSuffix mat-raised-button color="accent" style="height: 35px;"
+                                (click)="search()" (keyup.enter)="search()" class="btnpesquisa">
+                                    <mat-icon class='search-icon' color="primary" matSuffix>search</mat-icon>
+                                </button>
+
+                              </mat-form-field>
+                        </form>
+                    </div>
+                      <mtx-grid [data]="list"
+                      [columns]="columns"
+                      [loading]="isLoading"
+                      [pageOnFront]="false"
+                      [loading]="isLoading"
+                      [columnResizable]="columnResizable"
+                      [multiSelectable]="multiSelectable"
+                      [rowSelectable]="rowSelectable"
+                      [hideRowSelectionCheckbox]="hideRowSelectionCheckbox"
+                      [showToolbar]="showToolbar"
+                      [toolbarTitle]="'Barra de ferramentas da grade de dados'"
+                      [columnHideable]="columnHideable"
+                      [columnSortable]="columnSortable"
+                      [columnPinnable]="columnPinnable"
+                      [pageOnFront]="showPaginator"
+                      [showPaginator]="showPaginator"
+                                (sortChange)="changeSort($event)"
+                                                       [length]="totalRecords"
+                                                       [pageSize]="50"
+                                                       [pageSizeOptions]="[50, 100, 200]"
+                                (page)="getNextPage($event)">
+                      </mtx-grid>
+
+                      <ng-template #expansionTpl let-row>
+                      </ng-template>
+
+
+
+                  </ng-template>
+                  <ng-template #other_content>
+
+
+
+                    <br>
+                    <label for="fileInput" class="cus tom-file-label">📂  {{this.titulocarregar}}</label>
+                  <input type="file" id="fileInput" (change)="onFileChange($event)" hidden  title="Carregue o anexo da junta"/>
+
+                  <br/><span>{{ fileName || 'Nenhum ficheiro selecionado' }}</span>
+
+                  <br/>
+                     <br/>
+                                      <iframe
+                                      *ngIf="safeUrl"
+                                      [src]="safeUrl"
+                                      width="100%"
+                                      height="1000"
+                                      webkitallowfullscreen
+                                      mozallowfullscreen
+                                      allowfullscreen
+                                    ></iframe>
+
+
+
+
+                  </ng-template>
+
+                </mat-tab>
+
+              </mat-tab-group>
+
+
+              <div *ngIf="isLoadingProcesso;then contents else other_contents">
+
+              </div>
+              <ng-template #contents>
+
+                <mat-dialog-actions  align="end">
+                  <button mat-raised-button color="primary" type="submit" [disabled]="!!registerForm.invalid"><mat-icon>save</mat-icon></button>
+                </mat-dialog-actions>
+            </ng-template>
+            <ng-template #other_contents>
+
+              <mat-dialog-actions  align="end">
+                <button mat-raised-button color="primary" type="submit" [disabled]="!!registerForm.invalid"><mat-icon>save</mat-icon></button>
+              </mat-dialog-actions>
+            </ng-template>
+
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+
+
+
+
+       </div>
+    </mat-dialog-content>
+
+</div>
+
+
+

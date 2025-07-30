@@ -1,0 +1,39 @@
+<mat-tab-group>
+  <mat-tab label="Permissões de Usuário">
+    <div class="tab-content1">
+       <mat-form-field appearance="fill" class="full-width1">
+    <mat-label>Selecione os usuários</mat-label>
+    <mat-select multiple [(ngModel)]="selectedUserStamps" (selectionChange)="onUserChange($event.value)">
+      <mat-option *ngFor="let u of users" [value]="u.chave">{{ u.descricao }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <div *ngFor="let menu of menus">
+    <ng-container *ngTemplateOutlet="menuRecursive; context:{ $implicit: menu }"></ng-container>
+  </div>
+
+      <div class="actions1">
+    <button mat-raised-button color="primary" (click)="salvar()" [disabled]="!selectedUserStamps || selectedUserStamps.length === 0">
+      Salvar Seleção
+    </button>
+  </div>
+
+    </div>
+  </mat-tab>
+</mat-tab-group>
+
+<ng-template #menuRecursive let-menu>
+  <div class="menu-item1">
+    <mat-checkbox
+      [checked]="areAllChildrenSelected(menu)"
+      [indeterminate]="!areAllChildrenSelected(menu) && areSomeChildrenSelected(menu)"
+      (change)="toggleMenu(menu, $event)">
+      {{ menu.name }}
+    </mat-checkbox>
+
+    <div *ngIf="menu.children?.length" class="menu-children1">
+      <ng-container *ngFor="let child of menu.children">
+        <ng-container *ngTemplateOutlet="menuRecursive; context:{ $implicit: child }"></ng-container>
+      </ng-container>
+    </div>
+  </div>
+</ng-template>

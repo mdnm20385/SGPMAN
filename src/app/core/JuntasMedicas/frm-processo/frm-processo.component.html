@@ -1,0 +1,426 @@
+
+
+
+<div id="modal" class="modal">
+  <div mat-dialog-actions align="end">
+  <!-- Botão de Imprimir -->
+  <button mat-raised-button color="primary" (click)="toggleMenu($event)">
+    <mat-icon>print</mat-icon> Imprimir
+  </button>
+    <button mat-raised-button mat-dialog-close color="warn" (click)="dialogRef.close(nomecompleto)"> <mat-icon matSuffix>close</mat-icon></button>
+
+  </div>
+  <mat-dialog-content>
+    <div class="row">
+      <div class="col-sm-12">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>Ficha de cadastro do paciente (Todos os campos com * são de preenchimento obrigatórios)</mat-card-title>
+
+
+          </mat-card-header>
+
+          <mat-card-content>
+            <mat-dialog-actions  align="end">
+              <button mat-raised-button color="primary" type="button" (click)="SetarCombos()"><mat-icon>refresh</mat-icon>Refresh</button>
+            </mat-dialog-actions>
+            <form [formGroup]="registerForm" class="form-field-full" (ngSubmit)="Salvar()">
+
+              <div class="row">
+                <mat-form-field  class="col-sm-6">
+                  <mat-label>Nome Completo</mat-label>
+
+
+                  <input matInput placeholder="Introduza o nome completo..."
+                  formControlName="nome">
+                </mat-form-field>
+                <div class="col-sm-3">
+                  <mat-form-field class="w-full">
+                    <mat-label>Sexo</mat-label>
+                    <mtx-select [items]="selectsexo" formControlName="sexo"
+                      bindLabel="descricao" [loading]="loading" [hideSelected]="true"
+                      (change)="onsexoselect($event)" (clear)="onClear()"
+                      >
+                    </mtx-select>
+                  </mat-form-field>
+
+
+
+                </div>
+
+
+                <mat-form-field class="col-sm-3">
+                  <mat-label>Estado da junta</mat-label>
+
+                  <input matInput [readonly]="true"
+                  formControlName="inseriu">
+                </mat-form-field>
+
+
+              </div>
+
+              <div class="row">
+                <div class="col-sm-6">
+                  <mat-form-field class="w-full">
+                    <input  hidden="true"  matInput formControlName="paStamp">
+                    <mat-label>Tipo de Documento *</mat-label>
+                    <mtx-select [items]="selectbi" formControlName="tipodoc"
+                      bindLabel="descricao" [loading]="loading" [hideSelected]="true"
+                      (change)="onEspecieBi($event)" (clear)="Cleartipo()"
+                      >
+                    </mtx-select>
+                  </mat-form-field>
+                </div>
+
+
+                <mat-form-field class="col-sm-6">
+                  <mat-label>Nº de Bi *</mat-label>
+                  <input matInput formControlName="numBi" placeholder="Nº de Bi">
+                </mat-form-field>
+              </div>
+
+
+              <mat-tab-group>
+                <mat-tab label="DADOS GERAIS(***)">
+                <br>
+<mat-tab-group >
+
+  <mat-tab label="DADOS DE RESIDÊNCIA(***)" mat-tab-label-active>
+
+    <div class="row">
+      <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Naturalidade(**)</mat-label>
+          <mtx-select [items]="selectNaturalidade" formControlName="naturalidade1"
+            bindLabel="descricao" [loading]="loading"
+             (change)="onSelectNaturalidadeChange($event)"
+              [hideSelected]="true"
+              (clear)="ClearNaturalidade()"
+
+            >
+          </mtx-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Província(**)</mat-label>
+          <mtx-select [items]="selectresprov" formControlName="resProv1"
+            bindLabel="descricao" [loading]="loading" [hideSelected]="true"
+            (change)="onSelectresprovChange($event)"  (clear)="ClearResDist()"
+            >
+          </mtx-select>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Distrito</mat-label>
+          <mtx-select [items]="selectresdist" formControlName="resDist1"
+            bindLabel="descricao" [loading]="loading" (change)="onSelectresDistChange($event)"
+             (clear)="ClearResPost()"
+            >
+          </mtx-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Posto Administrativo</mat-label>
+          <mtx-select [items]="selectresposto" formControlName="resPosto1"
+            bindLabel="descricao" [loading]="loading"  [hideSelected]="true"
+            (change)="onSelectresPostoChange($event)"
+            (clear)="ClearResLocalidade()"
+            >
+          </mtx-select>
+        </mat-form-field>
+      </div> <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Localidade</mat-label>
+          <mtx-select [items]="selectreslocalidade" formControlName="resLocal1"
+            bindLabel="descricao" [loading]="loading"  [hideSelected]="true"
+             (change)="onreslocalidadeChange($event)" (clear)="Cleatloaclidadessss()"
+            >
+          </mtx-select>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field  class="col-sm-4">
+        <mat-label>Bairro</mat-label>
+        <input matInput  formControlName="resBairro">
+        <mat-icon matSuffix>home</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field  class="col-sm-4">
+        <mat-label>Quarteirão</mat-label>
+        <input matInput  formControlName="resQuarteirao">
+        <mat-icon matSuffix>home</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field  class="col-sm-4">
+        <mat-label>Nº de casa</mat-label>
+        <input matInput  formControlName="numCasa">
+        <mat-icon matSuffix>home</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field  class="col-sm-4">
+        <mat-label>Avenida/Rua</mat-label>
+        <input matInput formControlName="resAvenida">
+        <mat-icon matSuffix>home</mat-icon>
+      </mat-form-field>
+
+    </div>
+  </mat-tab>
+  <mat-tab label="DADOS MILITARES">
+
+    <div class="row">
+      <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Órgão</mat-label>
+          <mtx-select [items]="selectorgaos" formControlName="orgaoOrigem1"
+            bindLabel="descricao" [loading]="loading" [hideSelected]="true"
+            (change)="onSelectorgaoChange($event)"  (clear)="ClearDirecoes()"
+            >
+          </mtx-select>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Unidade</mat-label>
+          <mtx-select [items]="selectdirecoes" formControlName="direcaoOrigem1" [hideSelected]="true"
+            bindLabel="descricao" [loading]="loading" (change)="onDirecaoChange($event)"
+            (clear)="Clearsubunidades()"
+            >
+          </mtx-select>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Subunidade</mat-label>
+          <mtx-select [items]="selectsubunidade" formControlName="subunidade1" [hideSelected]="true"
+            bindLabel="descricao" [loading]="loading"
+            (change)="onSubunidadeChange($event)"
+             (clear)="onclearsubunidade()">
+          </mtx-select>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Ramo</mat-label>
+          <mtx-select [items]="selectramo" formControlName="ramo"
+            bindLabel="descricao" [loading]="loading" [hideSelected]="true"
+            (change)="onRamoChange($event)" (clear)="Clearramo()"
+            >
+          </mtx-select>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Categoria da patente</mat-label>
+          <mtx-select [items]="selectcatpat" formControlName="catpat" [hideSelected]="true"
+            bindLabel="descricao" [loading]="loading" (change)="oncatpatChange($event)"
+            (clear)="Clearpatente()">
+          </mtx-select>
+        </mat-form-field>
+      </div>
+
+      <div class="col-sm-4">
+        <mat-form-field class="w-full">
+          <mat-label>Patente</mat-label>
+          <mtx-select [items]="selectpatente" formControlName="patente1" [hideSelected]="true"
+            bindLabel="descricao" [loading]="loading" (change)="onselectPatChange($event)"
+
+            (clear)="onClearPatChange()">
+          </mtx-select>
+        </mat-form-field>
+      </div>
+
+
+
+    </div>
+  </mat-tab>
+  <mat-tab label="DADOS DE CONTACTO(***)">
+
+    <div class="row">
+      <mat-form-field class="col-sm-6">
+        <mat-label>Contacto principal</mat-label>
+        <input matInput formControlName="conPrinc" placeholder="Introduza o contacto principal">
+      </mat-form-field>
+       <mat-form-field class="col-sm-6">
+        <mat-label>Contacto alternativo</mat-label>
+        <input matInput formControlName="conAlter" placeholder="Introduza o contacto alternativo">
+      </mat-form-field>
+    </div>
+  </mat-tab>
+</mat-tab-group>
+
+                </mat-tab>
+<mat-tab label="DADOS CLÍNICOS">
+
+  <mat-tab-group>
+    <mat-tab label="Dados de Anamnese">
+      <div class="row">
+        <mat-form-field  class="col-sm-12">
+          <mat-label>Dados de Anamnese</mat-label>
+          <textarea class="large-textarea"
+           matInput placeholder="Introduza o texto dos dados de anamnese..."
+          formControlName="dadosAnamense"></textarea>
+        </mat-form-field>
+
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Exames objectivos">
+      <div class="row">
+        <mat-form-field  class="col-sm-12">
+          <mat-label>Exames objectivos</mat-label>
+          <textarea class="large-textarea" matInput placeholder="Introduza os Exames objectivos..."
+          formControlName="examesObjectivos"></textarea>
+        </mat-form-field>
+
+      </div>
+    </mat-tab>
+    <mat-tab label="Exames para-clínicos">
+      <div class="row">
+        <mat-form-field  class="col-sm-12">
+          <mat-label>Exames para-clínicos</mat-label>
+          <textarea class="large-textarea" matInput placeholder="Introduza os Exames clínicos..."
+          formControlName="examesClinicos"></textarea>
+        </mat-form-field>
+
+      </div>
+    </mat-tab>
+    <mat-tab label="Diagnóstico definitivo">
+      <div class="row">
+        <mat-form-field  class="col-sm-12">
+          <mat-label>Diagnóstico definitivo</mat-label>
+          <textarea class="large-textarea" matInput placeholder="Introduza o texto do Diagnóstico definitivo..."
+          formControlName="diaDef"></textarea>
+        </mat-form-field>
+
+      </div>
+    </mat-tab>
+    <mat-tab label="Conclusão">
+      <div class="row">
+        <mat-form-field  class="col-sm-12">
+          <mat-label>Conclusão</mat-label>
+          <textarea class="large-textarea" matInput placeholder="Introduza o texto da Conclusão..."
+          formControlName="conclusao"></textarea>
+        </mat-form-field>
+
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</mat-tab>
+
+<mat-tab label="PROCESSO">
+
+  <mat-card>
+    <mat-card-content>
+
+  <div class="row">
+
+    <div id="btnright">
+      <form>
+        <div class="row demo-full-width">
+          <div class="col-sm-6">
+            <mat-form-field appearance="outline" class="demo-full-width">
+              <input matInput readonly="true" placeholder="Clica no botão + ou tecla F2 para adicionar Processo!" />
+              <button matSuffix mat-raised-button color="primary" style="height: 35px;" class="m-x-4 btnpesquisa"
+                (click)="AddNew()" type="button">
+                <mat-icon class="chevron">add</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          <div class="col-sm-6">
+            <mat-form-field class="m-x-4 example-full-width" appearance="outline">
+              <input matInput placeholder="Filtragem através do assunto" class="inputpesquisa" (keyup)="busca($event)" #input />
+              <button matSuffix mat-raised-button color="accent" style="height: 35px;" class="btnpesquisa">
+                <mat-icon class="search-icon" color="primary">search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <mtx-grid
+      [data]="listdestinatario"
+      [columns]="columnsDestinatarios1"
+      [loading]="isLoadingdesti"
+      [pageOnFront]="showPaginatordesti"
+      [columnResizable]="columnResizabledesti"
+      [showToolbar]="showToolbardesti"
+      [toolbarTitle]="'Todos os processos'"
+      [columnHideable]="columnHideabledesti"
+      [columnSortable]="columnSortabledesti"
+      [columnPinnable]="columnPinnabledesti"
+      [showPaginator]="showPaginatordesti"
+      [rowHover]="true"
+      [length]="totalRecordsdest"
+      [pageSize]="5"
+      [pageIndex]="0"
+      [pageSizeOptions]="[5, 10, 15]">
+    </mtx-grid>
+
+
+</div>
+
+
+    </mat-card-content>
+  </mat-card>
+
+</mat-tab>
+
+
+<mat-tab label="ANEXO DA JUNTA">
+  <br>
+  <label for="fileInput" class="custom-file-label">📂  {{this.titulocarregar}}</label>
+<input type="file" id="fileInput" (change)="onFileChange($event)" hidden  title="Carregue o anexo da junta"/>
+
+<br/><span>{{ fileName || 'Nenhum ficheiro selecionado' }}</span>
+
+<br/>
+   <br/>
+  <iframe
+  *ngIf="safeUrl"
+  [src]="safeUrl"
+  width="100%"
+  height="1000"
+  webkitallowfullscreen
+  mozallowfullscreen
+  allowfullscreen
+></iframe>
+<br>
+</mat-tab>
+              </mat-tab-group>
+
+              <mat-dialog-actions  align="end">
+                <button mat-raised-button color="primary" type="submit" [disabled]="!!registerForm.invalid"><mat-icon>save</mat-icon></button>
+              </mat-dialog-actions>
+            </form>
+          </mat-card-content>
+        </mat-card>
+      </div>
+
+
+
+
+
+       </div>
+    </mat-dialog-content>
+<!-- Menu de opções de impressão -->
+<div class="custom-context-menu"
+     [style.top.px]="menuY"
+     [style.left.px]="menuX"
+     *ngIf="showMenu">
+  <ul>
+    <li (click)="onOptionClick('pedido')">Pedido de Junta médica Militar</li>
+    <li (click)="onOptionClick('emissao')">Emissão de JMMP</li>
+  </ul>
+</div>
+</div>
+
+
+

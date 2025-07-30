@@ -1,0 +1,54 @@
+.demo-full-width {
+  width: 100%;
+}
+.modal {
+   background: whitesmoke;
+}
+#btnright{
+
+  width: 100%;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  align-items: center;
+  >form{
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    align-items: center;
+    >
+    mat-field{
+      width: 100%;
+    }
+  }
+}
+
+.large-textarea {
+  height: 200px !important;
+}
+
+.custom-context-menu {
+  position: fixed;
+  background: #fff;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 250px;
+}
+
+.custom-context-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.custom-context-menu li {
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.custom-context-menu li:hover {
+  background-color: #eeeeee;
+}

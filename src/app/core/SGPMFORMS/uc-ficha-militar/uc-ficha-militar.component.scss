@@ -1,0 +1,795 @@
+// Ficha Militar Component Styles
+.ficha-militar-container {
+  padding: 16px;
+  max-width: 100%;
+  margin: 0 auto;
+
+  .ficha-militar-form {
+    width: 100%;
+
+    &.state-cancel {
+      .mat-mdc-form-field {
+        .mdc-text-field--disabled {
+          background-color: #f5f5f5;
+        }
+      }
+    }
+
+    &.state-insert,
+    &.state-update {
+      .mat-mdc-form-field {
+        .mdc-text-field {
+          background-color: white;
+        }
+      }
+    }
+  }
+}
+
+// Header Section
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.2);
+
+  .form-title {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+  }
+
+  .state-indicator {
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+
+    &.state-cancel {
+      background-color: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    &.state-insert {
+      background-color: #4caf50;
+      color: white;
+    }
+
+    &.state-update {
+      background-color: #ff9800;
+      color: white;
+    }
+  }
+}
+
+// Main Fields Section (sempre visível no topo)
+.main-fields-section {
+  margin-bottom: 24px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+
+  .section-header {
+    margin-bottom: 16px;
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      color: #1976d2;
+      font-size: 18px;
+      font-weight: 500;
+
+      mat-icon {
+        color: #1976d2;
+      }
+    }
+  }
+
+  .main-fields-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr; // NIM (col-sm-3), Nome (maior espaço), Situação (col-sm-3)
+    gap: 16px;
+
+    @media (max-width: 1200px) {
+      grid-template-columns: 1fr 2fr 1fr;
+    }
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto;
+
+      .field-nome {
+        grid-column: 1 / -1; // Nome ocupa toda a largura
+      }
+
+      .field-situacao {
+        grid-column: 1;
+      }
+
+      .field-nim {
+        grid-column: 2;
+      }
+    }
+
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
+
+      .field-nome,
+      .field-situacao,
+      .field-nim {
+        grid-column: 1;
+      }
+    }
+
+    .form-group {
+      width: 100%;
+
+      .mat-mdc-form-field {
+        width: 100%;
+
+        // Estilos para botões de procura - cores iguais ao FrmFt
+        .search-button {
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          border-radius: 4px;
+
+          &.client-search {
+            background: #3498db; // Azul igual ao FrmFt
+            color: white;
+
+            &:hover:not(:disabled) {
+              background: #2980b9; // Azul escuro no hover
+              transform: scale(1.05);
+            }
+
+            &:disabled {
+              background: #bdc3c7;
+              color: #ecf0f1;
+              cursor: not-allowed;
+              transform: none;
+            }
+          }
+
+          &.document-search {
+            background: #3498db; // Mesma cor azul para consistência
+            color: white;
+
+            &:hover:not(:disabled) {
+              background: #2980b9; // Mesmo azul escuro no hover
+              transform: scale(1.05);
+            }
+
+            &:disabled {
+              background: #bdc3c7;
+              color: #ecf0f1;
+              cursor: not-allowed;
+              transform: none;
+            }
+          }
+
+          mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+            color: white;
+          }
+
+          &:focus {
+            outline: 2px solid #3498db;
+            outline-offset: 2px;
+          }
+
+          &:active:not(:disabled) {
+            transform: scale(0.95);
+          }
+        }
+      }
+
+      // Estilos específicos para cada campo
+      &.field-nome {
+        .mat-mdc-form-field {
+          // Campo nome com destaque visual
+          ::ng-deep .mat-mdc-form-field-outline {
+            border-color: #3498db;
+          }
+
+          ::ng-deep .mat-mdc-form-field-label {
+            color: #2c3e50;
+            font-weight: 500;
+          }
+        }
+      }
+
+      &.field-situacao {
+        .mat-mdc-form-field {
+          ::ng-deep .mat-mdc-form-field-outline {
+            border-color: #27ae60;
+          }
+        }
+      }
+
+      &.field-nim {
+        .mat-mdc-form-field {
+          ::ng-deep .mat-mdc-form-field-outline {
+            border-color: #e74c3c;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Action Buttons
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 0 16px;
+  justify-content: flex-start;
+  align-items: center;
+
+  .action-button {
+    min-width: 120px;
+    height: 40px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &.new-button {
+      background-color: #4caf50;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #45a049;
+      }
+    }
+
+    &.edit-button {
+      background-color: #2196f3;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #1976d2;
+      }
+    }
+
+    &.cancel-button {
+      background-color: #f44336;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #d32f2f;
+      }
+    }
+
+    &.save-button {
+      background-color: #ff9800;
+      color: white;
+
+      &:hover:not(:disabled) {
+        background-color: #f57c00;
+      }
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// Form Content
+.form-content {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  .custom-tab-group {
+    .mat-mdc-tab-header {
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #dee2e6;
+
+      .mat-mdc-tab {
+        min-width: 140px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+
+        &.mdc-tab--active {
+          color: #1976d2;
+        }
+      }
+    }
+
+    .mat-mdc-tab-body-wrapper {
+      .mat-mdc-tab-body {
+        overflow-x: hidden;
+      }
+    }
+  }
+
+  .tab-content {
+    padding: 24px;
+    min-height: 400px;
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid #e3f2fd;
+
+      .section-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+        color: #1976d2;
+        font-size: 20px;
+        font-weight: 500;
+
+        mat-icon {
+          color: #1976d2;
+        }
+      }
+
+      button {
+        min-width: 160px;
+      }
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr !important; // Dois controles por linha - forçando especificidade
+      gap: 16px;
+      align-items: start;
+
+      // Responsivo para tablets
+      @media (max-width: 900px) {
+        gap: 12px;
+      }
+
+      // Responsivo para móveis - um por linha
+      @media (max-width: 600px) {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+      }
+
+      .form-group {
+        display: flex;
+        flex-direction: column;
+
+        &.form-group-full {
+          grid-column: 1 / -1;
+        }
+
+        mat-form-field {
+          width: 100%;
+
+          &.table-field {
+            .mat-mdc-form-field-wrapper {
+              padding-bottom: 0;
+            }
+
+            .mdc-text-field {
+              height: 40px;
+            }
+          }
+        }
+
+        mat-checkbox {
+          margin: 8px 0;
+        }
+      }
+    }
+  }
+}
+
+// Table Styles
+.table-container {
+  margin-top: 16px;
+  overflow-x: auto;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+
+  .data-table {
+    width: 100%;
+    min-width: 600px;
+
+    .mat-mdc-header-cell {
+      background-color: #f5f5f5;
+      font-weight: 600;
+      color: #333;
+      padding: 12px 8px;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .mat-mdc-cell {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+
+      mat-form-field {
+        width: 100%;
+        margin: 0;
+
+        .mat-mdc-form-field-wrapper {
+          padding-bottom: 0;
+        }
+
+        .mdc-text-field {
+          height: 36px;
+        }
+
+        .mdc-floating-label {
+          display: none;
+        }
+      }
+
+      mat-checkbox {
+        margin: 0;
+      }
+    }
+
+    .mat-mdc-row {
+      &:hover {
+        background-color: #f9f9f9;
+      }
+
+      &.selected {
+        background-color: #e3f2fd;
+      }
+
+      &:nth-child(even) {
+        background-color: #fafafa;
+      }
+    }
+
+    button {
+      mat-icon {
+        font-size: 18px;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .ficha-militar-container {
+    padding: 8px;
+
+    .form-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+
+      .form-title {
+        font-size: 20px;
+      }
+    }
+
+    .action-buttons {
+      flex-wrap: wrap;
+      gap: 8px;
+
+      .action-button {
+        flex: 1;
+        min-width: 100px;
+      }
+    }
+
+    .tab-content {
+      padding: 16px;
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+
+        button {
+          width: 100%;
+        }
+      }
+
+      // Sobrescrevendo para garantir layout 2x2 em todas as abas, exceto mobile
+      .form-grid {
+        grid-template-columns: 1fr; // Em mobile, volta para 1 coluna
+        gap: 12px;
+      }
+    }
+
+    .table-container {
+      .data-table {
+        min-width: 500px;
+
+        .mat-mdc-header-cell,
+        .mat-mdc-cell {
+          padding: 6px 4px;
+          font-size: 14px;
+        }
+      }
+    }
+
+    // Responsive para seção de foto
+    .row {
+      .col-sm-10,
+      .col-sm-2 {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+    }
+
+    .photo-section {
+      .photo-container {
+        .photo-preview {
+          width: 100px;
+          height: 125px;
+        }
+      }
+    }
+  }
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+// Regra específica para garantir layout 2x2 na aba de dados pessoais
+.ficha-militar-container .tab-content .form-grid {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 16px !important;
+  align-items: start !important;
+
+  @media (max-width: 900px) {
+    gap: 12px !important;
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+// Seção de foto embelezada
+.photo-section {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 2px solid #dee2e6;
+  border-radius: 16px;
+  padding: 20px;
+  text-align: center;
+  height: 100%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    border-color: #3498db;
+  }
+
+  .photo-title {
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+      color: #3498db;
+      background: rgba(52, 152, 219, 0.1);
+      border-radius: 50%;
+      padding: 8px;
+      box-sizing: content-box;
+    }
+  }
+
+  .photo-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+
+    .photo-preview {
+      width: 140px;
+      height: 170px;
+      border: 3px dashed #bdc3c7;
+      border-radius: 16px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+
+      &:hover {
+        border-color: #3498db;
+        transform: scale(1.02);
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+
+      &.has-photo {
+        border: 3px solid #27ae60;
+        box-shadow: 0 4px 16px rgba(39, 174, 96, 0.2);
+
+        &:hover {
+          border-color: #2ecc71;
+          box-shadow: 0 6px 24px rgba(39, 174, 96, 0.3);
+        }
+      }
+
+      .no-photo-placeholder {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: #7f8c8d;
+        padding: 20px;
+
+        mat-icon {
+          font-size: 48px;
+          width: 48px;
+          height: 48px;
+          margin-bottom: 12px;
+          opacity: 0.6;
+          transition: all 0.3s ease;
+        }
+
+        span {
+          font-size: 13px;
+          font-weight: 500;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        &:hover mat-icon {
+          opacity: 1;
+          transform: scale(1.1);
+        }
+      }
+
+      .militar-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+        transition: transform 0.3s ease;
+
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+    }
+
+    .photo-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      align-items: center;
+
+      button {
+        width: 48px;
+        height: 48px;
+        border-radius: 24px;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        &[color="primary"] {
+          background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+
+          &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #2980b9 0%, #1f5582 100%);
+          }
+        }
+
+        &[color="warn"] {
+          background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+
+          &:hover:not(:disabled) {
+            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+          }
+        }
+
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          color: white;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+      }
+    }
+  }
+
+  // Estados especiais
+  &.photo-loading {
+    .photo-preview {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading-shimmer 1.5s infinite;
+    }
+  }
+
+  @keyframes loading-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+}
+
+// Responsive adjustments para photo-section
+@media (max-width: 1200px) {
+  .photo-section {
+    .photo-container .photo-preview {
+      width: 120px;
+      height: 150px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .photo-section {
+    padding: 16px;
+    margin-top: 20px;
+
+    .photo-title {
+      font-size: 14px;
+      margin-bottom: 16px;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+        padding: 6px;
+      }
+    }
+
+    .photo-container {
+      gap: 12px;
+
+      .photo-preview {
+        width: 100px;
+        height: 125px;
+      }
+
+      .photo-actions button {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+}

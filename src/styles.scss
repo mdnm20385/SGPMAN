@@ -1,0 +1,500 @@
+/* You can add global styles to this file, and also import other style files */
+@use 'app/theme/style';
+@use 'styles/themes';
+@use 'styles/custom';
+@use 'styles/grid';
+@use 'styles/helpers';
+@use 'styles/plugins';
+@use 'styles/custom/form-styles';
+
+/* Customização do Menu Lateral e Barra de Título - Verde e Branco */
+// Barra de título (Header/Toolbar)
+.matero-header {
+  .matero-toolbar {
+    background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+    color: white !important;
+
+    // Todos os textos e ícones da toolbar ficam brancos
+    * {
+      color: white !important;
+    }
+
+    // Botões da toolbar
+    button {
+      color: white !important;
+
+      mat-icon {
+        color: white !important;
+      }
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+      }
+    }
+
+    // Input de busca (se houver)
+    .mat-mdc-form-field {
+      .mdc-text-field {
+        color: white !important;
+
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.7) !important;
+        }
+      }
+
+      .mat-mdc-form-field-label {
+        color: rgba(255, 255, 255, 0.8) !important;
+      }
+    }
+  }
+}
+
+// Menu lateral (Sidebar/Sidenav)
+.matero-sidenav {
+  background: linear-gradient(180deg, #27ae60 0%, #2ecc71 100%) !important;
+
+  // Header do sidebar
+  .matero-sidebar-header {
+    background: rgba(46, 204, 113, 0.9) !important;
+    color: white !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+
+    * {
+      color: white !important;
+    }
+
+    button {
+      color: white !important;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+      }
+    }
+  }
+
+  // Área principal do menu
+  .matero-sidebar-main {
+    background: transparent !important;
+
+    // Itens do menu
+    .mat-nav-list {
+      .mat-list-item {
+        color: white !important;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        &.active {
+          background-color: rgba(255, 255, 255, 0.2) !important;
+
+          .mat-list-item-content {
+            color: white !important;
+            font-weight: 600 !important;
+          }
+        }
+
+        .mat-list-item-content {
+          color: white !important;
+        }
+
+        .mat-icon {
+          color: white !important;
+        }
+
+        .menu-name {
+          color: white !important;
+        }
+
+        .menu-badge {
+          background-color: rgba(255, 255, 255, 0.9) !important;
+          color: #27ae60 !important;
+        }
+      }
+    }
+
+    // Submenu
+    .submenu {
+      background-color: rgba(39, 174, 96, 0.8) !important;
+
+      .mat-list-item {
+        color: rgba(255, 255, 255, 0.9) !important;
+        padding-left: 48px !important;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1) !important;
+          color: white !important;
+        }
+
+        &.active {
+          background-color: rgba(255, 255, 255, 0.15) !important;
+          color: white !important;
+          font-weight: 500 !important;
+        }
+      }
+    }
+
+    // User panel (se houver)
+    .matero-user-panel {
+      background-color: rgba(39, 174, 96, 0.3) !important;
+      border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+
+      .matero-user-panel-name,
+      .matero-user-panel-email {
+        color: white !important;
+      }
+
+      button {
+        color: white !important;
+
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.1) !important;
+        }
+      }
+    }
+  }
+}
+
+// Sidemenu (menu em gaveta)
+.sidemenu {
+  background: linear-gradient(180deg, #27ae60 0%, #2ecc71 100%) !important;
+
+  .menu-item {
+    color: white !important;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    &.active {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+    }
+
+    .menu-name {
+      color: white !important;
+    }
+
+    .menu-icon {
+      color: white !important;
+    }
+
+    .menu-caret {
+      color: white !important;
+    }
+  }
+
+  .menu-label {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-weight: 500 !important;
+    text-transform: uppercase !important;
+  }
+}
+
+// Top menu (se houver)
+.topmenu {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+
+  .menu-item {
+    color: white !important;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    &.active {
+      background-color: rgba(255, 255, 255, 0.2) !important;
+    }
+  }
+}
+
+// Sobrescrevendo variáveis CSS customizadas
+:root {
+  --sidemenu-heading-hover-background-color: rgba(255, 255, 255, 0.1) !important;
+  --sidemenu-active-heading-text-color: white !important;
+  --sidemenu-active-heading-background-color: rgba(255, 255, 255, 0.2) !important;
+  --sidemenu-active-heading-hover-background-color: rgba(255, 255, 255, 0.15) !important;
+  --sidemenu-expanded-background-color: rgba(39, 174, 96, 0.8) !important;
+  --topmenu-background-color: #27ae60 !important;
+  --topmenu-item-active-background-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* ========================================
+   CUSTOMIZAÇÃO: MENU LATERAL E BARRA DE TÍTULO
+   Cores: Verde e Branco
+   ======================================== */
+
+/* Sidebar/Menu Lateral - Fundo Verde */
+.matero-sidenav {
+  background: linear-gradient(180deg, #27ae60 0%, #2ecc71 100%) !important;
+  border-right: 2px solid #1e8449 !important;
+  box-shadow: 2px 0 8px rgba(39, 174, 96, 0.2) !important;
+}
+
+/* Header do Sidebar - Verde mais escuro */
+.matero-sidebar-header {
+  background: linear-gradient(135deg, #1e8449 0%, #27ae60 100%) !important;
+  color: white !important;
+  border-bottom: 1px solid #1e8449 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Texto do logo/título no sidebar */
+.matero-sidebar-header .matero-logo,
+.matero-sidebar-header .mat-button,
+.matero-sidebar-header button,
+.matero-sidebar-header a {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+/* Menu items no sidebar */
+.matero-sidebar-main {
+  background: transparent !important;
+}
+
+/* Items do menu lateral */
+.matero-sidemenu-item,
+.matero-sidemenu-item a,
+.matero-sidemenu-item .menu-name,
+.matero-sidemenu-item .menu-icon {
+  color: white !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Hover nos items do menu */
+.matero-sidemenu-item:hover,
+.matero-sidemenu-item:hover a {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f8f9fa !important;
+  border-radius: 8px !important;
+  margin: 2px 8px !important;
+}
+
+/* Item ativo do menu */
+.matero-sidemenu-item.active,
+.matero-sidemenu-item.active a {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  margin: 2px 8px !important;
+  border-left: 4px solid white !important;
+}
+
+/* Submenu expandido */
+.matero-sidemenu-item.expanded {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* ========================================
+   HEADER/TOOLBAR - FUNDO VERDE IGUAL AO MENU LATERAL
+   ======================================== */
+
+/* Toolbar/Header principal - VERDE como o sidebar */
+.matero-header,
+.matero-header .matero-toolbar,
+.mat-toolbar {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%) !important;
+  color: white !important;
+  border-bottom: 2px solid #1e8449 !important;
+  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3) !important;
+}
+
+/* Botões da toolbar - BRANCOS sobre fundo verde */
+.matero-header .mat-icon-button,
+.matero-header .mat-button,
+.matero-header button {
+  color: white !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease !important;
+  border-radius: 8px !important;
+}
+
+.matero-header .mat-icon-button:hover,
+.matero-header .mat-button:hover,
+.matero-header button:hover {
+  background-color: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Texto da toolbar - BRANCO */
+.matero-header .mat-toolbar-single-row,
+.matero-header .mat-toolbar-row,
+.matero-header span,
+.matero-header .toolbar-title {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+/* Menu superior (se existir) */
+.matero-topmenu {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+  border-bottom: 1px solid #27ae60 !important;
+}
+
+.matero-topmenu .mat-tab-label,
+.matero-topmenu .mat-tab-link {
+  color: #27ae60 !important;
+  font-weight: 500 !important;
+}
+
+.matero-topmenu .mat-tab-label:hover,
+.matero-topmenu .mat-tab-link:hover {
+  background-color: rgba(39, 174, 96, 0.1) !important;
+  color: #1e8449 !important;
+}
+
+.matero-topmenu .mat-tab-label.mat-tab-label-active,
+.matero-topmenu .mat-tab-link.mat-tab-link-active {
+  background-color: rgba(39, 174, 96, 0.2) !important;
+  color: #1e8449 !important;
+  font-weight: 600 !important;
+}
+
+/* User panel no sidebar */
+.matero-user-panel {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px !important;
+  margin: 8px !important;
+  padding: 12px !important;
+}
+
+.matero-user-panel-name,
+.matero-user-panel-email {
+  color: white !important;
+}
+
+.matero-user-panel-avatar {
+  border: 2px solid white !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Scrollbar do sidebar */
+.matero-sidebar-main::-webkit-scrollbar {
+  width: 6px;
+}
+
+.matero-sidebar-main::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.matero-sidebar-main::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.matero-sidebar-main::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+/* ========================================
+   BOTÃO FULLSCREEN/MAXIMIZE - HEADER
+   Garantir visibilidade do botão
+   ======================================== */
+
+/* Botão de fullscreen no header */
+.matero-header .mat-icon-button {
+  color: white !important;
+  transition: all 0.3s ease !important;
+  border-radius: 8px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  opacity: 1 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.matero-header .mat-icon-button:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: white !important;
+  transform: scale(1.05) !important;
+  opacity: 1 !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+.matero-header .mat-icon-button:active {
+  transform: scale(0.95) !important;
+}
+
+/* Ícones do header - máxima especificidade */
+.matero-header .matero-toolbar .mat-icon-button .mat-icon,
+.matero-header .mat-toolbar .mat-icon-button .mat-icon,
+.matero-header .mat-icon-button .mat-icon {
+  color: white !important;
+  font-size: 20px !important;
+  width: 20px !important;
+  height: 20px !important;
+  opacity: 1 !important;
+  background: none !important;
+}
+
+.matero-header .mat-icon-button:hover .mat-icon {
+  color: white !important;
+  opacity: 1 !important;
+}
+
+/* Especificidade extra para botão fullscreen */
+button.mat-icon-button[ng-reflect-ng-class] .mat-icon,
+button.mat-icon-button .mat-icon[ng-reflect-ng-class] {
+  color: white !important;
+  opacity: 1 !important;
+}
+
+/* Sobrescrever qualquer estilo que possa estar ofuscando */
+.matero-header * {
+  opacity: 1 !important;
+}
+
+.matero-header .mat-icon-button * {
+  color: white !important;
+  opacity: 1 !important;
+}
+
+/* Botão de toggle do sidenav (se existir) */
+.matero-header .mat-icon-button[aria-label*="toggle"] {
+  color: #27ae60 !important;
+}
+
+.matero-header .mat-icon-button[aria-label*="toggle"]:hover {
+  background-color: rgba(39, 174, 96, 0.1) !important;
+  color: #1e8449 !important;
+}
+
+/* ========================================
+   FORÇA VISIBILIDADE - BOTÕES HEADER
+   Regras com máxima especificidade
+   ======================================== */
+
+/* Remove qualquer ofuscamento ou transparência */
+.matero-header .mat-icon-button,
+.matero-header .mat-icon-button .mat-icon,
+.matero-header button,
+.matero-header button .mat-icon {
+  visibility: visible !important;
+  opacity: 1 !important;
+  color: #27ae60 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+/* Força cor verde em todos os ícones do header */
+.matero-header svg,
+.matero-header mat-icon,
+.matero-header .material-icons {
+  fill: #27ae60 !important;
+  color: #27ae60 !important;
+  opacity: 1 !important;
+}
+
+/* Hover states com força total */
+.matero-header .mat-icon-button:hover,
+.matero-header .mat-icon-button:hover .mat-icon,
+.matero-header .mat-icon-button:hover svg {
+  color: #1e8449 !important;
+  fill: #1e8449 !important;
+  opacity: 1 !important;
+  background-color: rgba(39, 174, 96, 0.1) !important;
+}

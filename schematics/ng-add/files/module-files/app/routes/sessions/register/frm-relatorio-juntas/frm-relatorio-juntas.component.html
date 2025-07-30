@@ -1,0 +1,110 @@
+<page-header class="bg-green-600"></page-header>
+<div id="btnright">
+  <form>
+    <div class="row demo-full-width">
+      <div class="col-sm-4">
+
+      </div>
+      <div class="col-sm-8">
+        <mat-form-field appearance="outline" class="demo-full-width">
+          <input matInput   matInput
+          placeholder="Clica neste botão para recarregar os dados do estado de tramitção"
+           class="inputpesquisa" [readonly]="true"/>
+          <button matSuffix mat-raised-button color="accent" style="height: 35px;"
+          (click)="Refresh()" (keenter)="Refresh()" yup.class="btnpesquisa">
+          <mat-icon class='refresh-icon' color="primary" matSuffix>refresh</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+  </div>
+  </form>
+</div>
+
+<div id="btnright">
+  <form>
+    <div class="row demo-full-width">
+    <div class="col-sm-2">
+      <mat-form-field  appearance="outline" class="demo-full-width">
+        <mat-label>Data início</mat-label>
+        <input matInput [matDatepicker]="picker2"
+         placeholder="Primeira data"
+           [(ngModel)]="query.data" name="data" (keyup.enter)="onEnterPress()" >
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+      </mat-form-field>
+    </div>
+     <div class="col-sm-2">
+      <mat-form-field  appearance="outline" class="demo-full-width">
+        <mat-label>Data Fim</mat-label>
+        <input matInput [matDatepicker]="picker1"
+         placeholder="Última data"
+           [(ngModel)]="query.data1" name="data1" (keyup.enter)="onEnterPress()"  >
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+      </mat-form-field>
+    </div>
+
+
+      <div class="col-sm-8" >
+
+        <mat-form-field appearance="outline" class="demo-full-width">
+          <mat-label>Estado de homologação</mat-label>
+          <mtx-select [items]="EstadoTramitacao"
+            bindLabel="descricao" [loading]="loading"
+             bindValue="descricao" autofocus
+             name="assunto"
+            [hideSelected]="true"
+            [(ngModel)]="query.q"
+             (change)="onEstadotramitacaChange($event)"
+            (clear)="ClearEstadotramitaca()">
+          </mtx-select>
+          <button matSuffix mat-raised-button color="accent" style="height: 35px;"
+          (click)="search()" (keenter)="search()" yup.class="btnpesquisa">
+              <mat-icon class='search-icon' color="primary" matSuffix>search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+  </div>
+  </form>
+</div>
+<mat-card>
+
+  <mat-card-content>
+
+
+    <ng-container *ngIf="isLoading$ | async; else notloading">
+      <div class="progress progress-modal">
+        <div
+          class="
+            progress-bar progress-bar-striped progress-bar-animated
+            bg-primary
+          "
+          role="progressbar"
+          style="width: 100%"
+          aria-valuenow="100"
+          aria-valuemin="0"
+          aria-valuemax="100"
+        ></div>
+      </div>
+    </ng-container>
+    <ng-template #notloading>
+      <iframe #myIframe
+        *ngIf="src"
+        [src]="src"
+        width="100%"
+        height="1000"
+        webkitallowfullscreen
+        mozallowfullscreen
+        allowfullscreen
+      ></iframe>
+    </ng-template>
+  </mat-card-content>
+
+</mat-card>
+
+
+
+
+<!-- <div  class="spinner-wrapper" *ngIf="isSpinnerDisplayed">
+  <mat-spinner></mat-spinner>
+ </div> -->

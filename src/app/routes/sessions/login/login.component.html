@@ -1,0 +1,63 @@
+<div class="d-flex w-full h-full">
+  <mat-card class="m-auto" style="max-width: 380px;">
+    <mat-card-header class="m-b-24  header-center">
+      <mat-card-title  >Bem Vindo ao SJM!</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form class="form-field-full" [formGroup]="loginForm">
+        <mat-form-field appearance="outline">
+          <mat-label>Usuário</mat-label>
+          <input matInput placeholder="Usuário" formControlName="username" required>
+          @if (username.invalid) {
+            <mat-error>
+              @if (username.errors?.required) {
+                <span>{{'please_enter' }}
+                  <strong>SJM</strong>
+                </span>
+              }
+              @if (username.errors?.remote) {
+                <span>{{ username.errors?.remote }}</span>
+              }
+            </mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Senha</mat-label>
+          <input matInput placeholder="Senha" type="password"
+            formControlName="password" required>
+          @if (password.invalid) {
+            <mat-error>
+              @if (password.errors?.required) {
+                <span>Por favor introduza
+                  <strong>SJM</strong>
+                </span>
+              }
+              @if (password.errors?.remote) {
+                <span>{{ password.errors?.remote }}</span>
+              }
+            </mat-error>
+          }
+        </mat-form-field>
+<!--
+        <mat-checkbox formControlName="rememberMe">Rembrar a senha
+        </mat-checkbox> -->
+
+        <button class="w-full m-y-16" mat-raised-button color="primary"
+          [disabled]="!!loginForm.invalid" [loading]="isSubmitting"
+        (click)="login()">{{'login' }}</button>
+
+        <div>Esqueceu senha?
+          <a routerLink="/auth/register">Recuperar</a>
+        </div>
+        <div class="button-container">
+          <button mat-raised-button color="accent" style="height: 35px;"
+            (click)="Refresh()" class="btnpesquisa">
+            <mat-icon class='refresh-icon' color="primary" matSuffix>refresh</mat-icon>
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

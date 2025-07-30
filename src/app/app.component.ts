@@ -1,9 +1,9 @@
-import { Component, OnInit, AfterViewInit, inject, OnDestroy, HostListener } from '@angular/core';
-import { AuthService, PreloaderService, SettingsService, Usuario } from '@core';
-import { Router, RouterOutlet } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { LogoutService } from './services/logout.service';
+import { AfterViewInit, Component, HostListener, inject, OnInit } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
+import { AuthService, PreloaderService, SettingsService } from '@core';
 import { MtxDialog } from '@ng-matero/extensions/dialog';
+import { LogoutService } from './services/logout.service';
 
 @Component({
   selector: 'app-root',

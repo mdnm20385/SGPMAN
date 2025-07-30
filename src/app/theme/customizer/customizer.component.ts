@@ -1,11 +1,11 @@
 import { CdkDrag, CdkDragStart } from '@angular/cdk/drag-drop';
 import {
-  Component,
-  EventEmitter,
-  Output,
-  TemplateRef,
-  ViewEncapsulation,
-  inject,
+    Component,
+    EventEmitter,
+    Output,
+    TemplateRef,
+    ViewEncapsulation,
+    inject,
 } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -107,10 +107,10 @@ export class CustomizerComponent {
       showHeader: true,
       headerPos: 'fixed'
     });
-    
+
     // Limpa as configurações antigas do localStorage
     localStorage.removeItem('ng-matero-settings');
-    
+
     // Obtém as configurações atuais do formulário e aplica defaults para valores undefined
     const currentOptions = this.form.value as AppSettings;
     const completeOptions: AppSettings = {
@@ -124,9 +124,9 @@ export class CustomizerComponent {
       sidenavCollapsed: currentOptions.sidenavCollapsed ?? false,
       language: currentOptions.language || 'en-US'
     };
-    
+
     this.sendOptions(completeOptions);
-    
+
     // Recarrega a página para garantir que as mudanças sejam aplicadas
     setTimeout(() => {
       window.location.reload();

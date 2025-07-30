@@ -32,18 +32,18 @@ export class SettingsService {
   constructor() {
     const storedOptions = this.store.get(this.key);
     this.options = Object.assign(defaults, storedOptions);
-    
+
     // FORÇAR HEADER SEMPRE VISÍVEL - DEBUG
     this.options.showHeader = true;
     this.options.headerPos = 'fixed';
-    
+
     this.themeColor = this.getThemeColor();
     this.htmlElement = this.document.querySelector('html')!;
   }
 
   reset() {
     this.store.remove(this.key);
-    
+
     // Força as configurações padrão com header visível
     this.options = Object.assign({}, defaults);
     this.options.showHeader = true;

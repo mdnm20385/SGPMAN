@@ -68,44 +68,111 @@
   }
 }
 
-// Main Fields Section (sempre visível no topo)
+// Main Fields Section (sempre visível no topo) - Melhorada
 .main-fields-section {
-  margin-bottom: 24px;
-  background: #f8f9fa;
-  border-radius: 8px;
-  padding: 16px;
-  border: 1px solid #e0e0e0;
+  margin-bottom: 32px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 16px;
+  padding: 24px;
+  border: 2px solid #e3f2fd;
+  box-shadow: 0 4px 20px rgba(25, 118, 210, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  // Efeito de borda animada
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #1976d2 0%, #42a5f5 50%, #1976d2 100%);
+    background-size: 200% 100%;
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(25, 118, 210, 0.12);
+    border-color: #1976d2;
+  }
 
   .section-header {
-    margin-bottom: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid #e3f2fd;
+    position: relative;
 
     .section-title {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       margin: 0;
       color: #1976d2;
-      font-size: 18px;
-      font-weight: 500;
+      font-size: 22px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
 
       mat-icon {
         color: #1976d2;
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        background: rgba(25, 118, 210, 0.1);
+        border-radius: 50%;
+        padding: 8px;
+        box-sizing: content-box;
+        transition: all 0.3s ease;
+      }
+
+      &:hover mat-icon {
+        background: rgba(25, 118, 210, 0.2);
+        transform: scale(1.1);
       }
     }
+
+    // Linha decorativa animada
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, #1976d2, #42a5f5);
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    &:hover::after {
+      width: 120px;
+    }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    50% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
   }
 
   .main-fields-grid {
     display: grid;
     grid-template-columns: 1fr 2fr 1fr; // NIM (col-sm-3), Nome (maior espaço), Situação (col-sm-3)
-    gap: 16px;
+    gap: 20px;
+    align-items: end; // Alinha os campos pela base
 
     @media (max-width: 1200px) {
       grid-template-columns: 1fr 2fr 1fr;
+      gap: 16px;
     }
 
     @media (max-width: 900px) {
       grid-template-columns: 1fr 1fr;
       grid-template-rows: auto auto;
+      gap: 16px;
 
       .field-nome {
         grid-column: 1 / -1; // Nome ocupa toda a largura
@@ -122,6 +189,7 @@
 
     @media (max-width: 600px) {
       grid-template-columns: 1fr;
+      gap: 16px;
 
       .field-nome,
       .field-situacao,
@@ -132,9 +200,26 @@
 
     .form-group {
       width: 100%;
+      position: relative;
 
       .mat-mdc-form-field {
         width: 100%;
+        transition: all 0.3s ease;
+
+        &:hover {
+          transform: translateY(-1px);
+        }
+
+        // Estilos melhorados para outline
+        ::ng-deep .mat-mdc-form-field-outline {
+          transition: all 0.3s ease;
+          border-width: 2px;
+        }
+
+        ::ng-deep .mat-mdc-form-field-label {
+          font-weight: 500;
+          transition: all 0.3s ease;
+        }
 
         // Estilos para botões de procura - cores iguais ao FrmFt
         .search-button {
@@ -142,15 +227,18 @@
           border: none;
           cursor: pointer;
           transition: all 0.3s ease;
-          border-radius: 4px;
+          border-radius: 8px;
+          padding: 8px;
 
           &.client-search {
-            background: #3498db; // Azul igual ao FrmFt
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
 
             &:hover:not(:disabled) {
-              background: #2980b9; // Azul escuro no hover
+              background: linear-gradient(135deg, #2980b9 0%, #1f5582 100%);
               transform: scale(1.05);
+              box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
             }
 
             &:disabled {
@@ -158,16 +246,19 @@
               color: #ecf0f1;
               cursor: not-allowed;
               transform: none;
+              box-shadow: none;
             }
           }
 
           &.document-search {
-            background: #3498db; // Mesma cor azul para consistência
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
             color: white;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
 
             &:hover:not(:disabled) {
-              background: #2980b9; // Mesmo azul escuro no hover
+              background: linear-gradient(135deg, #2980b9 0%, #1f5582 100%);
               transform: scale(1.05);
+              box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
             }
 
             &:disabled {
@@ -175,6 +266,7 @@
               color: #ecf0f1;
               cursor: not-allowed;
               transform: none;
+              box-shadow: none;
             }
           }
 
@@ -183,6 +275,7 @@
             width: 20px;
             height: 20px;
             color: white;
+            transition: all 0.3s ease;
           }
 
           &:focus {
@@ -196,18 +289,39 @@
         }
       }
 
-      // Estilos específicos para cada campo
+      // Estilos específicos melhorados para cada campo
       &.field-nome {
         .mat-mdc-form-field {
-          // Campo nome com destaque visual
+          // Campo nome com destaque visual aprimorado
           ::ng-deep .mat-mdc-form-field-outline {
             border-color: #3498db;
           }
 
           ::ng-deep .mat-mdc-form-field-label {
             color: #2c3e50;
-            font-weight: 500;
+            font-weight: 600;
           }
+
+          &:focus-within {
+            ::ng-deep .mat-mdc-form-field-outline {
+              border-color: #2980b9;
+              box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+            }
+          }
+        }
+
+        // Ícone decorativo para o campo nome
+        &::before {
+          content: '👤';
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          font-size: 16px;
+          background: white;
+          border-radius: 50%;
+          padding: 4px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          z-index: 10;
         }
       }
 
@@ -216,6 +330,32 @@
           ::ng-deep .mat-mdc-form-field-outline {
             border-color: #27ae60;
           }
+
+          ::ng-deep .mat-mdc-form-field-label {
+            color: #27ae60;
+            font-weight: 600;
+          }
+
+          &:focus-within {
+            ::ng-deep .mat-mdc-form-field-outline {
+              border-color: #2ecc71;
+              box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+            }
+          }
+        }
+
+        // Ícone decorativo para situação
+        &::before {
+          content: '⭐';
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          font-size: 16px;
+          background: white;
+          border-radius: 50%;
+          padding: 4px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          z-index: 10;
         }
       }
 
@@ -224,6 +364,83 @@
           ::ng-deep .mat-mdc-form-field-outline {
             border-color: #e74c3c;
           }
+
+          ::ng-deep .mat-mdc-form-field-label {
+            color: #e74c3c;
+            font-weight: 600;
+          }
+
+          &:focus-within {
+            ::ng-deep .mat-mdc-form-field-outline {
+              border-color: #c0392b;
+              box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+            }
+          }
+        }
+
+        // Ícone decorativo para NIM
+        &::before {
+          content: '🆔';
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          font-size: 16px;
+          background: white;
+          border-radius: 50%;
+          padding: 4px;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          z-index: 10;
+        }
+      }
+    }
+  }
+
+  // Ajustes responsivos para mobile
+  @media (max-width: 768px) {
+    padding: 20px 16px;
+    margin-bottom: 24px;
+    border-radius: 12px;
+
+    .section-header {
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+
+      .section-title {
+        font-size: 18px;
+        
+        mat-icon {
+          font-size: 24px;
+          width: 24px;
+          height: 24px;
+          padding: 6px;
+        }
+      }
+    }
+
+    .main-fields-grid {
+      gap: 12px;
+
+      .form-group {
+        // Remove os ícones decorativos em mobile para economizar espaço
+        &::before {
+          display: none;
+        }
+      }
+    }
+
+    // Remove animação shimmer em mobile para melhor performance
+    &::before {
+      display: none;
+    }
+  }
+
+  // Ajustes para tablets
+  @media (min-width: 769px) and (max-width: 1024px) {
+    .main-fields-grid {
+      .form-group {
+        &::before {
+          font-size: 14px;
+          padding: 3px;
         }
       }
     }

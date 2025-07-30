@@ -447,13 +447,13 @@
   }
 }
 
-// Action Buttons
+// Action Buttons - Alinhados à direita
 .action-buttons {
   display: flex;
   gap: 12px;
   margin-bottom: 24px;
   padding: 0 16px;
-  justify-content: flex-start;
+  justify-content: flex-end; // Alinha todos os botões à direita
   align-items: center;
 
   .action-button {

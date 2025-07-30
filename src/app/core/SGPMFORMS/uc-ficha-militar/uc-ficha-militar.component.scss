@@ -353,16 +353,52 @@
 
     .form-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr !important; // Dois controles por linha - forçando especificidade
+      grid-template-columns: repeat(4, 1fr) !important; // Quatro colunas iguais (col-sm-3 cada)
       gap: 16px;
       align-items: start;
+      width: 100%;
 
-      // Responsivo para tablets
+      // Campos que ocupam meia linha (2 colunas cada)
+      .form-group-half {
+        grid-column: span 2; // Ocupa 2 colunas das 4 disponíveis
+      }
+
+      // Responsivo para tablets - duas colunas
       @media (max-width: 900px) {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px;
+
+        .form-group-half {
+          grid-column: span 1; // Em tablet, cada campo ocupa 1 coluna
+        }
+      }
+
+      // Responsivo para móveis - uma coluna
+      @media (max-width: 600px) {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+
+        .form-group-half {
+          grid-column: span 1; // Em mobile, cada campo ocupa toda a linha
+        }
+      }
+    }
+
+    // Grid específico para 3 colunas (usado na aba Local de Nascimento)
+    .form-grid-three-columns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr) !important; // Três colunas iguais
+      gap: 16px;
+      align-items: start;
+      width: 100%;
+
+      // Responsivo para tablets - duas colunas
+      @media (max-width: 900px) {
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 12px;
       }
 
-      // Responsivo para móveis - um por linha
+      // Responsivo para móveis - uma coluna
       @media (max-width: 600px) {
         grid-template-columns: 1fr !important;
         gap: 12px;
@@ -374,6 +410,29 @@
 
         &.form-group-full {
           grid-column: 1 / -1;
+
+          // Ajuste especial para photo-section no grid
+          .photo-section {
+            max-width: 400px;
+            margin: 0 auto;
+
+            .photo-container {
+              display: flex;
+              align-items: center;
+              gap: 20px;
+
+              .photo-preview {
+                flex: 0 0 auto;
+              }
+
+              .photo-actions {
+                flex: 0 0 auto;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+              }
+            }
+          }
         }
 
         mat-form-field {
@@ -503,9 +562,9 @@
         }
       }
 
-      // Sobrescrevendo para garantir layout 2x2 em todas as abas, exceto mobile
+      // Layout correto para mobile em todas as abas
       .form-grid {
-        grid-template-columns: 1fr; // Em mobile, volta para 1 coluna
+        grid-template-columns: 1fr !important; // Em mobile, volta para 1 coluna
         gap: 12px;
       }
     }
@@ -545,23 +604,6 @@
 .full-width {
   width: 100%;
   margin-bottom: 16px;
-}
-
-// Regra específica para garantir layout 2x2 na aba de dados pessoais
-.ficha-militar-container .tab-content .form-grid {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 16px !important;
-  align-items: start !important;
-
-  @media (max-width: 900px) {
-    gap: 12px !important;
-  }
-
-  @media (max-width: 600px) {
-    grid-template-columns: 1fr !important;
-    gap: 12px !important;
-  }
 }
 
 // Seção de foto embelezada

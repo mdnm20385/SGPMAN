@@ -2,14 +2,14 @@ import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 import { BehaviorSubject, debounceTime, tap } from 'rxjs';
 
-import { AuthService, SettingsService, User, Usuario } from '@core';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { environment } from '@env/environment';
 import { HttpClient } from '@angular/common/http';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { AuthService, SettingsService, User, Usuario } from '@core';
+import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-user',
@@ -57,7 +57,7 @@ import { HttpClient } from '@angular/common/http';
       }
 
       .r-full {
-        background: rgba(39, 174, 96, 0.1) !important;
+        background: whitesmoke !important;
         color: #27ae60 !important;
         border-radius: 8px !important;
         padding: 8px 12px !important;

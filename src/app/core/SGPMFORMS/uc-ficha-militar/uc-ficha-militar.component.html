@@ -14,7 +14,7 @@
     <!-- Action buttons section -->
     <div class="action-buttons">
       <button
-        mat-raised-button
+        mat-raised-button type="button"
         class="action-button new-button"
         (click)="onNew()"
         [disabled]="formState === 'insert'"
@@ -24,7 +24,7 @@
       </button>
 
       <button
-        mat-raised-button
+        mat-raised-button type="button"
         class="action-button edit-button"
         (click)="onEdit()"
         [disabled]="formState === 'update' || !isDocumentLoaded"
@@ -34,7 +34,7 @@
       </button>
 
       <button
-        mat-raised-button
+        mat-raised-button type="button"
         class="action-button cancel-button"
         (click)="onCancel()"
         [disabled]="formState === 'cancel'"
@@ -45,6 +45,8 @@
 
       <button
         mat-raised-button
+        type="submit"
+        color="primary"
         class="action-button save-button"
         [disabled]="!canPerformActions() || fichaForm.invalid"
         matTooltip="Salvar alterações">
@@ -150,16 +152,29 @@
             </div>
 
             <div class="row">
-              <!-- Coluna principal dos dados - col-sm-10 -->
+              <!-- Coluna dos campos (col-sm-10) -->
               <div class="col-sm-10">
                 <div class="form-grid">
-                  <!-- Primeira linha -->
+                  <!-- Primeira linha: Data de Nascimento, Estado Civil, Sexo e Grupo Sanguíneo -->
                   <div class="form-group">
                     <mat-form-field appearance="outline">
                       <mat-label>Data de Nascimento</mat-label>
                       <input matInput [matDatepicker]="nascData" formControlName="nascData" [disabled]="!canPerformActions()">
                       <mat-datepicker-toggle matSuffix [for]="nascData" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
                       <mat-datepicker #nascData [disabled]="!canPerformActions()"></mat-datepicker>
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-group">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Estado Civil</mat-label>
+                      <mat-select formControlName="estCivil" [disabled]="!canPerformActions()">
+                        <mat-option value="Solteiro(a)">Solteiro(a)</mat-option>
+                        <mat-option value="Casado(a)">Casado(a)</mat-option>
+                        <mat-option value="Divorciado(a)">Divorciado(a)</mat-option>
+                        <mat-option value="Viúvo(a)">Viúvo(a)</mat-option>
+                        <mat-option value="União de Facto">União de Facto</mat-option>
+                      </mat-select>
                     </mat-form-field>
                   </div>
 
@@ -173,7 +188,6 @@
                     </mat-form-field>
                   </div>
 
-                  <!-- Segunda linha -->
                   <div class="form-group">
                     <mat-form-field appearance="outline">
                       <mat-label>Grupo Sanguíneo</mat-label>
@@ -190,50 +204,37 @@
                     </mat-form-field>
                   </div>
 
-                  <div class="form-group">
+                  <!-- Segunda linha: Nacionalidade e Cônjuge (ocupando toda a linha) -->
+                  <div class="form-group form-group-half">
                     <mat-form-field appearance="outline">
                       <mat-label>Nacionalidade</mat-label>
                       <input matInput formControlName="nacional" [disabled]="!canPerformActions()">
                     </mat-form-field>
                   </div>
 
-                  <!-- Terceira linha -->
-                  <div class="form-group">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Pai</mat-label>
-                      <input matInput formControlName="pai" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </div>
-
-                  <div class="form-group">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Mãe</mat-label>
-                      <input matInput formControlName="mae" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </div>
-
-                  <!-- Quarta linha -->
-                  <div class="form-group">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Estado Civil</mat-label>
-                      <mat-select formControlName="estCivil" [disabled]="!canPerformActions()">
-                        <mat-option value="Solteiro(a)">Solteiro(a)</mat-option>
-                        <mat-option value="Casado(a)">Casado(a)</mat-option>
-                        <mat-option value="Divorciado(a)">Divorciado(a)</mat-option>
-                        <mat-option value="Viúvo(a)">Viúvo(a)</mat-option>
-                        <mat-option value="União de Facto">União de Facto</mat-option>
-                      </mat-select>
-                    </mat-form-field>
-                  </div>
-
-                  <div class="form-group">
+                  <div class="form-group form-group-half">
                     <mat-form-field appearance="outline">
                       <mat-label>Cônjuge</mat-label>
                       <input matInput formControlName="conjuge" [disabled]="!canPerformActions()">
                     </mat-form-field>
                   </div>
 
-                  <!-- Quinta linha -->
+                  <!-- Terceira linha: Pai e Mãe (ocupando toda a linha) -->
+                  <div class="form-group form-group-half">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Pai</mat-label>
+                      <input matInput formControlName="pai" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </div>
+
+                  <div class="form-group form-group-half">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Mãe</mat-label>
+                      <input matInput formControlName="mae" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </div>
+
+                  <!-- Quarta linha: Data de Casamento, Número de Filhos, Habilitações Literárias e Ramo -->
                   <div class="form-group">
                     <mat-form-field appearance="outline">
                       <mat-label>Data de Casamento</mat-label>
@@ -250,7 +251,6 @@
                     </mat-form-field>
                   </div>
 
-                  <!-- Sexta linha -->
                   <div class="form-group">
                     <mat-form-field appearance="outline">
                       <mat-label>Habilitações Literárias</mat-label>
@@ -267,7 +267,7 @@
                 </div>
               </div>
 
-              <!-- Coluna da foto do militar - col-sm-2 -->
+              <!-- Coluna da foto (col-sm-2) -->
               <div class="col-sm-2">
                 <div class="photo-section">
                   <h5 class="photo-title">
@@ -327,7 +327,7 @@
               </h3>
             </div>
 
-            <div class="form-grid">
+            <div class="form-grid form-grid-three-columns">
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>País de Nascimento</mat-label>
@@ -453,7 +453,7 @@
               </h3>
             </div>
 
-            <div class="form-grid">
+            <div class="form-grid form-grid-three-columns">
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>País de Incorporação</mat-label>
@@ -511,7 +511,7 @@
               </h3>
             </div>
 
-            <div class="form-grid">
+            <div class="form-grid form-grid-three-columns">
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Início do Treino</mat-label>
@@ -662,6 +662,7 @@
               </h3>
             </div>
 
+            <!-- Checkboxes section - mantém layout original -->
             <div class="form-grid">
               <div class="form-group">
                 <mat-checkbox formControlName="uCerimonial" [disabled]="!canPerformActions()">
@@ -686,7 +687,10 @@
                   Recebe SQTC
                 </mat-checkbox>
               </div>
+            </div>
 
+            <!-- Campos de input - layout de 3 colunas -->
+            <div class="form-grid form-grid-three-columns">
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Escalão</mat-label>
@@ -748,6 +752,7 @@
                 Agregados Familiares
               </h3>
               <button mat-raised-button color="primary"
+                      type="button"
                       (click)="adicionarAgregado()"
                       [disabled]="!canPerformActions()">
                 <mat-icon>add</mat-icon>
@@ -802,6 +807,7 @@
                   <th mat-header-cell *matHeaderCellDef>Ações</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <button mat-icon-button color="warn"
+                            type="button"
                             (click)="removerAgregado(i)"
                             [disabled]="!canPerformActions()"
                             matTooltip="Remover">
@@ -828,6 +834,7 @@
                 Condecorações e Galardões
               </h3>
               <button mat-raised-button color="primary"
+                      type="button"
                       (click)="adicionarCondecoracoes()"
                       [disabled]="!canPerformActions()">
                 <mat-icon>add</mat-icon>
@@ -882,6 +889,7 @@
                   <th mat-header-cell *matHeaderCellDef>Ações</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <button mat-icon-button color="warn"
+                            type="button"
                             (click)="removerCondecoracoes(i)"
                             [disabled]="!canPerformActions()"
                             matTooltip="Remover">
@@ -908,6 +916,7 @@
                 Documentos de Identificação
               </h3>
               <button mat-raised-button color="primary"
+                      type="button"
                       (click)="adicionarDocumento()"
                       [disabled]="!canPerformActions()">
                 <mat-icon>add</mat-icon>
@@ -962,6 +971,7 @@
                   <th mat-header-cell *matHeaderCellDef>Ações</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <button mat-icon-button color="warn"
+                            type="button"
                             (click)="removerDocumento(i)"
                             [disabled]="!canPerformActions()"
                             matTooltip="Remover">
@@ -988,6 +998,7 @@
                 Endereços de Email
               </h3>
               <button mat-raised-button color="primary"
+                      type="button"
                       (click)="adicionarEmail()"
                       [disabled]="!canPerformActions()">
                 <mat-icon>add</mat-icon>
@@ -1013,6 +1024,7 @@
                   <th mat-header-cell *matHeaderCellDef>Ações</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <button mat-icon-button color="warn"
+                            type="button"
                             (click)="removerEmail(i)"
                             [disabled]="!canPerformActions()"
                             matTooltip="Remover">
@@ -1039,6 +1051,7 @@
                 Números de Telefone
               </h3>
               <button mat-raised-button color="primary"
+                      type="button"
                       (click)="adicionarTelefone()"
                       [disabled]="!canPerformActions()">
                 <mat-icon>add</mat-icon>
@@ -1077,6 +1090,7 @@
                   <th mat-header-cell *matHeaderCellDef>Ações</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <button mat-icon-button color="warn"
+                            type="button"
                             (click)="removerTelefone(i)"
                             [disabled]="!canPerformActions()"
                             matTooltip="Remover">
@@ -1103,6 +1117,7 @@
                 Formação Acadêmica
               </h3>
               <button mat-raised-button color="primary"
+                      type="button"
                       (click)="adicionarFormacao()"
                       [disabled]="!canPerformActions()">
                 <mat-icon>add</mat-icon>
@@ -1157,6 +1172,7 @@
                   <th mat-header-cell *matHeaderCellDef>Ações</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <button mat-icon-button color="warn"
+                            type="button"
                             (click)="removerFormacao(i)"
                             [disabled]="!canPerformActions()"
                             matTooltip="Remover">
@@ -1183,6 +1199,7 @@
                 Conhecimento de Línguas
               </h3>
               <button mat-raised-button color="primary"
+                      type="button"
                       (click)="adicionarLingua()"
                       [disabled]="!canPerformActions()">
                 <mat-icon>add</mat-icon>
@@ -1261,6 +1278,7 @@
                   <th mat-header-cell *matHeaderCellDef>Ações</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <button mat-icon-button color="warn"
+                            type="button"
                             (click)="removerLingua(i)"
                             [disabled]="!canPerformActions()"
                             matTooltip="Remover">
@@ -1287,6 +1305,7 @@
                 Situações Militares
               </h3>
               <button mat-raised-button color="primary"
+                      type="button"
                       (click)="adicionarSituacao()"
                       [disabled]="!canPerformActions()">
                 <mat-icon>add</mat-icon>
@@ -1331,6 +1350,7 @@
                   <th mat-header-cell *matHeaderCellDef>Ações</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <button mat-icon-button color="warn"
+                            type="button"
                             (click)="removerSituacao(i)"
                             [disabled]="!canPerformActions()"
                             matTooltip="Remover">

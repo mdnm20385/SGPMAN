@@ -1,5 +1,14 @@
-// Script para limpar as configurações do localStorage
-// Execute este script no console do navegador se o header ainda não estiver visível
+/* eslint-env browser */
+/**
+ * Script para limpar as configurações do localStorage
+ * Execute este script no console do navegador se o header ainda não estiver visível
+ *
+ * Instruções:
+ * 1. Abra o DevTools (F12)
+ * 2. Vá para a aba Console
+ * 3. Cole este código e pressione Enter
+ * 4. Recarregue a página (F5)
+ */
 
 console.log('Limpando configurações antigas...');
 

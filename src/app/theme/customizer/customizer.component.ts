@@ -1,11 +1,11 @@
 import { CdkDrag, CdkDragStart } from '@angular/cdk/drag-drop';
 import {
-    Component,
-    EventEmitter,
-    Output,
-    TemplateRef,
-    ViewEncapsulation,
-    inject,
+  Component,
+  EventEmitter,
+  Output,
+  TemplateRef,
+  ViewEncapsulation,
+  inject,
 } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';

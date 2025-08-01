@@ -79,10 +79,9 @@
                       (click)="onMilitarSearchClick('nim,nome,milstamp')"
                       type="button"
                       [disabled]="formState !== 'cancel'">
-                <mat-icon>menu</mat-icon>
+                <mat-icon>search</mat-icon>
               </button>
-              <mat-hint>Número único de identificação militar</mat-hint>
-            </mat-form-field>
+             </mat-form-field>
           </div>
 
           <!-- Nome - Campo com maior espaço disponível -->
@@ -95,7 +94,7 @@
                       (click)="onMilitarSearchClick('nome,nim,milstamp')"
                       type="button"
                       [disabled]="formState !== 'cancel'">
-                <mat-icon>menu</mat-icon>
+                <mat-icon>search</mat-icon>
               </button>
             </mat-form-field>
           </div>
@@ -201,7 +200,7 @@
                               type="button"
                               [disabled]="!canPerformActions()"
                               matTooltip="Procurar Nacionalidade">
-                        <mat-icon>menu</mat-icon>
+                        <mat-icon>menu_vert</mat-icon>
                       </button>
                     </mat-form-field>
                   </div>
@@ -262,7 +261,7 @@
                               type="button"
                               [disabled]="!canPerformActions()"
                               matTooltip="Procurar Ramo">
-                        <mat-icon>menu</mat-icon>
+                        <mat-icon>menu_vert</mat-icon>
                       </button>
                     </mat-form-field>
                   </div>
@@ -340,7 +339,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar País">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -355,7 +354,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Província">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -370,7 +369,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Distrito">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -385,7 +384,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Posto Administrativo">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -400,7 +399,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Localidade">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -439,8 +438,8 @@
                   <th mat-header-cell *matHeaderCellDef>Tipo de Documento</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <div class="input-with-search">
-                      <input class="table-input" 
-                             [formControl]="$any(docFormArray.at(i)).get('tipoDocumento')" 
+                      <input class="table-input"
+                             [formControl]="$any(docFormArray.at(i)).get('tipoDocumento')"
                              [disabled]="!canPerformActions()"
                              placeholder="Tipo de documento">
                       <button mat-icon-button
@@ -448,7 +447,7 @@
                               (click)="selectedDocIndex = i; searchTipoDocumento(i)"
                               [disabled]="!canPerformActions()"
                               matTooltip="Procurar Tipo de Documento">
-                        <mat-icon>menu</mat-icon>
+                        <mat-icon>menu_vert</mat-icon>
                       </button>
                     </div>
                   </td>
@@ -458,8 +457,8 @@
                 <ng-container matColumnDef="numeroDoc">
                   <th mat-header-cell *matHeaderCellDef>Número</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input" 
-                           [formControl]="$any(docFormArray.at(i)).get('numeroDoc')" 
+                    <input class="table-input"
+                           [formControl]="$any(docFormArray.at(i)).get('numeroDoc')"
                            [disabled]="!canPerformActions()"
                            placeholder="Número do documento">
                   </td>
@@ -470,8 +469,8 @@
                   <th mat-header-cell *matHeaderCellDef>Local de Emissão</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <div class="input-with-search">
-                      <input class="table-input" 
-                             [formControl]="$any(docFormArray.at(i)).get('localemissao')" 
+                      <input class="table-input"
+                             [formControl]="$any(docFormArray.at(i)).get('localemissao')"
                              [disabled]="!canPerformActions()"
                              placeholder="Local de emissão">
                       <button mat-icon-button
@@ -479,7 +478,7 @@
                               (click)="selectedDocIndex = i; searchLocalEmissao(i)"
                               [disabled]="!canPerformActions()"
                               matTooltip="Procurar Local de Emissão">
-                        <mat-icon>menu</mat-icon>
+                        <mat-icon>menu_vert</mat-icon>
                       </button>
                     </div>
                   </td>
@@ -489,8 +488,8 @@
                 <ng-container matColumnDef="dataemissao">
                   <th mat-header-cell *matHeaderCellDef>Data de Emissão</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input" 
-                           [formControl]="$any(docFormArray.at(i)).get('dataemissao')" 
+                    <input class="table-input"
+                           [formControl]="$any(docFormArray.at(i)).get('dataemissao')"
                            [disabled]="!canPerformActions()"
                            placeholder="Data de emissão"
                            type="date">
@@ -541,7 +540,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Província">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -556,7 +555,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Distrito">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -571,7 +570,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Posto Administrativo">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -586,7 +585,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Localidade">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -643,7 +642,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar País">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -658,7 +657,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Província">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -673,7 +672,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Distrito">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -688,7 +687,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Posto Administrativo">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -703,7 +702,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Localidade">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -766,7 +765,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Centro de Treino">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -781,7 +780,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Curso">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -796,7 +795,7 @@
                           type="button"
                           [disabled]="!canPerformActions()"
                           matTooltip="Procurar Especialidade">
-                    <mat-icon>menu</mat-icon>
+                    <mat-icon>menu_vert</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -959,6 +958,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Nome do Banco</mat-label>
                   <input matInput formControlName="nomeBanco" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchBanco()"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Banco">
+                    <mat-icon>menu_vert</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -1009,8 +1016,8 @@
                 <ng-container matColumnDef="nome">
                   <th mat-header-cell *matHeaderCellDef>Nome</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input" 
-                           [formControl]="$any(agreFormArray.at(i)).get('nome')" 
+                    <input class="table-input"
+                           [formControl]="$any(agreFormArray.at(i)).get('nome')"
                            [disabled]="!canPerformActions()"
                            placeholder="Nome completo">
                   </td>
@@ -1020,8 +1027,8 @@
                 <ng-container matColumnDef="grau">
                   <th mat-header-cell *matHeaderCellDef>Grau de Parentesco</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input" 
-                           [formControl]="$any(agreFormArray.at(i)).get('grau')" 
+                    <input class="table-input"
+                           [formControl]="$any(agreFormArray.at(i)).get('grau')"
                            [disabled]="!canPerformActions()"
                            placeholder="Grau de parentesco">
                   </td>
@@ -1031,8 +1038,8 @@
                 <ng-container matColumnDef="nascData">
                   <th mat-header-cell *matHeaderCellDef>Data de Nascimento</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input" 
-                           [formControl]="$any(agreFormArray.at(i)).get('nascData')" 
+                    <input class="table-input"
+                           [formControl]="$any(agreFormArray.at(i)).get('nascData')"
                            [disabled]="!canPerformActions()"
                            placeholder="Data de nascimento"
                            type="date">
@@ -1043,8 +1050,8 @@
                 <ng-container matColumnDef="telefone">
                   <th mat-header-cell *matHeaderCellDef>Telefone</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input" 
-                           [formControl]="$any(agreFormArray.at(i)).get('telefone')" 
+                    <input class="table-input"
+                           [formControl]="$any(agreFormArray.at(i)).get('telefone')"
                            [disabled]="!canPerformActions()"
                            placeholder="Telefone"
                            type="tel">
@@ -1097,8 +1104,8 @@
                 <ng-container matColumnDef="galardoa">
                   <th mat-header-cell *matHeaderCellDef>Galardão</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input" 
-                           [formControl]="$any(condeFormArray.at(i)).get('galardoa')" 
+                    <input class="table-input"
+                           [formControl]="$any(condeFormArray.at(i)).get('galardoa')"
                            [disabled]="!canPerformActions()"
                            placeholder="Galardão">
                   </td>
@@ -1108,8 +1115,8 @@
                 <ng-container matColumnDef="especie">
                   <th mat-header-cell *matHeaderCellDef>Espécie</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input" 
-                           [formControl]="$any(condeFormArray.at(i)).get('especie')" 
+                    <input class="table-input"
+                           [formControl]="$any(condeFormArray.at(i)).get('especie')"
                            [disabled]="!canPerformActions()"
                            placeholder="Espécie">
                   </td>
@@ -1119,8 +1126,8 @@
                 <ng-container matColumnDef="grauMedalha">
                   <th mat-header-cell *matHeaderCellDef>Grau da Medalha</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input" 
-                           [formControl]="$any(condeFormArray.at(i)).get('grauMedalha')" 
+                    <input class="table-input"
+                           [formControl]="$any(condeFormArray.at(i)).get('grauMedalha')"
                            [disabled]="!canPerformActions()"
                            placeholder="Grau da medalha">
                   </td>
@@ -1130,8 +1137,8 @@
                 <ng-container matColumnDef="dataGalardoacao">
                   <th mat-header-cell *matHeaderCellDef>Data de Galardoação</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input" 
-                           [formControl]="$any(condeFormArray.at(i)).get('dataGalardoacao')" 
+                    <input class="table-input"
+                           [formControl]="$any(condeFormArray.at(i)).get('dataGalardoacao')"
                            [disabled]="!canPerformActions()"
                            placeholder="Data de galardoação"
                            type="date">

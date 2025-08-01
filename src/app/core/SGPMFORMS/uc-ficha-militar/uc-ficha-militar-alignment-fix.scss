@@ -1,6 +1,6 @@
 /* Correção de alinhamento para campos com e sem botões de busca */
 .ficha-militar-container {
-  
+
   /* Garantir altura consistente para todos os mat-form-fields */
   ::ng-deep .mat-mdc-form-field {
     .mat-mdc-form-field-wrapper {
@@ -28,7 +28,7 @@
       display: flex !important;
       align-items: center !important;
       height: 100% !important;
-      
+
       .mat-mdc-icon-button {
         align-self: center !important;
       }
@@ -58,14 +58,14 @@
   .form-grid,
   .form-grid-three-columns {
     align-items: start !important;
-    
+
     .form-group {
       display: flex !important;
       flex-direction: column !important;
-      
+
       .mat-mdc-form-field {
         flex: 1 !important;
-        
+
         /* Forçar mesma altura base */
         .mat-mdc-form-field-wrapper {
           height: 56px !important;
@@ -80,7 +80,7 @@
       height: 36px !important;
       width: 36px !important;
       min-width: 36px !important;
-      
+
       mat-icon {
         font-size: 18px !important;
         width: 18px !important;

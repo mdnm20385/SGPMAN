@@ -1247,3 +1247,59 @@
     }
   }
 }
+
+// Estilos para botões de limpar seleção
+.mat-mdc-form-field {
+  .mat-mdc-form-field-suffix {
+    button[matSuffix] {
+      &:has(mat-icon[fontIcon="clear"]),
+      &:has(mat-icon:contains("clear")) {
+        color: #666;
+        opacity: 0.7;
+        transition: all 0.2s ease;
+
+        &:hover:not(:disabled) {
+          color: #f44336;
+          opacity: 1;
+          background-color: rgba(244, 67, 54, 0.1);
+        }
+
+        &:disabled {
+          opacity: 0.3;
+          cursor: not-allowed;
+        }
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+}
+
+// Estilos específicos para tabelas
+.data-table {
+  .table-field {
+    .mat-mdc-form-field-suffix {
+      button[matSuffix] {
+        &:has(mat-icon[fontIcon="clear"]),
+        &:has(mat-icon:contains("clear")) {
+          margin-left: 4px;
+
+          mat-icon {
+            font-size: 16px;
+            width: 16px;
+            height: 16px;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Garantir que os botões não quebrem o layout
+::ng-deep .mat-mdc-form-field-has-icon-suffix .mat-mdc-text-field-wrapper {
+  padding-right: 0 !important;
+}

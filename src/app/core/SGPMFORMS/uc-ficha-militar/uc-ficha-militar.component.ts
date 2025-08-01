@@ -1,4 +1,5 @@
 import { CommonModule } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone, Renderer2, ViewEncapsulation } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -18,6 +19,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '@core/authentication';
 import { Proc2Component } from '@core/Formsfacturacao/proc2/proc2.component';
 import { PhotoCaptureComponent } from '@core/JuntasMedicas/product-form/photo-capture/photo-capture.component';
+import { condicoesprocura, selects } from 'app/classes/CampoSessoes';
 import {
   MilAgre, MilConde, MilDoc, MilEmail,
   MilFor,
@@ -25,6 +27,9 @@ import {
   MilSit,
   Telefone
 } from 'app/classes/SGPM/Models';
+import { TablesRemoteDataService } from 'app/routes/tables/remote-data/remote-data.service';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -36,6 +41,10 @@ import Swal from 'sweetalert2';
     CommonModule, MatDividerModule, MatCardModule, MatFormFieldModule, MatInputModule,
     MatCheckboxModule, MatTabsModule, MatButtonModule, MatTableModule, ReactiveFormsModule,
     MatIcon, MatSelectModule, MatDatepickerModule, MatAutocompleteModule, MatTooltipModule,
+    HttpClientModule,
+  ],
+  providers: [
+    TablesRemoteDataService
   ],
   templateUrl: './uc-ficha-militar.component.html',
   styleUrl: './uc-ficha-militar.component.scss'
@@ -123,6 +132,94 @@ export class UcFichaMilitarComponent implements AfterViewInit {
   selectedSitQPActivoIndex: number | null = null;
   selectedTelefoneIndex: number | null = null;
 
+  // Autocomplete options arrays
+  situacaoOptions = ['Ativo', 'Licença', 'Missão', 'Formação', 'Reforma', 'Reserva', 'Disponibilidade', 'Suspenso', 'Transferido'];
+  estCivilOptions = ['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União de Facto'];
+  sexoOptions = ['Masculino', 'Feminino'];
+  grupSangueOptions = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+  tipoTelefoneOptions = ['Pessoal', 'Profissional', 'Emergência'];
+  nivelLinguaOptions = ['Básico', 'Intermediário', 'Avançado', 'Nativo'];
+  habilitacoesOptions = [
+    '1ª Classe',
+    '2ª Classe',
+    '3ª Classe',
+    '4ª Classe',
+    '5ª Classe',
+    '6ª Classe',
+    '7ª Classe',
+    'Ensino Básico (7º ano)',
+    'Ensino Básico (8º ano)',
+    'Ensino Básico (9º ano)',
+    'Ensino Secundário (10º ano)',
+    'Ensino Secundário (11º ano)',
+    'Ensino Secundário (12º ano)',
+    'Curso Técnico',
+    'Curso Profissional',
+    'Bacharelato',
+    'Licenciatura',
+    'Pós-Graduação',
+    'Mestrado',
+    'Doutoramento',
+    'Sem escolaridade'
+  ];
+
+  // Location data from database
+  selectProvincias: selects[] = [];
+  selectDistritosNasc: selects[] = [];
+  selectPostosNasc: selects[] = [];
+  selectLocalidadesNasc: selects[] = [];
+
+  selectDistritosRes: selects[] = [];
+  selectPostosRes: selects[] = [];
+  selectLocalidadesRes: selects[] = [];
+
+  selectDistritosInc: selects[] = [];
+  selectPostosInc: selects[] = [];
+  selectLocalidadesInc: selects[] = [];
+
+  // Arrays for autocomplete dropdowns
+  provinciasOptions: string[] = [];
+
+  // Dynamic arrays that will be populated based on selections
+  nascDistritoOptions: string[] = [];
+  nascPostoOptions: string[] = [];
+  nascLocalidadeOptions: string[] = [];
+
+  resDistritoOptions: string[] = [];
+  resPostoOptions: string[] = [];
+  resLocalidadeOptions: string[] = [];
+
+  incDistritoOptions: string[] = [];
+  incPostoOptions: string[] = [];
+  incLocalidadeOptions: string[] = [];
+
+  // Filtered observables for autocomplete
+  filteredSituacao!: Observable<string[]>;
+  filteredEstCivil!: Observable<string[]>;
+  filteredSexo!: Observable<string[]>;
+  filteredGrupSangue!: Observable<string[]>;
+  filteredHabilitacoes!: Observable<string[]>;
+  filteredTipoTelefone!: Observable<string[]>;
+  filteredFala!: Observable<string[]>;
+  filteredLeitura!: Observable<string[]>;
+  filteredEscrita!: Observable<string[]>;
+
+  // Location filtered observables
+  filteredProvinciasNasc!: Observable<string[]>;
+  filteredDistritosNasc!: Observable<string[]>;
+  filteredPostosNasc!: Observable<string[]>;
+  filteredLocalidadesNasc!: Observable<string[]>;
+
+  filteredProvinciasRes!: Observable<string[]>;
+  filteredDistritosRes!: Observable<string[]>;
+  filteredPostosRes!: Observable<string[]>;
+  filteredLocalidadesRes!: Observable<string[]>;
+
+  filteredProvinciasInc!: Observable<string[]>;
+  filteredDistritosInc!: Observable<string[]>;
+  filteredPostosInc!: Observable<string[]>;
+  filteredLocalidadesInc!: Observable<string[]>;
+
   // Form Array getters with safety checks
   get agreFormArray(): FormArray {
     return this.fichaForm?.get('milAgre') as FormArray || this.fb.array([]);
@@ -198,9 +295,16 @@ export class UcFichaMilitarComponent implements AfterViewInit {
     private ngZone: NgZone,
     private el: ElementRef,
     private renderer: Renderer2,
-    private auth: AuthService
+    private auth: AuthService,
+    private remoteSrv: TablesRemoteDataService
   ) {
     this.fichaForm = this.generateFormGroup();
+
+    // Load provinces from database
+    this.loadProvincias();
+
+    // Initialize filtered observables for autocomplete
+    this.initializeAutocompleteFilters();
 
     // Defer state setting to next tick to avoid assertion error
     setTimeout(() => {
@@ -218,6 +322,769 @@ export class UcFichaMilitarComponent implements AfterViewInit {
         this.cdr.detectChanges();
       });
     }, 0);
+  }
+
+  initializeAutocompleteFilters(): void {
+    // Initialize filtered observables for main form controls with null safety
+    const situacaoControl = this.fichaForm.get('situacaoAtual');
+    if (situacaoControl) {
+      this.filteredSituacao = situacaoControl.valueChanges.pipe(
+        startWith(situacaoControl.value || ''),
+        map(value => this._filter(value || '', this.situacaoOptions))
+      );
+    }
+
+    const estCivilControl = this.fichaForm.get('estCivil');
+    if (estCivilControl) {
+      this.filteredEstCivil = estCivilControl.valueChanges.pipe(
+        startWith(estCivilControl.value || ''),
+        map(value => this._filter(value || '', this.estCivilOptions))
+      );
+    }
+
+    const sexoControl = this.fichaForm.get('sexo');
+    if (sexoControl) {
+      this.filteredSexo = sexoControl.valueChanges.pipe(
+        startWith(sexoControl.value || ''),
+        map(value => this._filter(value || '', this.sexoOptions))
+      );
+    }
+
+    const grupSangueControl = this.fichaForm.get('grupSangue');
+    if (grupSangueControl) {
+      this.filteredGrupSangue = grupSangueControl.valueChanges.pipe(
+        startWith(grupSangueControl.value || ''),
+        map(value => this._filter(value || '', this.grupSangueOptions))
+      );
+    }
+
+    const habilitacoesControl = this.fichaForm.get('habiLite');
+    if (habilitacoesControl) {
+      this.filteredHabilitacoes = habilitacoesControl.valueChanges.pipe(
+        startWith(habilitacoesControl.value || ''),
+        map(value => this._filter(value || '', this.habilitacoesOptions))
+      );
+    }
+
+    // These will be handled per form array item - initialize with empty observables
+    this.filteredTipoTelefone = new Observable();
+    this.filteredFala = new Observable();
+    this.filteredLeitura = new Observable();
+    this.filteredEscrita = new Observable();
+
+    // Initialize location filtered observables with null safety
+    const nascProvControl = this.fichaForm.get('nascProv');
+    if (nascProvControl) {
+      this.filteredProvinciasNasc = nascProvControl.valueChanges.pipe(
+        startWith(nascProvControl.value || ''),
+        map(value => this._filter(value || '', this.provinciasOptions))
+      );
+    }
+
+    const nascDistControl = this.fichaForm.get('nascDist');
+    if (nascDistControl) {
+      this.filteredDistritosNasc = nascDistControl.valueChanges.pipe(
+        startWith(nascDistControl.value || ''),
+        map(value => this._filter(value || '', this.nascDistritoOptions))
+      );
+    }
+
+    const nascPostoControl = this.fichaForm.get('nascPosto');
+    if (nascPostoControl) {
+      this.filteredPostosNasc = nascPostoControl.valueChanges.pipe(
+        startWith(nascPostoControl.value || ''),
+        map(value => this._filter(value || '', this.nascPostoOptions))
+      );
+    }
+
+    const nascLocalControl = this.fichaForm.get('nascLocal');
+    if (nascLocalControl) {
+      this.filteredLocalidadesNasc = nascLocalControl.valueChanges.pipe(
+        startWith(nascLocalControl.value || ''),
+        map(value => this._filter(value || '', this.nascLocalidadeOptions))
+      );
+    }
+
+    const resProvControl = this.fichaForm.get('resProv');
+    if (resProvControl) {
+      this.filteredProvinciasRes = resProvControl.valueChanges.pipe(
+        startWith(resProvControl.value || ''),
+        map(value => this._filter(value || '', this.provinciasOptions))
+      );
+    }
+
+    const resDistControl = this.fichaForm.get('resDist');
+    if (resDistControl) {
+      this.filteredDistritosRes = resDistControl.valueChanges.pipe(
+        startWith(resDistControl.value || ''),
+        map(value => this._filter(value || '', this.resDistritoOptions))
+      );
+    }
+
+    const resPostoControl = this.fichaForm.get('resPosto');
+    if (resPostoControl) {
+      this.filteredPostosRes = resPostoControl.valueChanges.pipe(
+        startWith(resPostoControl.value || ''),
+        map(value => this._filter(value || '', this.resPostoOptions))
+      );
+    }
+
+    const resLocalControl = this.fichaForm.get('resLocalidade');
+    if (resLocalControl) {
+      this.filteredLocalidadesRes = resLocalControl.valueChanges.pipe(
+        startWith(resLocalControl.value || ''),
+        map(value => this._filter(value || '', this.resLocalidadeOptions))
+      );
+    }
+
+    // Initialize incorporation location filtered observables with null safety
+    const incProvControl = this.fichaForm.get('incProv');
+    if (incProvControl) {
+      this.filteredProvinciasInc = incProvControl.valueChanges.pipe(
+        startWith(incProvControl.value || ''),
+        map(value => this._filter(value || '', this.provinciasOptions))
+      );
+    }
+
+    const incDistControl = this.fichaForm.get('incDist');
+    if (incDistControl) {
+      this.filteredDistritosInc = incDistControl.valueChanges.pipe(
+        startWith(incDistControl.value || ''),
+        map(value => this._filter(value || '', this.incDistritoOptions))
+      );
+    }
+
+    const incPostoControl = this.fichaForm.get('incPosto');
+    if (incPostoControl) {
+      this.filteredPostosInc = incPostoControl.valueChanges.pipe(
+        startWith(incPostoControl.value || ''),
+        map(value => this._filter(value || '', this.incPostoOptions))
+      );
+    }
+
+    const incLocalControl = this.fichaForm.get('incLocal');
+    if (incLocalControl) {
+      this.filteredLocalidadesInc = incLocalControl.valueChanges.pipe(
+        startWith(incLocalControl.value || ''),
+        map(value => this._filter(value || '', this.incLocalidadeOptions))
+      );
+    }
+  }
+
+  private _filter(value: string, options: string[], excludeValue?: string): string[] {
+    const filterValue = value.toLowerCase();
+    return options.filter(option => {
+      const matchesFilter = option.toLowerCase().includes(filterValue);
+      const isNotSelected = !excludeValue || option !== excludeValue;
+      return matchesFilter && isNotSelected;
+    });
+  }
+
+  private _filterWithCurrentValue(
+    value: string,
+    options: string[],
+    currentValue?: string
+  ): string[] {
+    const filterValue = value.toLowerCase();
+    // Se o valor atual for igual ao que está sendo digitado, não excluir
+    const shouldExclude = currentValue && currentValue !== value;
+    return options.filter(option => {
+      const matchesFilter = option.toLowerCase().includes(filterValue);
+      const isNotSelected = !shouldExclude || option !== currentValue;
+      return matchesFilter && isNotSelected;
+    });
+  }
+
+  // Método para filtrar excluindo valores já selecionados em outros campos similares
+  private _filterExcludingSelected(
+    value: string,
+    options: string[],
+    arrayName: string,
+    controlName: string,
+    currentIndex?: number
+  ): string[] {
+    const filterValue = value.toLowerCase();
+    const formArray = this.fichaForm.get(arrayName) as FormArray;
+    const selectedValues: string[] = [];
+
+    if (formArray) {
+      for (let i = 0; i < formArray.length; i++) {
+        if (currentIndex !== undefined && i === currentIndex) continue;
+        const controlValue = formArray.at(i).get(controlName)?.value;
+        if (controlValue && controlValue.trim()) {
+          selectedValues.push(controlValue);
+        }
+      }
+    }
+
+    return options.filter(option => {
+      const matchesFilter = option.toLowerCase().includes(filterValue);
+      const isNotSelected = !selectedValues.includes(option);
+      return matchesFilter && isNotSelected;
+    });
+  }
+
+  // Métodos para limpar seleções
+  clearSelection(controlName: string): void {
+    const control = this.fichaForm.get(controlName);
+    if (control) {
+      // Limpa o valor e força a atualização completa
+      control.setValue('', { emitEvent: true });
+      control.markAsTouched();
+      control.updateValueAndValidity();
+
+      // Força o reinicios da filtragem para o campo específico
+      this.reinitializeSpecificFilter(controlName);
+
+      // Força a detecção de mudanças
+      this.cdr.detectChanges();
+    }
+  }
+
+  clearSelectionWithReset(controlName: string, autocomplete: any): void {
+    const control = this.fichaForm.get(controlName);
+    if (control) {
+      // Limpa o valor
+      control.setValue('', { emitEvent: true });
+      control.markAsTouched();
+      control.updateValueAndValidity();
+
+      // Fecha o painel do autocomplete se estiver aberto
+      if (autocomplete && autocomplete.isOpen) {
+        autocomplete.closePanel();
+      }
+
+      // Reinicializa o filtro específico
+      this.reinitializeSpecificFilter(controlName);
+
+      // Força a detecção de mudanças
+      this.cdr.detectChanges();
+
+      // Reabre o painel para mostrar todas as opções
+      setTimeout(() => {
+        if (autocomplete && !autocomplete.isOpen) {
+          autocomplete.openPanel();
+        }
+      }, 100);
+    }
+  }
+
+  // Método específico para limpar localizações com cascata
+  clearLocationSelection(controlName: string, type: 'nasc' | 'res' | 'inc'): void {
+    const control = this.fichaForm.get(controlName);
+    if (control) {
+      control.setValue('', { emitEvent: false });
+      control.markAsTouched();
+      control.updateValueAndValidity();
+
+      // Clear dependent fields based on which field is being cleared
+      if (controlName.includes('Prov')) {
+        // Clearing province - clear all dependents
+        if (type === 'nasc') {
+          this.nascDistritoOptions = [];
+          this.nascPostoOptions = [];
+          this.nascLocalidadeOptions = [];
+          this.fichaForm.get('nascDist')?.setValue('', { emitEvent: false });
+          this.fichaForm.get('nascPosto')?.setValue('', { emitEvent: false });
+          this.fichaForm.get('nascLocal')?.setValue('', { emitEvent: false });
+        } else if (type === 'res') {
+          this.resDistritoOptions = [];
+          this.resPostoOptions = [];
+          this.resLocalidadeOptions = [];
+          this.fichaForm.get('resDist')?.setValue('', { emitEvent: false });
+          this.fichaForm.get('resPosto')?.setValue('', { emitEvent: false });
+          this.fichaForm.get('resLocalidade')?.setValue('', { emitEvent: false });
+        } else if (type === 'inc') {
+          this.incDistritoOptions = [];
+          this.incPostoOptions = [];
+          this.incLocalidadeOptions = [];
+          this.fichaForm.get('incDist')?.setValue('', { emitEvent: false });
+          this.fichaForm.get('incPosto')?.setValue('', { emitEvent: false });
+          this.fichaForm.get('incLocal')?.setValue('', { emitEvent: false });
+        }
+      } else if (controlName.includes('Dist')) {
+        // Clearing district - clear posto and localidade
+        if (type === 'nasc') {
+          this.nascPostoOptions = [];
+          this.nascLocalidadeOptions = [];
+          this.fichaForm.get('nascPosto')?.setValue('', { emitEvent: false });
+          this.fichaForm.get('nascLocal')?.setValue('', { emitEvent: false });
+        } else if (type === 'res') {
+          this.resPostoOptions = [];
+          this.resLocalidadeOptions = [];
+          this.fichaForm.get('resPosto')?.setValue('', { emitEvent: false });
+          this.fichaForm.get('resLocalidade')?.setValue('', { emitEvent: false });
+        } else if (type === 'inc') {
+          this.incPostoOptions = [];
+          this.incLocalidadeOptions = [];
+          this.fichaForm.get('incPosto')?.setValue('', { emitEvent: false });
+          this.fichaForm.get('incLocal')?.setValue('', { emitEvent: false });
+        }
+      } else if (controlName.includes('Posto')) {
+        // Clearing posto - clear localidade
+        if (type === 'nasc') {
+          this.nascLocalidadeOptions = [];
+          this.fichaForm.get('nascLocal')?.setValue('', { emitEvent: false });
+        } else if (type === 'res') {
+          this.resLocalidadeOptions = [];
+          this.fichaForm.get('resLocalidade')?.setValue('', { emitEvent: false });
+        } else if (type === 'inc') {
+          this.incLocalidadeOptions = [];
+          this.fichaForm.get('incLocal')?.setValue('', { emitEvent: false });
+        }
+      }
+
+      this.cdr.detectChanges();
+    }
+  }
+
+  // Função para display no autocomplete
+  displayFunction = (value: string): string => {
+    return value || '';
+  };
+
+  // Método chamado quando uma opção é selecionada
+  onOptionSelected(controlName: string, event: any): void {
+    const control = this.fichaForm.get(controlName);
+    if (control) {
+      control.setValue(event.option.value);
+      control.markAsTouched();
+    }
+  }
+
+  clearArrayControlSelection(arrayName: string, index: number, controlName: string): void {
+    const formArray = this.fichaForm.get(arrayName) as FormArray;
+    if (formArray && formArray.at(index)) {
+      const control = formArray.at(index).get(controlName);
+      if (control) {
+        // Limpa o valor e força a atualização completa
+        control.setValue('', { emitEvent: true });
+        control.markAsTouched();
+        control.updateValueAndValidity();
+
+        // Força a detecção de mudanças
+        this.cdr.detectChanges();
+      }
+    }
+  }
+
+  // Método para reinicializar filtros específicos
+  private reinitializeSpecificFilter(controlName: string): void {
+    switch (controlName) {
+      case 'situacaoAtual':
+        this.filteredSituacao = this.fichaForm.get('situacaoAtual')!.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value || '', this.situacaoOptions))
+        );
+        break;
+      case 'estCivil':
+        this.filteredEstCivil = this.fichaForm.get('estCivil')!.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value || '', this.estCivilOptions))
+        );
+        break;
+      case 'sexo':
+        this.filteredSexo = this.fichaForm.get('sexo')!.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value || '', this.sexoOptions))
+        );
+        break;
+      case 'grupSangue':
+        this.filteredGrupSangue = this.fichaForm.get('grupSangue')!.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value || '', this.grupSangueOptions))
+        );
+        break;
+      case 'habiLite':
+        this.filteredHabilitacoes = this.fichaForm.get('habiLite')!.valueChanges.pipe(
+          startWith(''),
+          map(value => this._filter(value || '', this.habilitacoesOptions))
+        );
+        break;
+    }
+  }
+
+  // Method to get filtered options for FormArray controls
+  getFilteredTipoTelefone(control: any): Observable<string[]> {
+    return control.valueChanges.pipe(
+      startWith(control.value || ''),
+      map((value: string) => this._filter(value || '', this.tipoTelefoneOptions))
+    );
+  }
+
+  getFilteredNivelLingua(control: any): Observable<string[]> {
+    return control.valueChanges.pipe(
+      startWith(control.value || ''),
+      map((value: string) => this._filter(value || '', this.nivelLinguaOptions))
+    );
+  }
+
+  // Método para obter opções filtradas excluindo seleções de outros campos similares
+  getFilteredTipoTelefoneExcluding(control: any, index: number): Observable<string[]> {
+    return control.valueChanges.pipe(
+      startWith(control.value || ''),
+      map((value: string) => this._filterExcludingSelected(
+        value || '',
+        this.tipoTelefoneOptions,
+        'telefones',
+        'tipo',
+        index
+      ))
+    );
+  }
+
+  getFilteredNivelLinguaExcluding(
+    control: any,
+    index: number,
+    controlName: string
+  ): Observable<string[]> {
+    return control.valueChanges.pipe(
+      startWith(control.value || ''),
+      map((value: string) => this._filterExcludingSelected(
+        value || '',
+        this.nivelLinguaOptions,
+        'linguas',
+        controlName,
+        index
+      ))
+    );
+  }
+
+  // Methods for loading data from database
+  loadProvincias(): void {
+    const se: condicoesprocura = {
+      tabela: 'provincia',
+      campo1: 'nome',
+      campo2: 'provinciaStamp',
+      condicao: '1=1',
+      campochave: 'provinciaStamp'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectProvincias = data.dados.selects;
+          this.provinciasOptions = this.selectProvincias.map(p => p.descricao);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar províncias:', e);
+      }
+    });
+  }
+
+  loadDistritos(provinciaStamp: string, type: 'nasc' | 'res' | 'inc'): void {
+    const se: condicoesprocura = {
+      tabela: 'distrito',
+      campo1: 'nome',
+      campo2: 'distritoStamp',
+      condicao: `provinciaStamp='${provinciaStamp}'`,
+      campochave: 'distritoStamp'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          if (type === 'nasc') {
+            this.selectDistritosNasc = data.dados.selects;
+            this.nascDistritoOptions = this.selectDistritosNasc.map(d => d.descricao);
+          } else if (type === 'res') {
+            this.selectDistritosRes = data.dados.selects;
+            this.resDistritoOptions = this.selectDistritosRes.map(d => d.descricao);
+          } else if (type === 'inc') {
+            this.selectDistritosInc = data.dados.selects;
+            this.incDistritoOptions = this.selectDistritosInc.map(d => d.descricao);
+          }
+          this.reinitializeLocationFilter(`${type}Dist`, type);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar distritos:', e);
+      }
+    });
+  }
+
+  loadPostos(distritoStamp: string, type: 'nasc' | 'res' | 'inc'): void {
+    const se: condicoesprocura = {
+      tabela: 'posto',
+      campo1: 'nome',
+      campo2: 'postoStamp',
+      condicao: `distritoStamp='${distritoStamp}'`,
+      campochave: 'postoStamp'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          if (type === 'nasc') {
+            this.selectPostosNasc = data.dados.selects;
+            this.nascPostoOptions = this.selectPostosNasc.map(p => p.descricao);
+          } else if (type === 'res') {
+            this.selectPostosRes = data.dados.selects;
+            this.resPostoOptions = this.selectPostosRes.map(p => p.descricao);
+          } else if (type === 'inc') {
+            this.selectPostosInc = data.dados.selects;
+            this.incPostoOptions = this.selectPostosInc.map(p => p.descricao);
+          }
+          this.reinitializeLocationFilter(`${type}Posto`, type);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar postos:', e);
+      }
+    });
+  }
+
+  loadLocalidades(postoStamp: string, type: 'nasc' | 'res' | 'inc'): void {
+    const se: condicoesprocura = {
+      tabela: 'localidade',
+      campo1: 'nome',
+      campo2: 'localidadeStamp',
+      condicao: `postoStamp='${postoStamp}'`,
+      campochave: 'localidadeStamp'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          if (type === 'nasc') {
+            this.selectLocalidadesNasc = data.dados.selects;
+            this.nascLocalidadeOptions = this.selectLocalidadesNasc.map(l => l.descricao);
+          } else if (type === 'res') {
+            this.selectLocalidadesRes = data.dados.selects;
+            this.resLocalidadeOptions = this.selectLocalidadesRes.map(l => l.descricao);
+          } else if (type === 'inc') {
+            this.selectLocalidadesInc = data.dados.selects;
+            this.incLocalidadeOptions = this.selectLocalidadesInc.map(l => l.descricao);
+          }
+          const controlName = type === 'res' ? 'resLocalidade' : `${type}Local`;
+          this.reinitializeLocationFilter(controlName, type);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar localidades:', e);
+      }
+    });
+  }
+
+  // Event handlers for location autocomplete
+  onProvinciaAutocompleteSelected(event: any, type: 'nasc' | 'res' | 'inc'): void {
+    this.onProvinciaSelected(event.option.value, type);
+  }
+
+  onDistritoAutocompleteSelected(event: any, type: 'nasc' | 'res' | 'inc'): void {
+    this.onDistritoSelected(event.option.value, type);
+  }
+
+  onPostoAutocompleteSelected(event: any, type: 'nasc' | 'res' | 'inc'): void {
+    this.onPostoSelected(event.option.value, type);
+  }
+
+  // Methods for cascading location searches
+  onProvinciaSelected(provincia: string, type: 'nasc' | 'res' | 'inc'): void {
+    const selectedProvincia = this.selectProvincias.find(p => p.descricao === provincia);
+    if (!selectedProvincia) return;
+
+    // Clear dependent fields
+    if (type === 'nasc') {
+      this.nascDistritoOptions = [];
+      this.nascPostoOptions = [];
+      this.nascLocalidadeOptions = [];
+
+      this.fichaForm.get('nascDist')?.setValue('', { emitEvent: false });
+      this.fichaForm.get('nascPosto')?.setValue('', { emitEvent: false });
+      this.fichaForm.get('nascLocal')?.setValue('', { emitEvent: false });
+    } else if (type === 'res') {
+      this.resDistritoOptions = [];
+      this.resPostoOptions = [];
+      this.resLocalidadeOptions = [];
+
+      this.fichaForm.get('resDist')?.setValue('', { emitEvent: false });
+      this.fichaForm.get('resPosto')?.setValue('', { emitEvent: false });
+      this.fichaForm.get('resLocalidade')?.setValue('', { emitEvent: false });
+    } else if (type === 'inc') {
+      this.incDistritoOptions = [];
+      this.incPostoOptions = [];
+      this.incLocalidadeOptions = [];
+
+      this.fichaForm.get('incDist')?.setValue('', { emitEvent: false });
+      this.fichaForm.get('incPosto')?.setValue('', { emitEvent: false });
+      this.fichaForm.get('incLocal')?.setValue('', { emitEvent: false });
+    }
+
+    // Load districts for selected province
+    this.loadDistritos(selectedProvincia.chave, type);
+
+    this.cdr.detectChanges();
+  }
+
+  onDistritoSelected(distrito: string, type: 'nasc' | 'res' | 'inc'): void {
+    let selectDistritos: selects[] = [];
+    if (type === 'nasc') {
+      selectDistritos = this.selectDistritosNasc;
+    } else if (type === 'res') {
+      selectDistritos = this.selectDistritosRes;
+    } else if (type === 'inc') {
+      selectDistritos = this.selectDistritosInc;
+    }
+    
+    const selectedDistrito = selectDistritos.find(d => d.descricao === distrito);
+    if (!selectedDistrito) return;
+
+    // Clear dependent fields
+    if (type === 'nasc') {
+      this.nascPostoOptions = [];
+      this.nascLocalidadeOptions = [];
+
+      this.fichaForm.get('nascPosto')?.setValue('', { emitEvent: false });
+      this.fichaForm.get('nascLocal')?.setValue('', { emitEvent: false });
+    } else if (type === 'res') {
+      this.resPostoOptions = [];
+      this.resLocalidadeOptions = [];
+
+      this.fichaForm.get('resPosto')?.setValue('', { emitEvent: false });
+      this.fichaForm.get('resLocalidade')?.setValue('', { emitEvent: false });
+    } else if (type === 'inc') {
+      this.incPostoOptions = [];
+      this.incLocalidadeOptions = [];
+
+      this.fichaForm.get('incPosto')?.setValue('', { emitEvent: false });
+      this.fichaForm.get('incLocal')?.setValue('', { emitEvent: false });
+    }
+
+    // Load postos for selected distrito
+    this.loadPostos(selectedDistrito.chave, type);
+
+    this.cdr.detectChanges();
+  }
+
+  onPostoSelected(posto: string, type: 'nasc' | 'res' | 'inc'): void {
+    let selectPostos: selects[] = [];
+    if (type === 'nasc') {
+      selectPostos = this.selectPostosNasc;
+    } else if (type === 'res') {
+      selectPostos = this.selectPostosRes;
+    } else if (type === 'inc') {
+      selectPostos = this.selectPostosInc;
+    }
+    
+    const selectedPosto = selectPostos.find(p => p.descricao === posto);
+    if (!selectedPosto) return;
+
+    // Clear dependent fields
+    if (type === 'nasc') {
+      this.nascLocalidadeOptions = [];
+      this.fichaForm.get('nascLocal')?.setValue('', { emitEvent: false });
+    } else if (type === 'res') {
+      this.resLocalidadeOptions = [];
+      this.fichaForm.get('resLocalidade')?.setValue('', { emitEvent: false });
+    } else if (type === 'inc') {
+      this.incLocalidadeOptions = [];
+      this.fichaForm.get('incLocal')?.setValue('', { emitEvent: false });
+    }
+
+    // Load localidades for selected posto
+    this.loadLocalidades(selectedPosto.chave, type);
+
+    this.cdr.detectChanges();
+  }
+
+  private reinitializeLocationFilter(controlName: string, type: 'nasc' | 'res' | 'inc'): void {
+    let control: any;
+    let options: string[] = [];
+
+    switch (controlName) {
+      case 'nascDist':
+        control = this.fichaForm.get('nascDist');
+        options = this.nascDistritoOptions;
+        if (control) {
+          this.filteredDistritosNasc = control.valueChanges.pipe(
+            startWith(''),
+            map((value: string) => this._filter(value || '', options))
+          );
+        }
+        break;
+      case 'nascPosto':
+        control = this.fichaForm.get('nascPosto');
+        options = this.nascPostoOptions;
+        if (control) {
+          this.filteredPostosNasc = control.valueChanges.pipe(
+            startWith(''),
+            map((value: string) => this._filter(value || '', options))
+          );
+        }
+        break;
+      case 'nascLocal':
+        control = this.fichaForm.get('nascLocal');
+        options = this.nascLocalidadeOptions;
+        if (control) {
+          this.filteredLocalidadesNasc = control.valueChanges.pipe(
+            startWith(''),
+            map((value: string) => this._filter(value || '', options))
+          );
+        }
+        break;
+      case 'resDist':
+        control = this.fichaForm.get('resDist');
+        options = this.resDistritoOptions;
+        if (control) {
+          this.filteredDistritosRes = control.valueChanges.pipe(
+            startWith(''),
+            map((value: string) => this._filter(value || '', options))
+          );
+        }
+        break;
+      case 'resPosto':
+        control = this.fichaForm.get('resPosto');
+        options = this.resPostoOptions;
+        if (control) {
+          this.filteredPostosRes = control.valueChanges.pipe(
+            startWith(''),
+            map((value: string) => this._filter(value || '', options))
+          );
+        }
+        break;
+      case 'resLocalidade':
+        control = this.fichaForm.get('resLocalidade');
+        options = this.resLocalidadeOptions;
+        if (control) {
+          this.filteredLocalidadesRes = control.valueChanges.pipe(
+            startWith(''),
+            map((value: string) => this._filter(value || '', options))
+          );
+        }
+        break;
+      case 'incDist':
+        control = this.fichaForm.get('incDist');
+        options = this.incDistritoOptions;
+        if (control) {
+          this.filteredDistritosInc = control.valueChanges.pipe(
+            startWith(''),
+            map((value: string) => this._filter(value || '', options))
+          );
+        }
+        break;
+      case 'incPosto':
+        control = this.fichaForm.get('incPosto');
+        options = this.incPostoOptions;
+        if (control) {
+          this.filteredPostosInc = control.valueChanges.pipe(
+            startWith(''),
+            map((value: string) => this._filter(value || '', options))
+          );
+        }
+        break;
+      case 'incLocal':
+        control = this.fichaForm.get('incLocal');
+        options = this.incLocalidadeOptions;
+        if (control) {
+          this.filteredLocalidadesInc = control.valueChanges.pipe(
+            startWith(''),
+            map((value: string) => this._filter(value || '', options))
+          );
+        }
+        break;
+    }
   }
 
   generateFormGroup(): FormGroup {
@@ -1397,6 +2264,63 @@ export class UcFichaMilitarComponent implements AfterViewInit {
       if (resultado) {
         this.fichaForm.patchValue({
           ramo: resultado.ramo || resultado.descricao
+        });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Métodos de pesquisa para banco
+  searchBanco(): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'banco,descricao';
+    proc.tabela = 'banco';
+    proc.campo = 'banco';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'banco,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'banco asc';
+    proc.origem = 'Banco';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        this.fichaForm.get('milSalario')?.patchValue({
+          nomeBanco: resultado.banco || resultado.descricao
+        });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Métodos de pesquisa para grau de parentesco
+  searchGrauParentesco(index: number): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'grauparentesco,descricao';
+    proc.tabela = 'grauparentesco';
+    proc.campo = 'grauparentesco';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'grauparentesco,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'grauparentesco asc';
+    proc.origem = 'Grau de Parentesco';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        const agreFormGroup = this.agreFormArray.at(index);
+        agreFormGroup.patchValue({
+          grau: resultado.grauparentesco || resultado.descricao
         });
         this.cdr.detectChanges();
       }

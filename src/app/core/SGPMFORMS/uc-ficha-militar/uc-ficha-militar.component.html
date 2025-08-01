@@ -103,17 +103,16 @@
           <div class="form-group field-situacao">
             <mat-form-field appearance="outline">
               <mat-label>Situação Atual</mat-label>
-              <mat-select formControlName="situacaoAtual" [disabled]="!canPerformActions()">
-                <mat-option value="Ativo">Ativo</mat-option>
-                <mat-option value="Licença">Em Licença</mat-option>
-                <mat-option value="Missão">Em Missão</mat-option>
-                <mat-option value="Formação">Em Formação</mat-option>
-                <mat-option value="Reforma">Reformado</mat-option>
-                <mat-option value="Reserva">Na Reserva</mat-option>
-                <mat-option value="Disponibilidade">Em Disponibilidade</mat-option>
-                <mat-option value="Suspenso">Suspenso</mat-option>
-                <mat-option value="Transferido">Transferido</mat-option>
-              </mat-select>
+              <input matInput
+                     formControlName="situacaoAtual"
+                     [disabled]="!canPerformActions()"
+                     [matAutocomplete]="autoSituacao"
+                     placeholder="Digite para procurar...">
+              <mat-autocomplete #autoSituacao="matAutocomplete">
+                <mat-option *ngFor="let situacao of filteredSituacao | async" [value]="situacao">
+                  {{situacao}}
+                </mat-option>
+              </mat-autocomplete>
               <mat-icon matSuffix>assignment_ind</mat-icon>
               <mat-hint>Situação militar atual</mat-hint>
             </mat-form-field>
@@ -153,39 +152,75 @@
                   <div class="form-group">
                     <mat-form-field appearance="outline">
                       <mat-label>Estado Civil</mat-label>
-                      <mat-select formControlName="estCivil" [disabled]="!canPerformActions()">
-                        <mat-option value="Solteiro(a)">Solteiro(a)</mat-option>
-                        <mat-option value="Casado(a)">Casado(a)</mat-option>
-                        <mat-option value="Divorciado(a)">Divorciado(a)</mat-option>
-                        <mat-option value="Viúvo(a)">Viúvo(a)</mat-option>
-                        <mat-option value="União de Facto">União de Facto</mat-option>
-                      </mat-select>
+                      <input matInput
+                             formControlName="estCivil"
+                             [disabled]="!canPerformActions()"
+                             [matAutocomplete]="autoEstCivil"
+                             placeholder="Digite para procurar...">
+                      <mat-autocomplete #autoEstCivil="matAutocomplete"
+                                        [displayWith]="displayFunction"
+                                        (optionSelected)="onOptionSelected('estCivil', $event)">
+                        <mat-option *ngFor="let estado of filteredEstCivil | async" [value]="estado">
+                          {{estado}}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <button mat-icon-button matSuffix
+                              type="button"
+                              (click)="clearSelectionWithReset('estCivil', autoEstCivil)"
+                              [disabled]="!canPerformActions() || !fichaForm.get('estCivil')?.value"
+                              matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
                     </mat-form-field>
                   </div>
 
                   <div class="form-group">
                     <mat-form-field appearance="outline">
                       <mat-label>Sexo</mat-label>
-                      <mat-select formControlName="sexo" [disabled]="!canPerformActions()">
-                        <mat-option value="M">Masculino</mat-option>
-                        <mat-option value="F">Feminino</mat-option>
-                      </mat-select>
+                      <input matInput
+                             formControlName="sexo"
+                             [disabled]="!canPerformActions()"
+                             [matAutocomplete]="autoSexo"
+                             placeholder="Digite para procurar...">
+                      <mat-autocomplete #autoSexo="matAutocomplete"
+                                        [displayWith]="displayFunction"
+                                        (optionSelected)="onOptionSelected('sexo', $event)">
+                        <mat-option *ngFor="let sexo of filteredSexo | async" [value]="sexo">
+                          {{sexo}}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <button mat-icon-button matSuffix
+                              type="button"
+                              (click)="clearSelectionWithReset('sexo', autoSexo)"
+                              [disabled]="!canPerformActions() || !fichaForm.get('sexo')?.value"
+                              matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
                     </mat-form-field>
                   </div>
 
                   <div class="form-group">
                     <mat-form-field appearance="outline">
                       <mat-label>Grupo Sanguíneo</mat-label>
-                      <mat-select formControlName="grupSangue" [disabled]="!canPerformActions()">
-                        <mat-option value="A+">A+</mat-option>
-                        <mat-option value="A-">A-</mat-option>
-                        <mat-option value="B+">B+</mat-option>
-                        <mat-option value="B-">B-</mat-option>
-                        <mat-option value="AB+">AB+</mat-option>
-                        <mat-option value="AB-">AB-</mat-option>
-                        <mat-option value="O+">O+</mat-option>
-                        <mat-option value="O-">O-</mat-option>
-                      </mat-select>
+                      <input matInput
+                             formControlName="grupSangue"
+                             [disabled]="!canPerformActions()"
+                             [matAutocomplete]="autoGrupSangue"
+                             placeholder="Digite para procurar...">
+                      <mat-autocomplete #autoGrupSangue="matAutocomplete"
+                                        [displayWith]="displayFunction"
+                                        (optionSelected)="onOptionSelected('grupSangue', $event)">
+                        <mat-option *ngFor="let grupo of filteredGrupSangue | async" [value]="grupo">
+                          {{grupo}}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <button mat-icon-button matSuffix
+                              type="button"
+                              (click)="clearSelectionWithReset('grupSangue', autoGrupSangue)"
+                              [disabled]="!canPerformActions() || !fichaForm.get('grupSangue')?.value"
+                              matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
                     </mat-form-field>
                   </div>
 
@@ -247,7 +282,25 @@
                   <div class="form-group">
                     <mat-form-field appearance="outline">
                       <mat-label>Habilitações Literárias</mat-label>
-                      <input matInput formControlName="habiLite" [disabled]="!canPerformActions()">
+                      <input matInput
+                             formControlName="habiLite"
+                             [disabled]="!canPerformActions()"
+                             [matAutocomplete]="autoHabilitacoes"
+                             placeholder="Digite para procurar...">
+                      <mat-autocomplete #autoHabilitacoes="matAutocomplete"
+                                        [displayWith]="displayFunction"
+                                        (optionSelected)="onOptionSelected('habiLite', $event)">
+                        <mat-option *ngFor="let habilitacao of filteredHabilitacoes | async" [value]="habilitacao">
+                          {{habilitacao}}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <button mat-icon-button matSuffix
+                              type="button"
+                              (click)="clearSelectionWithReset('habiLite', autoHabilitacoes)"
+                              [disabled]="!canPerformActions() || !fichaForm.get('habiLite')?.value"
+                              matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
                     </mat-form-field>
                   </div>
 
@@ -347,14 +400,23 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Província de Nascimento</mat-label>
-                  <input matInput formControlName="nascProv" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="nascProv"
+                         [matAutocomplete]="autoProvinciaNasc"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoProvinciaNasc="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onProvinciaSelected($event.option.value, 'nasc')">
+                    <mat-option *ngFor="let option of filteredProvinciasNasc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchProvincia('nascProv')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('nascProv', 'nasc')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Província">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar Província">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -362,14 +424,23 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Distrito de Nascimento</mat-label>
-                  <input matInput formControlName="nascDist" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="nascDist"
+                         [matAutocomplete]="autoDistritoNasc"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoDistritoNasc="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onDistritoSelected($event.option.value, 'nasc')">
+                    <mat-option *ngFor="let option of filteredDistritosNasc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchDistrito('nascDist')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('nascDist', 'nasc')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Distrito">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar Distrito">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -377,14 +448,23 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Posto Administrativo de Nascimento</mat-label>
-                  <input matInput formControlName="nascPosto" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="nascPosto"
+                         [matAutocomplete]="autoPostoNasc"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoPostoNasc="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onPostoSelected($event.option.value, 'nasc')">
+                    <mat-option *ngFor="let option of filteredPostosNasc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchPostoAdministrativo('nascPosto')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('nascPosto', 'nasc')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Posto Administrativo">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar Posto Administrativo">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -392,14 +472,22 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Localidade de Nascimento</mat-label>
-                  <input matInput formControlName="nascLocal" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="nascLocal"
+                         [matAutocomplete]="autoLocalNasc"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoLocalNasc="matAutocomplete"
+                                    [displayWith]="displayFunction">
+                    <mat-option *ngFor="let option of filteredLocalidadesNasc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchLocalidade('nascLocal')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('nascLocal', 'nasc')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Localidade">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar Localidade">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -533,14 +621,23 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Província de Residência</mat-label>
-                  <input matInput formControlName="resProv" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="resProv"
+                         [matAutocomplete]="autoProvinciaRes"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoProvinciaRes="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onProvinciaSelected($event.option.value, 'res')">
+                    <mat-option *ngFor="let option of filteredProvinciasRes | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchProvincia('resProv')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('resProv', 'res')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Província">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar Província">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -548,14 +645,23 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Distrito de Residência</mat-label>
-                  <input matInput formControlName="resDist" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="resDist"
+                         [matAutocomplete]="autoDistritoRes"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoDistritoRes="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onDistritoSelected($event.option.value, 'res')">
+                    <mat-option *ngFor="let option of filteredDistritosRes | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchDistrito('resDist')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('resDist', 'res')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Distrito">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar Distrito">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -563,14 +669,23 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Posto Administrativo</mat-label>
-                  <input matInput formControlName="resPosto" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="resPosto"
+                         [matAutocomplete]="autoPostoRes"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoPostoRes="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onPostoSelected($event.option.value, 'res')">
+                    <mat-option *ngFor="let option of filteredPostosRes | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchPostoAdministrativo('resPosto')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('resPosto', 'res')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Posto Administrativo">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar Posto Administrativo">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -578,14 +693,22 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Localidade</mat-label>
-                  <input matInput formControlName="resLocalidade" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="resLocalidade"
+                         [matAutocomplete]="autoLocalRes"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoLocalRes="matAutocomplete"
+                                    [displayWith]="displayFunction">
+                    <mat-option *ngFor="let option of filteredLocalidadesRes | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchLocalidade('resLocalidade')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('resLocalidade', 'res')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Localidade">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar Localidade">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -650,14 +773,23 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Província de Incorporação</mat-label>
-                  <input matInput formControlName="incProv" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="incProv" 
+                         [matAutocomplete]="incProvAutocomplete"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #incProvAutocomplete="matAutocomplete" 
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onProvinciaAutocompleteSelected($event, 'inc')">
+                    <mat-option *ngFor="let option of filteredProvinciasInc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchProvincia('incProv')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('incProv', 'inc')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Província">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar seleção">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -665,14 +797,23 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Distrito de Incorporação</mat-label>
-                  <input matInput formControlName="incDist" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="incDist" 
+                         [matAutocomplete]="incDistAutocomplete"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #incDistAutocomplete="matAutocomplete" 
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onDistritoAutocompleteSelected($event, 'inc')">
+                    <mat-option *ngFor="let option of filteredDistritosInc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchDistrito('incDist')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('incDist', 'inc')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Distrito">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar seleção">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -680,14 +821,23 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Posto Administrativo</mat-label>
-                  <input matInput formControlName="incPosto" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="incPosto" 
+                         [matAutocomplete]="incPostoAutocomplete"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #incPostoAutocomplete="matAutocomplete" 
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onPostoAutocompleteSelected($event, 'inc')">
+                    <mat-option *ngFor="let option of filteredPostosInc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchPostoAdministrativo('incPosto')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('incPosto', 'inc')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Posto Administrativo">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar seleção">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -695,14 +845,21 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Localidade</mat-label>
-                  <input matInput formControlName="incLocal" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="incLocal" 
+                         [matAutocomplete]="incLocalAutocomplete"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #incLocalAutocomplete="matAutocomplete" [displayWith]="displayFunction">
+                    <mat-option *ngFor="let option of filteredLocalidadesInc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchLocalidade('incLocal')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('incLocal', 'inc')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Localidade">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar seleção">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -1027,10 +1184,19 @@
                 <ng-container matColumnDef="grau">
                   <th mat-header-cell *matHeaderCellDef>Grau de Parentesco</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input"
-                           [formControl]="$any(agreFormArray.at(i)).get('grau')"
-                           [disabled]="!canPerformActions()"
-                           placeholder="Grau de parentesco">
+                    <div class="input-with-search">
+                      <input class="table-input"
+                             [formControl]="$any(agreFormArray.at(i)).get('grau')"
+                             [disabled]="!canPerformActions()"
+                             placeholder="Grau de parentesco">
+                      <button mat-icon-button
+                              type="button"
+                              (click)="selectedAgreIndex = i; searchGrauParentesco(i)"
+                              [disabled]="!canPerformActions()"
+                              matTooltip="Procurar Grau de Parentesco">
+                        <mat-icon>menu_vert</mat-icon>
+                      </button>
+                    </div>
                   </td>
                 </ng-container>
 
@@ -1255,11 +1421,23 @@
                   <th mat-header-cell *matHeaderCellDef>Tipo</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <mat-form-field appearance="outline" class="table-field">
-                      <mat-select [formControl]="$any(telefoneFormArray.at(i)).get('tipo')" [disabled]="!canPerformActions()">
-                        <mat-option value="Pessoal">Pessoal</mat-option>
-                        <mat-option value="Profissional">Profissional</mat-option>
-                        <mat-option value="Emergência">Emergência</mat-option>
-                      </mat-select>
+                      <input matInput
+                             [formControl]="$any(telefoneFormArray.at(i)).get('tipo')"
+                             [disabled]="!canPerformActions()"
+                             [matAutocomplete]="autoTipoTelefone"
+                             placeholder="Digite para procurar...">
+                      <mat-autocomplete #autoTipoTelefone="matAutocomplete">
+                        <mat-option *ngFor="let tipo of getFilteredTipoTelefone($any(telefoneFormArray.at(i)).get('tipo')) | async" [value]="tipo">
+                          {{tipo}}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <button mat-icon-button matSuffix
+                              type="button"
+                              (click)="clearArrayControlSelection('telefones', i, 'tipo')"
+                              [disabled]="!canPerformActions() || !$any(telefoneFormArray.at(i)).get('tipo')?.value"
+                              matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
                     </mat-form-field>
                   </td>
                 </ng-container>
@@ -1403,12 +1581,23 @@
                   <th mat-header-cell *matHeaderCellDef>Fala</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <mat-form-field appearance="outline" class="table-field">
-                      <mat-select [formControl]="$any(linguaFormArray.at(i)).get('fala')" [disabled]="!canPerformActions()">
-                        <mat-option value="Básico">Básico</mat-option>
-                        <mat-option value="Intermediário">Intermediário</mat-option>
-                        <mat-option value="Avançado">Avançado</mat-option>
-                        <mat-option value="Nativo">Nativo</mat-option>
-                      </mat-select>
+                      <input matInput
+                             [formControl]="$any(linguaFormArray.at(i)).get('fala')"
+                             [disabled]="!canPerformActions()"
+                             [matAutocomplete]="autoFala"
+                             placeholder="Digite para procurar...">
+                      <mat-autocomplete #autoFala="matAutocomplete">
+                        <mat-option *ngFor="let nivel of getFilteredNivelLingua($any(linguaFormArray.at(i)).get('fala')) | async" [value]="nivel">
+                          {{nivel}}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <button mat-icon-button matSuffix
+                              type="button"
+                              (click)="clearArrayControlSelection('linguas', i, 'fala')"
+                              [disabled]="!canPerformActions() || !$any(linguaFormArray.at(i)).get('fala')?.value"
+                              matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
                     </mat-form-field>
                   </td>
                 </ng-container>
@@ -1418,12 +1607,23 @@
                   <th mat-header-cell *matHeaderCellDef>Leitura</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <mat-form-field appearance="outline" class="table-field">
-                      <mat-select [formControl]="$any(linguaFormArray.at(i)).get('leitura')" [disabled]="!canPerformActions()">
-                        <mat-option value="Básico">Básico</mat-option>
-                        <mat-option value="Intermediário">Intermediário</mat-option>
-                        <mat-option value="Avançado">Avançado</mat-option>
-                        <mat-option value="Nativo">Nativo</mat-option>
-                      </mat-select>
+                      <input matInput
+                             [formControl]="$any(linguaFormArray.at(i)).get('leitura')"
+                             [disabled]="!canPerformActions()"
+                             [matAutocomplete]="autoLeitura"
+                             placeholder="Digite para procurar...">
+                      <mat-autocomplete #autoLeitura="matAutocomplete">
+                        <mat-option *ngFor="let nivel of getFilteredNivelLingua($any(linguaFormArray.at(i)).get('leitura')) | async" [value]="nivel">
+                          {{nivel}}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <button mat-icon-button matSuffix
+                              type="button"
+                              (click)="clearArrayControlSelection('linguas', i, 'leitura')"
+                              [disabled]="!canPerformActions() || !$any(linguaFormArray.at(i)).get('leitura')?.value"
+                              matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
                     </mat-form-field>
                   </td>
                 </ng-container>
@@ -1433,12 +1633,23 @@
                   <th mat-header-cell *matHeaderCellDef>Escrita</th>
                   <td mat-cell *matCellDef="let element; let i = index">
                     <mat-form-field appearance="outline" class="table-field">
-                      <mat-select [formControl]="$any(linguaFormArray.at(i)).get('escrita')" [disabled]="!canPerformActions()">
-                        <mat-option value="Básico">Básico</mat-option>
-                        <mat-option value="Intermediário">Intermediário</mat-option>
-                        <mat-option value="Avançado">Avançado</mat-option>
-                        <mat-option value="Nativo">Nativo</mat-option>
-                      </mat-select>
+                      <input matInput
+                             [formControl]="$any(linguaFormArray.at(i)).get('escrita')"
+                             [disabled]="!canPerformActions()"
+                             [matAutocomplete]="autoEscrita"
+                             placeholder="Digite para procurar...">
+                      <mat-autocomplete #autoEscrita="matAutocomplete">
+                        <mat-option *ngFor="let nivel of getFilteredNivelLingua($any(linguaFormArray.at(i)).get('escrita')) | async" [value]="nivel">
+                          {{nivel}}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <button mat-icon-button matSuffix
+                              type="button"
+                              (click)="clearArrayControlSelection('linguas', i, 'escrita')"
+                              [disabled]="!canPerformActions() || !$any(linguaFormArray.at(i)).get('escrita')?.value"
+                              matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
                     </mat-form-field>
                   </td>
                 </ng-container>

@@ -4,6 +4,58 @@
   max-width: 100%;
   margin: 0 auto;
 
+  // CORREÇÃO GLOBAL DE ALINHAMENTO - Aplicar em todos os form-fields do componente
+  ::ng-deep .mat-mdc-form-field {
+    .mat-mdc-form-field-wrapper {
+      height: 56px !important;
+      min-height: 56px !important;
+      max-height: 56px !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      height: 56px !important;
+      min-height: 56px !important;
+      max-height: 56px !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+
+    .mat-mdc-form-field-infix {
+      min-height: 24px !important;
+      padding: 16px 0 !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+
+    // Alinhamento específico para botões suffix
+    .mat-mdc-form-field-suffix {
+      align-self: center !important;
+      display: flex !important;
+      align-items: center !important;
+      height: 100% !important;
+      
+      .mat-mdc-icon-button {
+        align-self: center !important;
+        margin: 0 !important;
+      }
+    }
+
+    // Normalizar mat-select para mesma altura
+    .mat-mdc-select {
+      display: flex !important;
+      align-items: center !important;
+      min-height: 24px !important;
+      
+      .mat-mdc-select-trigger {
+        min-height: 24px !important;
+        display: flex !important;
+        align-items: center !important;
+      }
+    }
+  }
+
   .ficha-militar-form {
     width: 100%;
 
@@ -26,6 +78,38 @@
   }
 }
 
+// Search button styles (integrated with mat-form-field)
+.search-button {
+  &.document-search {
+    color: #1976d2;
+    transition: all 0.3s ease;
+
+    &:hover {
+      color: #1565c0;
+      background-color: rgba(25, 118, 210, 0.08);
+    }
+
+    &:disabled {
+      color: rgba(0, 0, 0, 0.26);
+    }
+
+    mat-icon {
+      font-size: 20px;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  &.client-search {
+    color: #4caf50;
+
+    &:hover {
+      color: #388e3c;
+      background-color: rgba(76, 175, 80, 0.08);
+    }
+  }
+}
+
 // Header Section
 .form-header {
   display: flex;
@@ -36,7 +120,7 @@
   background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
   color: white;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(39, 174, 96, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(39, 174, 96, 0.3);
 
   .form-title {
     margin: 0;
@@ -50,7 +134,6 @@
     font-size: 12px;
     font-weight: 500;
     text-transform: uppercase;
-
     &.state-cancel {
       background-color: rgba(255, 255, 255, 0.2);
       color: rgba(255, 255, 255, 0.9);
@@ -162,7 +245,8 @@
     display: grid;
     grid-template-columns: 1fr 2fr 1fr; // NIM (col-sm-3), Nome (maior espaço), Situação (col-sm-3)
     gap: 20px;
-    align-items: end; // Alinha os campos pela base
+    align-items: stretch; // Força todos os itens a terem a mesma altura
+    margin-bottom: 20px;
 
     @media (max-width: 1200px) {
       grid-template-columns: 1fr 2fr 1fr;
@@ -394,48 +478,52 @@
       }
     }
   }
+}
 
-  // Ajustes responsivos para mobile
-  @media (max-width: 768px) {
-    padding: 20px 16px;
-    margin-bottom: 24px;
-    border-radius: 12px;
+// Ajustes responsivos para mobile
+@media (max-width: 768px) {
+  .main-fields-section {
+      padding: 20px 16px;
+      margin-bottom: 24px;
+      border-radius: 12px;
 
-    .section-header {
-      margin-bottom: 20px;
-      padding-bottom: 12px;
+      .section-header {
+        margin-bottom: 20px;
+        padding-bottom: 12px;
 
-      .section-title {
-        font-size: 18px;
-        
-        mat-icon {
-          font-size: 24px;
-          width: 24px;
-          height: 24px;
-          padding: 6px;
+        .section-title {
+          font-size: 18px;
+
+          mat-icon {
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            padding: 6px;
+          }
         }
       }
-    }
 
-    .main-fields-grid {
-      gap: 12px;
+      .main-fields-grid {
+        gap: 12px;
 
-      .form-group {
-        // Remove os ícones decorativos em mobile para economizar espaço
-        &::before {
-          display: none;
+        .form-group {
+          // Remove os ícones decorativos em mobile para economizar espaço
+          &::before {
+            display: none;
+          }
         }
       }
-    }
 
-    // Remove animação shimmer em mobile para melhor performance
-    &::before {
-      display: none;
+      // Remove animação shimmer em mobile para melhor performance
+      &::before {
+        display: none;
+      }
     }
-  }
+}
 
-  // Ajustes para tablets
-  @media (min-width: 769px) and (max-width: 1024px) {
+// Ajustes para tablets
+@media (min-width: 769px) and (max-width: 1024px) {
+  .main-fields-section {
     .main-fields-grid {
       .form-group {
         &::before {
@@ -575,6 +663,14 @@
       align-items: start;
       width: 100%;
 
+      // Garantia de altura consistente em todos os form-fields do grid
+      .form-group {
+        .mat-mdc-form-field {
+          width: 100%;
+          // Campos já alinhados pela correção global
+        }
+      }
+
       // Campos que ocupam meia linha (2 colunas cada)
       .form-group-half {
         grid-column: span 2; // Ocupa 2 colunas das 4 disponíveis
@@ -654,6 +750,7 @@
 
         mat-form-field {
           width: 100%;
+          // Altura já definida pela correção global
 
           &.table-field {
             .mat-mdc-form-field-wrapper {
@@ -674,7 +771,7 @@
   }
 }
 
-// Table Styles
+// Table Styles - Versão Simplificada e Funcional
 .table-container {
   margin-top: 16px;
   overflow-x: auto;
@@ -694,32 +791,101 @@
     }
 
     .mat-mdc-cell {
-      padding: 8px;
+      padding: 4px 8px;
       border-bottom: 1px solid #eee;
+      vertical-align: middle;
 
-      mat-form-field {
+      // Container para campos com botão de procura
+      .input-with-search {
+        display: flex;
+        align-items: center;
+        gap: 6px;
         width: 100%;
-        margin: 0;
 
-        .mat-mdc-form-field-wrapper {
-          padding-bottom: 0;
+        .table-field {
+          flex: 1;
+          
+          ::ng-deep .mat-mdc-form-field-wrapper {
+            padding-bottom: 0 !important;
+          }
+          
+          ::ng-deep .mdc-text-field {
+            height: 32px !important;
+            min-height: 32px !important;
+          }
+          
+          ::ng-deep .mdc-floating-label {
+            display: none !important;
+          }
+
+          ::ng-deep .mat-mdc-form-field-infix {
+            padding: 8px 0 !important;
+            min-height: 16px !important;
+          }
         }
 
-        .mdc-text-field {
-          height: 36px;
-        }
+        button {
+          flex-shrink: 0;
+          width: 32px;
+          height: 32px;
+          min-width: 32px;
+          background-color: #f8f9fa;
+          border: 1px solid #dee2e6;
 
-        .mdc-floating-label {
-          display: none;
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+          }
+
+          &:hover:not(:disabled) {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+          }
         }
       }
 
-      mat-checkbox {
-        margin: 0;
+      // Campos simples sem botão
+      .table-field {
+        width: 100%;
+        
+        ::ng-deep .mat-mdc-form-field-wrapper {
+          padding-bottom: 0 !important;
+        }
+        
+        ::ng-deep .mdc-text-field {
+          height: 32px !important;
+          min-height: 32px !important;
+        }
+        
+        ::ng-deep .mdc-floating-label {
+          display: none !important;
+        }
+
+        ::ng-deep .mat-mdc-form-field-infix {
+          padding: 8px 0 !important;
+          min-height: 16px !important;
+        }
+      }
+
+      // Botões de ação
+      button[mat-icon-button] {
+        width: 32px;
+        height: 32px;
+        min-width: 32px;
+
+        mat-icon {
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
       }
     }
 
+    // Estilos das linhas
     .mat-mdc-row {
+      min-height: 40px;
+
       &:hover {
         background-color: #f9f9f9;
       }
@@ -730,12 +896,6 @@
 
       &:nth-child(even) {
         background-color: #fafafa;
-      }
-    }
-
-    button {
-      mat-icon {
-        font-size: 18px;
       }
     }
   }

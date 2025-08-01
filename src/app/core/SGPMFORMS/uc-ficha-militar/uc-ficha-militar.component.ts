@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, EventEmitter, inject, Input, NgZone, Output, Renderer2, ViewEncapsulation } from '@angular/core';
-import { FormGroup, FormBuilder, ReactiveFormsModule, FormControl, FormArray, Validators } from '@angular/forms';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone, Renderer2, ViewEncapsulation } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -13,24 +14,18 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-import { AuthService, Usuario } from '@core/authentication';
-import {
-  Mil, MilAgre, MilConde, MilDoc, MilEmail, MilEmFor, MilEspecial,
-  MilFa, MilFor, MilFot, MilFuncao, MilIDigital, MilLice, MilLingua,
-  MilMed, MilPeEmerg, MilProm, MilRea, MilReco, MilReg, MilRetReaSal,
-  MilSa, MilSalario, MilSit, MilSitCrim, MilSitDisc, MilSitQPActivo,
-  Telefone
-} from 'app/classes/SGPM/Models';
-import { debounceTime, map, Observable, startWith } from 'rxjs';
-import { selects } from 'app/classes/Procura';
-import { GenericoService } from 'app/InterfacesSigex/generic-service';
-import { condicoesprocura, dmzview } from 'app/classes/CampoSessoes';
-import moment from 'moment';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import Swal from 'sweetalert2';
+import { AuthService } from '@core/authentication';
 import { Proc2Component } from '@core/Formsfacturacao/proc2/proc2.component';
 import { PhotoCaptureComponent } from '@core/JuntasMedicas/product-form/photo-capture/photo-capture.component';
+import {
+  MilAgre, MilConde, MilDoc, MilEmail,
+  MilFor,
+  MilLingua,
+  MilSit,
+  Telefone
+} from 'app/classes/SGPM/Models';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-uc-ficha-militar',
@@ -464,16 +459,49 @@ export class UcFichaMilitarComponent implements AfterViewInit {
       return;
     }
 
+    // Verifica se existe pelo menos um documento
+    if (this.docFormArray.length === 0) {
+      Swal.fire('Atenção!', 'É obrigatório adicionar pelo menos um documento antes de salvar a ficha militar.', 'warning');
+      return;
+    }
+
+    // Verifica se existe pelo menos uma função
+    if (this.funcaoFormArray.length === 0) {
+      Swal.fire('Atenção!', 'É obrigatório adicionar pelo menos uma função antes de salvar a ficha militar.', 'warning');
+      return;
+    }
+
     if (this.fichaForm.valid) {
       const formData = this.fichaForm.value;
-      console.log('Saving military record:', formData);
+      //console.log('Saving military record:', formData);
 
-      // Here you would typically call a service to save the data
-      // await this.militarService.save(formData);
+      // Monta o objeto com os dados do formulário para enviar à API
+      const objeto = {
+        tipo: 'Mil', // Nome da entidade no backend
+        ...formData, // Inclui todos os dados do formulário
+        // Adiciona metadata de controle
+        inseriu: this.auth.obterSessao()?.nome || '',
+        inseriuDataHora: new Date(),
+        alterou: this.auth.obterSessao()?.nome || '',
+        alterouDataHora: new Date()
+      };
 
-      Swal.fire('Sucesso!', 'Ficha militar salva com sucesso!', 'success');
-      this.setFormState('cancel');
-      this.isDocumentLoaded = true;
+      this.auth.saveWithChildren(objeto).subscribe({
+        next: (result) => {
+          if (result.success) {
+            Swal.fire('Sucesso!', 'Ficha militar salva com sucesso!', 'success');
+            this.setFormState('cancel');
+            this.isDocumentLoaded = true;
+            this.displayTitle = this.formTitle;
+          } else {
+            Swal.fire('Erro!', result.message || 'Erro ao salvar dados', 'error');
+          }
+        },
+        error: (error) => {
+          console.error('Erro ao salvar:', error);
+          Swal.fire('Erro!', 'Erro interno do servidor. Tente novamente.', 'error');
+        }
+      });
     } else {
       Swal.fire('Erro!', 'Por favor, preencha todos os campos obrigatórios.', 'error');
       this.markFormGroupTouched();
@@ -850,45 +878,99 @@ export class UcFichaMilitarComponent implements AfterViewInit {
     this.selectedSitIndex = this.sitFormArray.length - 1;
   }
 
-  // Remove methods
+  // Remove methods - Generic method to avoid repetition
+  removerItem(arrayName: string, index: number, selectedIndexProperty: string): void {
+    this.removeFromFormArray(arrayName, index);
+    (this as any)[selectedIndexProperty] = null;
+  }
+
+  // Specific remove methods using generic method
   removerAgregado(index: number): void {
-    this.removeFromFormArray('milAgre', index);
-    this.selectedAgreIndex = null;
+    this.removerItem('milAgre', index, 'selectedAgreIndex');
   }
 
   removerCondecoracoes(index: number): void {
-    this.removeFromFormArray('milConde', index);
-    this.selectedCondeIndex = null;
+    this.removerItem('milConde', index, 'selectedCondeIndex');
   }
 
   removerDocumento(index: number): void {
-    this.removeFromFormArray('milDoc', index);
-    this.selectedDocIndex = null;
+    this.removerItem('milDoc', index, 'selectedDocIndex');
   }
 
   removerEmail(index: number): void {
-    this.removeFromFormArray('milEmail', index);
-    this.selectedEmailIndex = null;
+    this.removerItem('milEmail', index, 'selectedEmailIndex');
   }
 
   removerTelefone(index: number): void {
-    this.removeFromFormArray('telefone', index);
-    this.selectedTelefoneIndex = null;
+    this.removerItem('telefone', index, 'selectedTelefoneIndex');
   }
 
   removerFormacao(index: number): void {
-    this.removeFromFormArray('milFor', index);
-    this.selectedForIndex = null;
+    this.removerItem('milFor', index, 'selectedForIndex');
   }
 
   removerLingua(index: number): void {
-    this.removeFromFormArray('milLingua', index);
-    this.selectedLinguaIndex = null;
+    this.removerItem('milLingua', index, 'selectedLinguaIndex');
   }
 
   removerSituacao(index: number): void {
-    this.removeFromFormArray('milSit', index);
-    this.selectedSitIndex = null;
+    this.removerItem('milSit', index, 'selectedSitIndex');
+  }
+
+  removerEmergencia(index: number): void {
+    this.removerItem('milPeEmerg', index, 'selectedPeEmergIndex');
+  }
+
+  removerPromocao(index: number): void {
+    this.removerItem('milProm', index, 'selectedPromIndex');
+  }
+
+  removerReactivacao(index: number): void {
+    this.removerItem('milRea', index, 'selectedReaIndex');
+  }
+
+  removerReconhecimento(index: number): void {
+    this.removerItem('milReco', index, 'selectedRecoIndex');
+  }
+
+  removerRegime(index: number): void {
+    this.removerItem('milReg', index, 'selectedRegIndex');
+  }
+
+  removerRetencaoSalario(index: number): void {
+    this.removerItem('milRetReaSal', index, 'selectedRetReaSalIndex');
+  }
+
+  removerSaude(index: number): void {
+    this.removerItem('milSa', index, 'selectedSaIndex');
+  }
+
+  removerSituacaoCriminal(index: number): void {
+    this.removerItem('milSitCrim', index, 'selectedSitCrimIndex');
+  }
+
+  removerSituacaoDisciplinar(index: number): void {
+    this.removerItem('milSitDisc', index, 'selectedSitDiscIndex');
+  }
+
+  removerSituacaoQPActivo(index: number): void {
+    this.removerItem('milSitQPActivo', index, 'selectedSitQPActivoIndex');
+  }
+
+  removerEspecialidade(index: number): void {
+    this.removerItem('milEspecial', index, 'selectedEspecialIndex');
+  }
+
+  removerFormacaoMilitar(index: number): void {
+    this.removerItem('milEmFor', index, 'selectedEmforIndex');
+  }
+
+  removerFuncao(index: number): void {
+    this.removerItem('milFuncao', index, 'selectedFuncaoIndex');
+  }
+
+  removerLicenca(index: number): void {
+    this.removerItem('milLice', index, 'selectedLiceIndex');
   }
 
   // Select methods
@@ -1265,6 +1347,343 @@ export class UcFichaMilitarComponent implements AfterViewInit {
     this.selectedLiceIndex = this.liceFormArray.length - 1;
   }
 
+  // Métodos de pesquisa para nacionalidade
+  searchNacionalidade(): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'pais,descricao';
+    proc.tabela = 'pais';
+    proc.campo = 'pais';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'pais,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'pais asc';
+    proc.origem = 'País';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        this.fichaForm.patchValue({
+          nacional: resultado.pais || resultado.descricao
+        });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Métodos de pesquisa para ramo
+  searchRamo(): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'ramo,descricao';
+    proc.tabela = 'ramo';
+    proc.campo = 'ramo';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'ramo,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'ramo asc';
+    proc.origem = 'Ramo';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        this.fichaForm.patchValue({
+          ramo: resultado.ramo || resultado.descricao
+        });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Métodos de pesquisa para país
+  searchPais(fieldName: string): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'pais,descricao';
+    proc.tabela = 'pais';
+    proc.campo = 'pais';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'pais,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'pais asc';
+    proc.origem = 'País';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        const patchValue: any = {};
+        patchValue[fieldName] = resultado.pais || resultado.descricao;
+        this.fichaForm.patchValue(patchValue);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Métodos de pesquisa para província
+  searchProvincia(fieldName: string): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'provincia,descricao';
+    proc.tabela = 'provincia';
+    proc.campo = 'provincia';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'provincia,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'provincia asc';
+    proc.origem = 'Província';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        const patchValue: any = {};
+        patchValue[fieldName] = resultado.provincia || resultado.descricao;
+        this.fichaForm.patchValue(patchValue);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Métodos de pesquisa para distrito
+  searchDistrito(fieldName: string): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'distrito,descricao';
+    proc.tabela = 'distrito';
+    proc.campo = 'distrito';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'distrito,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'distrito asc';
+    proc.origem = 'Distrito';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        const patchValue: any = {};
+        patchValue[fieldName] = resultado.distrito || resultado.descricao;
+        this.fichaForm.patchValue(patchValue);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Métodos de pesquisa para posto administrativo
+  searchPostoAdministrativo(fieldName: string): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'postoadministrativo,descricao';
+    proc.tabela = 'postoadministrativo';
+    proc.campo = 'postoadministrativo';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'postoadministrativo,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'postoadministrativo asc';
+    proc.origem = 'Posto';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        const patchValue: any = {};
+        patchValue[fieldName] = resultado.postoadministrativo || resultado.descricao;
+        this.fichaForm.patchValue(patchValue);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Métodos de pesquisa para localidade
+  searchLocalidade(fieldName: string): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'localidade,descricao';
+    proc.tabela = 'localidade';
+    proc.campo = 'localidade';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'localidade,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'localidade asc';
+    proc.origem = 'Localidade';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        const patchValue: any = {};
+        patchValue[fieldName] = resultado.localidade || resultado.descricao;
+        this.fichaForm.patchValue(patchValue);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Métodos de pesquisa para centro de treino
+  searchCentroTreino(): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'centro,descricao';
+    proc.tabela = 'centro';
+    proc.campo = 'centro';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'centro,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'centro asc';
+    proc.origem = 'Centro';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        this.fichaForm.patchValue({
+          centroTreino: resultado.centro || resultado.descricao
+        });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Métodos de pesquisa para curso
+  searchCurso(fieldName: string): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'curso,descricao';
+    proc.tabela = 'curso';
+    proc.campo = 'curso';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'curso,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'curso asc';
+    proc.origem = 'Curso';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        const patchValue: any = {};
+        patchValue[fieldName] = resultado.curso || resultado.descricao;
+        this.fichaForm.patchValue(patchValue);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Métodos de pesquisa para especialidade
+  searchEspecialidade(fieldName: string): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'especialidade,descricao';
+    proc.tabela = 'especialidade';
+    proc.campo = 'especialidade';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'especialidade,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'especialidade asc';
+    proc.origem = 'Especialidade';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        const patchValue: any = {};
+        patchValue[fieldName] = resultado.especialidade || resultado.descricao;
+        this.fichaForm.patchValue(patchValue);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  // Specific search methods for documents
+  searchTipoDocumento(index: number): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'tipodocumento,descricao';
+    proc.tabela = 'tipodocumento';
+    proc.campo = 'tipodocumento';
+    proc.campo1 = 'descricao';
+    proc.camposseleccionados = 'tipodocumento,descricao';
+    proc.referencia = '';
+    proc.alunoestamp = 'tipodocumento asc';
+    proc.origem = 'Tipo';
+    proc.descricao = 'Descrição';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        const docControl = this.docFormArray.at(index);
+        docControl.patchValue({
+          tipoDocumento: resultado.tipodocumento || resultado.descricao || resultado.codigo
+        });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  searchLocalEmissao(index: number): void {
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = 'provincia,distrito';
+    proc.tabela = 'provincia';
+    proc.campo = 'provincia';
+    proc.campo1 = 'distrito';
+    proc.camposseleccionados = 'provincia,distrito';
+    proc.referencia = '';
+    proc.alunoestamp = 'provincia asc';
+    proc.origem = 'Província';
+    proc.descricao = 'Distrito';
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado) {
+        const docControl = this.docFormArray.at(index);
+        docControl.patchValue({
+          localemissao: resultado.provincia || resultado.distrito || resultado.descricao
+        });
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   // Search and helper methods
   onSearchClick(campos: string): void {
     // Implementation for search functionality
@@ -1278,8 +1697,57 @@ export class UcFichaMilitarComponent implements AfterViewInit {
     condicao: string,
     mapeamento: any
   ): void {
-    // Implementation for generic search functionality
-    console.log('Generic search:', { campos, tabela, titulos, condicao, mapeamento });
+    const proc = this.auth.InicializaProcura();
+    proc.descricao = campos;
+    proc.tabela = tabela;
+    proc.campo = campos.split(',')[0];
+    proc.campo1 = campos.split(',')[1] || '';
+    proc.camposseleccionados = campos;
+    proc.referencia = condicao;
+    proc.alunoestamp = `${proc.campo} asc`;
+
+    // Define origem e descrição baseado na tabela
+    switch(tabela.toLowerCase()) {
+      case 'tipodocumento':
+        proc.origem = 'Tipo';
+        proc.descricao = 'Descrição';
+        break;
+      case 'provincia':
+        proc.origem = 'Província';
+        proc.descricao = 'Distrito';
+        break;
+      default:
+        proc.origem = 'Código';
+        proc.descricao = 'Descrição';
+        break;
+    }
+
+    const dialogRef = this.dialog.open(Proc2Component, {
+      width: '800px',
+      data: proc
+    });
+
+    dialogRef.afterClosed().subscribe((resultado) => {
+      if (resultado && mapeamento) {
+        // Aqui você pode implementar a lógica específica para preencher os campos
+        // baseado no resultado e no mapeamento fornecido
+        console.log('Resultado da pesquisa:', resultado);
+        console.log('Mapeamento:', mapeamento);
+
+        // Exemplo de como usar - você pode personalizar conforme necessário
+        if (tabela === 'tipodocumento' && this.selectedDocIndex !== null) {
+          const docControl = this.docFormArray.at(this.selectedDocIndex);
+          docControl.patchValue({
+            tipoDocumento: resultado[mapeamento.tipoDocumento] || resultado.tipodocumento
+          });
+        } else if (tabela === 'provincia' && this.selectedDocIndex !== null) {
+          const docControl = this.docFormArray.at(this.selectedDocIndex);
+          docControl.patchValue({
+            localemissao: resultado[mapeamento.provincia] || resultado.provincia
+          });
+        }
+      }
+    });
   }
 
   // Import/Export methods

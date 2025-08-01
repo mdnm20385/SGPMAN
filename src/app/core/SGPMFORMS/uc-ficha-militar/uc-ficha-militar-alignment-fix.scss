@@ -1,0 +1,91 @@
+/* Correção de alinhamento para campos com e sem botões de busca */
+.ficha-militar-container {
+  
+  /* Garantir altura consistente para todos os mat-form-fields */
+  ::ng-deep .mat-mdc-form-field {
+    .mat-mdc-form-field-wrapper {
+      min-height: 56px !important;
+      align-items: center !important;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      min-height: 56px !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+
+    .mat-mdc-form-field-infix {
+      min-height: 24px !important;
+      padding: 16px 0 !important;
+      display: flex !important;
+      align-items: center !important;
+    }
+
+    /* Alinhamento consistente dos botões suffix e prefix */
+    .mat-mdc-form-field-suffix,
+    .mat-mdc-form-field-prefix {
+      align-self: center !important;
+      display: flex !important;
+      align-items: center !important;
+      height: 100% !important;
+      
+      .mat-mdc-icon-button {
+        align-self: center !important;
+      }
+    }
+
+    /* Alinhamento para mat-select também */
+    .mat-mdc-select {
+      display: flex !important;
+      align-items: center !important;
+      min-height: 24px !important;
+    }
+
+    /* Correção específica para outline appearance */
+    &.mat-mdc-form-field-appearance-outline {
+      .mat-mdc-form-field-outline {
+        .mat-mdc-form-field-outline-start,
+        .mat-mdc-form-field-outline-notch,
+        .mat-mdc-form-field-outline-end {
+          border-width: 1px !important;
+        }
+      }
+    }
+  }
+
+  /* Correção específica para grids */
+  .main-fields-grid,
+  .form-grid,
+  .form-grid-three-columns {
+    align-items: start !important;
+    
+    .form-group {
+      display: flex !important;
+      flex-direction: column !important;
+      
+      .mat-mdc-form-field {
+        flex: 1 !important;
+        
+        /* Forçar mesma altura base */
+        .mat-mdc-form-field-wrapper {
+          height: 56px !important;
+        }
+      }
+    }
+  }
+
+  /* Estilos específicos para botões de busca */
+  .search-button {
+    &.document-search {
+      height: 36px !important;
+      width: 36px !important;
+      min-width: 36px !important;
+      
+      mat-icon {
+        font-size: 18px !important;
+        width: 18px !important;
+        height: 18px !important;
+      }
+    }
+  }
+}

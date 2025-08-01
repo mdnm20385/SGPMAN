@@ -1,25 +1,24 @@
 /* eslint-disable max-len */
+import { formatDate } from '@angular/common';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { environment } from '@env/environment';
+import { MtxDialog } from '@ng-matero/extensions/dialog';
+import { busca } from 'app/classes/busca';
+import { CampoSessoes, condicoesprocura, selects, selectsprocura, selectview } from 'app/classes/CampoSessoes';
+import { Cliente, EntradaProcesso, Processo, SaidaProcesso, Unidade } from 'app/classes/ClassesSIGEX';
+import { Di, Facc, Fact, Formasp, LineValues, LineValuesParams, LineValuesParamss, MenuItem, Param, Percl, Pgf, RCL, St } from 'app/classes/Facturacao/Facturacao';
+import { LoginModel } from 'app/classes/LoginModel';
+import { Filepdf, Procura, RecPassword, Selects } from 'app/classes/Procura';
+import { Objecto, Resposta } from 'app/classes/Resposta';
+import { GenericoService } from 'app/InterfacesSigex/generic-service';
 import { BehaviorSubject, Observable, catchError, delay, firstValueFrom, iif, map, merge, of, share, switchMap, tap } from 'rxjs';
 import { filterObject, isEmptyObject } from './helpers';
-import {  DClinicos, EmailRec, Pa, ScanDoc, Token, Trabalho, User, Usuario } from './interface';
+import { DClinicos, EmailRec, Pa, ScanDoc, Token, Trabalho, User, Usuario } from './interface';
 import { LoginService } from './login.service';
 import { TokenService } from './token.service';
-import { environment } from '@env/environment';
-import { CampoSessoes, condicoesprocura, selects, selectsprocura, selectview } from 'app/classes/CampoSessoes';
-import { LoginModel } from 'app/classes/LoginModel';
-import { Objecto, Resposta } from 'app/classes/Resposta';
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { busca } from 'app/classes/busca';
-import { Cliente, EntradaProcesso, Processo, SaidaProcesso, Unidade } from 'app/classes/ClassesSIGEX';
-import { formatDate } from '@angular/common';
-import { Filepdf, Procura, RecPassword, Selects } from 'app/classes/Procura';
-import { MtxDialog } from '@ng-matero/extensions/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Di, Facc, Fact, Formasp, LineValues, LineValuesParams, LineValuesParamss, MenuItem, Param, Percl, Pgf, RCL, St } from 'app/classes/Facturacao/Facturacao';
-import { AbstractControl, FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import Swal from 'sweetalert2';
-import { GenericoService } from 'app/InterfacesSigex/generic-service';
 
 @Injectable({
   providedIn: 'root',
@@ -1865,7 +1864,6 @@ const item: selects = {
     return this.http.post<Resposta<Unidade>>(`${this.ApiUrl}Save/InserirAlterarObjecto`,valor);
     }
 
-
     SqlCmd(valor: Selects): Observable<Resposta<Selects>>{
       return this.http.post<Resposta<Selects>>(`${this.ApiUrl}EntradaProcesso/SqlCmd`,valor);
       }
@@ -2005,5 +2003,20 @@ const usrg=this.user$.pipe(share());
   }
   eliminarReload() {
     localStorage.removeItem('reload');
+  }
+
+  /**
+   * Salva uma entidade com suas entidades filhas
+   * @param obj Objeto contendo os dados da entidade e suas relações
+   * @returns Observable com a resposta da API
+   */
+  saveWithChildren(obj: any): Observable<{ success: boolean; message: string }> {
+    return this.http.post<{ success: boolean; message: string }>(
+      `${this.ApiUrl}Save/SaveWithChildren`,
+      obj,
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
   }
 }

@@ -49,7 +49,7 @@
         color="primary"
         class="action-button save-button"
         [disabled]="!canPerformActions() || fichaForm.invalid"
-        matTooltip="Salvar alterações">
+        matTooltip="Salvar alterações"  >
         <mat-icon>save</mat-icon>
         Salvar
       </button>
@@ -73,20 +73,13 @@
           <div class="form-group field-nim">
             <mat-form-field appearance="outline">
               <mat-label>NIM</mat-label>
-              <button mat-icon-button matPrefix
-                      class="search-button client-search"
-                      (click)="getMilitar('nim,nome,milstamp')"
-                      type="button"
-                      [disabled]="!canPerformActions()">
-                <mat-icon>more_vert</mat-icon>
-              </button>
               <input matInput formControlName="nim" type="number" [disabled]="!canPerformActions()">
               <button mat-icon-button matSuffix
                       class="search-button document-search"
                       (click)="onMilitarSearchClick('nim,nome,milstamp')"
                       type="button"
                       [disabled]="formState !== 'cancel'">
-                <mat-icon>search</mat-icon>
+                <mat-icon>menu</mat-icon>
               </button>
               <mat-hint>Número único de identificação militar</mat-hint>
             </mat-form-field>
@@ -96,20 +89,13 @@
           <div class="form-group field-nome">
             <mat-form-field appearance="outline">
               <mat-label>Nome Completo</mat-label>
-              <button mat-icon-button matPrefix
-                      class="search-button client-search"
-                      (click)="getMilitar('nome,nim,milstamp')"
-                      type="button"
-                      [disabled]="!canPerformActions()">
-                <mat-icon>more_vert</mat-icon>
-              </button>
               <input matInput formControlName="nome" [disabled]="!canPerformActions()">
               <button mat-icon-button matSuffix
                       class="search-button document-search"
                       (click)="onMilitarSearchClick('nome,nim,milstamp')"
                       type="button"
                       [disabled]="formState !== 'cancel'">
-                <mat-icon>search</mat-icon>
+                <mat-icon>menu</mat-icon>
               </button>
             </mat-form-field>
           </div>
@@ -209,6 +195,14 @@
                     <mat-form-field appearance="outline">
                       <mat-label>Nacionalidade</mat-label>
                       <input matInput formControlName="nacional" [disabled]="!canPerformActions()">
+                      <button mat-icon-button matSuffix
+                              class="search-button document-search"
+                              (click)="searchNacionalidade()"
+                              type="button"
+                              [disabled]="!canPerformActions()"
+                              matTooltip="Procurar Nacionalidade">
+                        <mat-icon>menu</mat-icon>
+                      </button>
                     </mat-form-field>
                   </div>
 
@@ -262,6 +256,14 @@
                     <mat-form-field appearance="outline">
                       <mat-label>Ramo</mat-label>
                       <input matInput formControlName="ramo" [disabled]="!canPerformActions()">
+                      <button mat-icon-button matSuffix
+                              class="search-button document-search"
+                              (click)="searchRamo()"
+                              type="button"
+                              [disabled]="!canPerformActions()"
+                              matTooltip="Procurar Ramo">
+                        <mat-icon>menu</mat-icon>
+                      </button>
                     </mat-form-field>
                   </div>
                 </div>
@@ -332,6 +334,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>País de Nascimento</mat-label>
                   <input matInput formControlName="nascPais" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchPais('nascPais')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar País">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -339,6 +349,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Província de Nascimento</mat-label>
                   <input matInput formControlName="nascProv" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchProvincia('nascProv')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Província">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -346,6 +364,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Distrito de Nascimento</mat-label>
                   <input matInput formControlName="nascDist" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchDistrito('nascDist')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Distrito">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -353,6 +379,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Posto Administrativo de Nascimento</mat-label>
                   <input matInput formControlName="nascPosto" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchPostoAdministrativo('nascPosto')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Posto Administrativo">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -360,6 +394,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Localidade de Nascimento</mat-label>
                   <input matInput formControlName="nascLocal" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchLocalidade('nascLocal')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Localidade">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -373,7 +415,107 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 3: Dados de Residência -->
+        <!-- Tab 3: Documentos -->
+        <mat-tab label="Documentos">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>description</mat-icon>
+                Documentos de Identificação
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="adicionarDocumento()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Documento
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="docDataSource" class="data-table">
+                <!-- Tipo de Documento Column -->
+                <ng-container matColumnDef="tipoDocumento">
+                  <th mat-header-cell *matHeaderCellDef>Tipo de Documento</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <div class="input-with-search">
+                      <mat-form-field appearance="outline" class="table-field">
+                        <input matInput [formControl]="$any(docFormArray.at(i)).get('tipoDocumento')" [disabled]="!canPerformActions()">
+                      </mat-form-field>
+                      <button mat-icon-button
+                              type="button"
+                              (click)="selectedDocIndex = i; searchTipoDocumento(i)"
+                              [disabled]="!canPerformActions()"
+                              matTooltip="Procurar Tipo de Documento">
+                        <mat-icon>menu</mat-icon>
+                      </button>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Número do Documento Column -->
+                <ng-container matColumnDef="numeroDoc">
+                  <th mat-header-cell *matHeaderCellDef>Número</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(docFormArray.at(i)).get('numeroDoc')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Local de Emissão Column -->
+                <ng-container matColumnDef="localemissao">
+                  <th mat-header-cell *matHeaderCellDef>Local de Emissão</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <div class="input-with-search">
+                      <mat-form-field appearance="outline" class="table-field">
+                        <input matInput [formControl]="$any(docFormArray.at(i)).get('localemissao')" [disabled]="!canPerformActions()">
+                      </mat-form-field>
+                      <button mat-icon-button
+                              type="button"
+                              (click)="selectedDocIndex = i; searchLocalEmissao(i)"
+                              [disabled]="!canPerformActions()"
+                              matTooltip="Procurar Local de Emissão">
+                        <mat-icon>menu</mat-icon>
+                      </button>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- Data de Emissão Column -->
+                <ng-container matColumnDef="dataemissao">
+                  <th mat-header-cell *matHeaderCellDef>Data de Emissão</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <mat-form-field appearance="outline" class="table-field">
+                      <input matInput [formControl]="$any(docFormArray.at(i)).get('dataemissao')" [disabled]="!canPerformActions()">
+                    </mat-form-field>
+                  </td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button color="warn"
+                            type="button"
+                            (click)="removerDocumento(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Remover">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="docColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: docColumns; let i = index"
+                    [class.selected]="selectedDocIndex === i"
+                    (click)="selectDocumento(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 4: Dados de Residência -->
         <mat-tab label="Residência">
           <div class="tab-content">
             <div class="section-header">
@@ -388,6 +530,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Província de Residência</mat-label>
                   <input matInput formControlName="resProv" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchProvincia('resProv')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Província">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -395,6 +545,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Distrito de Residência</mat-label>
                   <input matInput formControlName="resDist" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchDistrito('resDist')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Distrito">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -402,6 +560,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Posto Administrativo</mat-label>
                   <input matInput formControlName="resPosto" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchPostoAdministrativo('resPosto')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Posto Administrativo">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -409,6 +575,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Localidade</mat-label>
                   <input matInput formControlName="resLocalidade" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchLocalidade('resLocalidade')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Localidade">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -443,7 +617,7 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 4: Incorporação -->
+        <!-- Tab 5: Incorporação -->
         <mat-tab label="Incorporação">
           <div class="tab-content">
             <div class="section-header">
@@ -458,6 +632,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>País de Incorporação</mat-label>
                   <input matInput formControlName="incPais" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchPais('incPais')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar País">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -465,6 +647,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Província de Incorporação</mat-label>
                   <input matInput formControlName="incProv" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchProvincia('incProv')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Província">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -472,6 +662,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Distrito de Incorporação</mat-label>
                   <input matInput formControlName="incDist" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchDistrito('incDist')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Distrito">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -479,6 +677,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Posto Administrativo</mat-label>
                   <input matInput formControlName="incPosto" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchPostoAdministrativo('incPosto')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Posto Administrativo">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -486,6 +692,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Localidade</mat-label>
                   <input matInput formControlName="incLocal" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchLocalidade('incLocal')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Localidade">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -501,7 +715,7 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 5: Treino Militar -->
+        <!-- Tab 6: Treino Militar -->
         <mat-tab label="Treino">
           <div class="tab-content">
             <div class="section-header">
@@ -541,6 +755,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Centro de Treino</mat-label>
                   <input matInput formControlName="centroTreino" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchCentroTreino()"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Centro de Treino">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -548,6 +770,14 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Curso de Treino</mat-label>
                   <input matInput formControlName="cursoTreino" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchCurso('cursoTreino')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Curso">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
 
@@ -555,13 +785,21 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Especialidade Adquirida</mat-label>
                   <input matInput formControlName="adquirEspecial" [disabled]="!canPerformActions()">
+                  <button mat-icon-button matSuffix
+                          class="search-button document-search"
+                          (click)="searchEspecialidade('adquirEspecial')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Procurar Especialidade">
+                    <mat-icon>menu</mat-icon>
+                  </button>
                 </mat-form-field>
               </div>
             </div>
           </div>
         </mat-tab>
 
-        <!-- Tab 6: Dados Médicos -->
+        <!-- Tab 7: Dados Médicos -->
         <mat-tab label="Dados Médicos">
           <div class="tab-content" formGroupName="milMed">
             <div class="section-header">
@@ -652,7 +890,7 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 7: Salário -->
+        <!-- Tab 8: Salário -->
         <mat-tab label="Dados Salariais">
           <div class="tab-content" formGroupName="milSalario">
             <div class="section-header">
@@ -743,7 +981,7 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 8: Agregados Familiares -->
+        <!-- Tab 9: Agregados Familiares -->
         <mat-tab label="Agregados Familiares">
           <div class="tab-content">
             <div class="section-header">
@@ -907,89 +1145,7 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 10: Documentos -->
-        <mat-tab label="Documentos">
-          <div class="tab-content">
-            <div class="section-header">
-              <h3 class="section-title">
-                <mat-icon>description</mat-icon>
-                Documentos de Identificação
-              </h3>
-              <button mat-raised-button color="primary"
-                      type="button"
-                      (click)="adicionarDocumento()"
-                      [disabled]="!canPerformActions()">
-                <mat-icon>add</mat-icon>
-                Adicionar Documento
-              </button>
-            </div>
-
-            <div class="table-container">
-              <table mat-table [dataSource]="docDataSource" class="data-table">
-                <!-- Tipo de Documento Column -->
-                <ng-container matColumnDef="tipoDocumento">
-                  <th mat-header-cell *matHeaderCellDef>Tipo de Documento</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(docFormArray.at(i)).get('tipoDocumento')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
-                </ng-container>
-
-                <!-- Número do Documento Column -->
-                <ng-container matColumnDef="numeroDoc">
-                  <th mat-header-cell *matHeaderCellDef>Número</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(docFormArray.at(i)).get('numeroDoc')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
-                </ng-container>
-
-                <!-- Local de Emissão Column -->
-                <ng-container matColumnDef="localemissao">
-                  <th mat-header-cell *matHeaderCellDef>Local de Emissão</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(docFormArray.at(i)).get('localemissao')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
-                </ng-container>
-
-                <!-- Data de Emissão Column -->
-                <ng-container matColumnDef="dataemissao">
-                  <th mat-header-cell *matHeaderCellDef>Data de Emissão</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(docFormArray.at(i)).get('dataemissao')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
-                </ng-container>
-
-                <!-- Actions Column -->
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Ações</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <button mat-icon-button color="warn"
-                            type="button"
-                            (click)="removerDocumento(i)"
-                            [disabled]="!canPerformActions()"
-                            matTooltip="Remover">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="docColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: docColumns; let i = index"
-                    [class.selected]="selectedDocIndex === i"
-                    (click)="selectDocumento(i)"></tr>
-              </table>
-            </div>
-          </div>
-        </mat-tab>
-
-        <!-- Tab 11: Emails -->
+        <!-- Tab 10: Emails -->
         <mat-tab label="Emails">
           <div class="tab-content">
             <div class="section-header">
@@ -1042,7 +1198,7 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 12: Telefones -->
+        <!-- Tab 11: Telefones -->
         <mat-tab label="Telefones">
           <div class="tab-content">
             <div class="section-header">
@@ -1108,7 +1264,7 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 13: Formação -->
+        <!-- Tab 12: Formação -->
         <mat-tab label="Formação">
           <div class="tab-content">
             <div class="section-header">
@@ -1190,7 +1346,7 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 14: Línguas -->
+        <!-- Tab 13: Línguas -->
         <mat-tab label="Línguas">
           <div class="tab-content">
             <div class="section-header">
@@ -1296,7 +1452,7 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 15: Situações -->
+        <!-- Tab 14: Situações -->
         <mat-tab label="Situações">
           <div class="tab-content">
             <div class="section-header">

@@ -150,6 +150,7 @@ export class UcFichaMilitarComponent implements AfterViewInit {
   centroInstrucaoOptions: string[] = [];
   designacaoCursoOptions: string[] = [];
 
+  designacaoCursoOptionssssssssAniva: string[] = [];
   // Data from Busca table (by numTabela)
   selectGrupSangue: selects[] = [];
   selectHabilitacoes: selects[] = [];

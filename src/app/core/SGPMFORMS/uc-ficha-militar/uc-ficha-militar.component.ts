@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, NgZone, Renderer2, ViewEncapsulation } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -134,34 +134,35 @@ export class UcFichaMilitarComponent implements AfterViewInit {
 
   // Autocomplete options arrays
   situacaoOptions = ['Ativo', 'Licença', 'Missão', 'Formação', 'Reforma', 'Reserva', 'Disponibilidade', 'Suspenso', 'Transferido'];
-  estCivilOptions = ['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União de Facto'];
+  estCivilOptions: string[] = [];
   sexoOptions = ['Masculino', 'Feminino'];
-  grupSangueOptions = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+  grupSangueOptions: string[] = [];
   tipoTelefoneOptions = ['Pessoal', 'Profissional', 'Emergência'];
   nivelLinguaOptions = ['Básico', 'Intermediário', 'Avançado', 'Nativo'];
-  habilitacoesOptions = [
-    '1ª Classe',
-    '2ª Classe',
-    '3ª Classe',
-    '4ª Classe',
-    '5ª Classe',
-    '6ª Classe',
-    '7ª Classe',
-    'Ensino Básico (7º ano)',
-    'Ensino Básico (8º ano)',
-    'Ensino Básico (9º ano)',
-    'Ensino Secundário (10º ano)',
-    'Ensino Secundário (11º ano)',
-    'Ensino Secundário (12º ano)',
-    'Curso Técnico',
-    'Curso Profissional',
-    'Bacharelato',
-    'Licenciatura',
-    'Pós-Graduação',
-    'Mestrado',
-    'Doutoramento',
-    'Sem escolaridade'
-  ];
+  habilitacoesOptions: string[] = [];
+  linguaOptions: string[] = [];
+  falaOptions: string[] = [];
+  leituraOptions: string[] = [];
+  escritaOptions: string[] = [];
+  compreensaoOptions: string[] = [];
+  regCasamentoOptions: string[] = [];
+  tipoDocumentoOptions: string[] = [];
+  centroInstrucaoOptions: string[] = [];
+  designacaoCursoOptions: string[] = [];
+
+  // Data from Busca table (by numTabela)
+  selectGrupSangue: selects[] = [];
+  selectHabilitacoes: selects[] = [];
+  selectLinguaData: selects[] = [];
+  selectFala: selects[] = [];
+  selectLeitura: selects[] = [];
+  selectEscrita: selects[] = [];
+  selectCompreensao: selects[] = [];
+  selectRegCasamento: selects[] = [];
+  selectEstCivil: selects[] = [];
+  selectTipoDocumento: selects[] = [];
+  selectCentroInstrucao: selects[] = [];
+  selectDesignacaoCurso: selects[] = [];
 
   // Location data from database
   selectProvincias: selects[] = [];
@@ -302,6 +303,20 @@ export class UcFichaMilitarComponent implements AfterViewInit {
 
     // Load provinces from database
     this.loadProvincias();
+
+    // Load data from Busca table by numTabela
+    this.loadGrupSangue();           // numTabela = 5
+    this.loadHabilitacoes();         // numTabela = 17
+    this.loadLingua();               // numTabela = 8
+    this.loadFala();                 // numTabela = 10
+    this.loadLeitura();              // numTabela = 11
+    this.loadEscrita();              // numTabela = 9
+    this.loadCompreensao();          // numTabela = 12
+    this.loadRegCasamento();         // numTabela = 4
+    this.loadEstCivil();             // numTabela = 3
+    this.loadTipoDocumento();        // numTabela = 13
+    this.loadCentroInstrucao();      // numTabela = 6
+    this.loadDesignacaoCurso();      // numTabela = 7
 
     // Initialize filtered observables for autocomplete
     this.initializeAutocompleteFilters();
@@ -701,6 +716,18 @@ export class UcFichaMilitarComponent implements AfterViewInit {
           map(value => this._filter(value || '', this.habilitacoesOptions))
         );
         break;
+      case 'regCasamento': {
+        const regCasamentoControl = this.fichaForm.get('regCasamento');
+        if (regCasamentoControl) {
+          // Criar um observable para regCasamento se não existir
+          const regCasamentoObservable = regCasamentoControl.valueChanges.pipe(
+            startWith(''),
+            map(value => this._filter(value || '', this.regCasamentoOptions))
+          );
+          // Nota: Adicionar filteredRegCasamento às propriedades da classe se necessário
+        }
+        break;
+      }
     }
   }
 
@@ -716,6 +743,49 @@ export class UcFichaMilitarComponent implements AfterViewInit {
     return control.valueChanges.pipe(
       startWith(control.value || ''),
       map((value: string) => this._filter(value || '', this.nivelLinguaOptions))
+    );
+  }
+
+  // Métodos para filtrar dados da tabela Busca
+  getFilteredFala(control: any): Observable<string[]> {
+    return control.valueChanges.pipe(
+      startWith(control.value || ''),
+      map((value: string) => this._filter(value || '', this.falaOptions))
+    );
+  }
+
+  getFilteredLeitura(control: any): Observable<string[]> {
+    return control.valueChanges.pipe(
+      startWith(control.value || ''),
+      map((value: string) => this._filter(value || '', this.leituraOptions))
+    );
+  }
+
+  getFilteredEscrita(control: any): Observable<string[]> {
+    return control.valueChanges.pipe(
+      startWith(control.value || ''),
+      map((value: string) => this._filter(value || '', this.escritaOptions))
+    );
+  }
+
+  getFilteredCompreensao(control: any): Observable<string[]> {
+    return control.valueChanges.pipe(
+      startWith(control.value || ''),
+      map((value: string) => this._filter(value || '', this.compreensaoOptions))
+    );
+  }
+
+  getFilteredLingua(control: any): Observable<string[]> {
+    return control.valueChanges.pipe(
+      startWith(control.value || ''),
+      map((value: string) => this._filter(value || '', this.linguaOptions))
+    );
+  }
+
+  getFilteredTipoDocumento(control: any): Observable<string[]> {
+    return control.valueChanges.pipe(
+      startWith(control.value || ''),
+      map((value: string) => this._filter(value || '', this.tipoDocumentoOptions))
     );
   }
 
@@ -752,9 +822,11 @@ export class UcFichaMilitarComponent implements AfterViewInit {
 
   // Methods for loading data from database
   loadProvincias(): void {
+
+    //provinciaStamp,descricao,codProv
     const se: condicoesprocura = {
-      tabela: 'provincia',
-      campo1: 'nome',
+      tabela: 'Provincia',
+      campo1: 'descricao',
       campo2: 'provinciaStamp',
       condicao: '1=1',
       campochave: 'provinciaStamp'
@@ -773,15 +845,339 @@ export class UcFichaMilitarComponent implements AfterViewInit {
     });
   }
 
+  loadHabilitacoes(): void {
+    // Carregar habilitações literárias da base de dados
+    // Usa o mesmo padrão implementado para carregar províncias, distritos, etc.
+    // codBusca,descricao
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=17',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectHabilitacoes = data.dados.selects;
+          this.habilitacoesOptions = this.selectHabilitacoes.map(h => h.descricao);
+
+          // Reinicializar o filtro das habilitações após o carregamento
+          this.reinitializeSpecificFilter('habiLite');
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar habilitações literárias:', e);
+        // Em caso de erro, usar valores padrão
+        this.habilitacoesOptions = [
+          '1ª Classe',
+          '2ª Classe',
+          '3ª Classe',
+          '4ª Classe',
+          '5ª Classe',
+          '6ª Classe',
+          '7ª Classe',
+          'Ensino Básico (7º ano)',
+          'Ensino Básico (8º ano)',
+          'Ensino Básico (9º ano)',
+          'Ensino Secundário (10º ano)',
+          'Ensino Secundário (11º ano)',
+          'Ensino Secundário (12º ano)',
+          'Curso Técnico',
+          'Curso Profissional',
+          'Bacharelato',
+          'Licenciatura',
+          'Pós-Graduação',
+          'Mestrado',
+          'Doutoramento',
+          'Sem escolaridade'
+        ];
+
+        // Reinicializar o filtro das habilitações mesmo com valores padrão
+        this.reinitializeSpecificFilter('habiLite');
+      }
+    });
+  }
+
+  loadGrupSangue(): void {
+    // Carregar grupo sanguíneo da base de dados (numTabela = 5)
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=5',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectGrupSangue = data.dados.selects;
+          this.grupSangueOptions = this.selectGrupSangue.map(g => g.descricao);
+          this.reinitializeSpecificFilter('grupSangue');
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar grupo sanguíneo:', e);
+        this.grupSangueOptions = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
+        this.reinitializeSpecificFilter('grupSangue');
+      }
+    });
+  }
+
+  loadLingua(): void {
+    // Carregar línguas da base de dados (numTabela = 8)
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=8',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectLinguaData = data.dados.selects;
+          this.linguaOptions = this.selectLinguaData.map(l => l.descricao);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar línguas:', e);
+        this.linguaOptions = [];
+      }
+    });
+  }
+
+  loadFala(): void {
+    // Carregar níveis de fala da base de dados (numTabela = 10)
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=10',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectFala = data.dados.selects;
+          this.falaOptions = this.selectFala.map(f => f.descricao);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar níveis de fala:', e);
+        this.falaOptions = ['Básico', 'Intermediário', 'Avançado', 'Nativo'];
+      }
+    });
+  }
+
+  loadLeitura(): void {
+    // Carregar níveis de leitura da base de dados (numTabela = 11)
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=11',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectLeitura = data.dados.selects;
+          this.leituraOptions = this.selectLeitura.map(l => l.descricao);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar níveis de leitura:', e);
+        this.leituraOptions = ['Básico', 'Intermediário', 'Avançado', 'Nativo'];
+      }
+    });
+  }
+
+  loadEscrita(): void {
+    // Carregar níveis de escrita da base de dados (numTabela = 9)
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=9',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectEscrita = data.dados.selects;
+          this.escritaOptions = this.selectEscrita.map(e => e.descricao);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar níveis de escrita:', e);
+        this.escritaOptions = ['Básico', 'Intermediário', 'Avançado', 'Nativo'];
+      }
+    });
+  }
+
+  loadCompreensao(): void {
+    // Carregar níveis de compreensão da base de dados (numTabela = 12)
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=12',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectCompreensao = data.dados.selects;
+          this.compreensaoOptions = this.selectCompreensao.map(c => c.descricao);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar níveis de compreensão:', e);
+        this.compreensaoOptions = ['Básico', 'Intermediário', 'Avançado', 'Nativo'];
+      }
+    });
+  }
+
+  loadRegCasamento(): void {
+    // Carregar regimes de casamento da base de dados (numTabela = 4)
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=4',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectRegCasamento = data.dados.selects;
+          this.regCasamentoOptions = this.selectRegCasamento.map(r => r.descricao);
+          this.reinitializeSpecificFilter('regCasamento');
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar regimes de casamento:', e);
+        this.regCasamentoOptions = [];
+        this.reinitializeSpecificFilter('regCasamento');
+      }
+    });
+  }
+
+  loadEstCivil(): void {
+    // Carregar estados civis da base de dados (numTabela = 3)
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=3',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectEstCivil = data.dados.selects;
+          this.estCivilOptions = this.selectEstCivil.map(e => e.descricao);
+          this.reinitializeSpecificFilter('estCivil');
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar estados civis:', e);
+        this.estCivilOptions = ['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União de Facto'];
+        this.reinitializeSpecificFilter('estCivil');
+      }
+    });
+  }
+
+  loadTipoDocumento(): void {
+    // Carregar tipos de documento da base de dados (numTabela = 13)
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=13',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectTipoDocumento = data.dados.selects;
+          this.tipoDocumentoOptions = this.selectTipoDocumento.map(t => t.descricao);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar tipos de documento:', e);
+        this.tipoDocumentoOptions = [];
+      }
+    });
+  }
+
+  loadCentroInstrucao(): void {
+    // Carregar centros de instrução da base de dados (numTabela = 6)
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=6',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectCentroInstrucao = data.dados.selects;
+          this.centroInstrucaoOptions = this.selectCentroInstrucao.map(c => c.descricao);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar centros de instrução:', e);
+        this.centroInstrucaoOptions = [];
+      }
+    });
+  }
+
+  loadDesignacaoCurso(): void {
+    // Carregar designações de curso da base de dados (numTabela = 7)
+    const se: condicoesprocura = {
+      tabela: 'busca',
+      campo1: 'descricao',
+      campo2: 'codBusca',
+      condicao: 'numTabela=7',
+      campochave: 'descricao'
+    };
+
+    this.remoteSrv.getSelection(se).subscribe({
+      next: (data) => {
+        if (data.sucesso) {
+          this.selectDesignacaoCurso = data.dados.selects;
+          this.designacaoCursoOptions = this.selectDesignacaoCurso.map(d => d.descricao);
+        }
+      },
+      error: (e) => {
+        console.error('Erro ao carregar designações de curso:', e);
+        this.designacaoCursoOptions = [];
+      }
+    });
+  }
+
   loadDistritos(provinciaStamp: string, type: 'nasc' | 'res' | 'inc'): void {
     const se: condicoesprocura = {
       tabela: 'distrito',
-      campo1: 'nome',
+      campo1: 'descricao',
       campo2: 'distritoStamp',
       condicao: `provinciaStamp='${provinciaStamp}'`,
       campochave: 'distritoStamp'
     };
-
     this.remoteSrv.getSelection(se).subscribe({
       next: (data) => {
         if (data.sucesso) {
@@ -808,9 +1204,9 @@ export class UcFichaMilitarComponent implements AfterViewInit {
     const se: condicoesprocura = {
       tabela: 'posto',
       campo1: 'nome',
-      campo2: 'postoStamp',
+      campo2: 'postAdmStamp',
       condicao: `distritoStamp='${distritoStamp}'`,
-      campochave: 'postoStamp'
+      campochave: 'postAdmStamp'
     };
 
     this.remoteSrv.getSelection(se).subscribe({
@@ -835,13 +1231,14 @@ export class UcFichaMilitarComponent implements AfterViewInit {
     });
   }
 
-  loadLocalidades(postoStamp: string, type: 'nasc' | 'res' | 'inc'): void {
+  loadLocalidades(postAdmStamp: string, type: 'nasc' | 'res' | 'inc'): void {
+    //codLocalidade,descricao
     const se: condicoesprocura = {
       tabela: 'localidade',
-      campo1: 'nome',
-      campo2: 'localidadeStamp',
-      condicao: `postoStamp='${postoStamp}'`,
-      campochave: 'localidadeStamp'
+      campo1: 'descricao',
+      campo2: 'codLocalidade',
+      condicao: `postAdmStamp='${postAdmStamp}'`,
+      campochave: 'descricao'
     };
 
     this.remoteSrv.getSelection(se).subscribe({
@@ -927,7 +1324,7 @@ export class UcFichaMilitarComponent implements AfterViewInit {
     } else if (type === 'inc') {
       selectDistritos = this.selectDistritosInc;
     }
-    
+
     const selectedDistrito = selectDistritos.find(d => d.descricao === distrito);
     if (!selectedDistrito) return;
 
@@ -967,7 +1364,7 @@ export class UcFichaMilitarComponent implements AfterViewInit {
     } else if (type === 'inc') {
       selectPostos = this.selectPostosInc;
     }
-    
+
     const selectedPosto = selectPostos.find(p => p.descricao === posto);
     if (!selectedPosto) return;
 

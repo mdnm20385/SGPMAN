@@ -773,10 +773,10 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Província de Incorporação</mat-label>
-                  <input matInput formControlName="incProv" 
+                  <input matInput formControlName="incProv"
                          [matAutocomplete]="incProvAutocomplete"
                          [disabled]="!canPerformActions()">
-                  <mat-autocomplete #incProvAutocomplete="matAutocomplete" 
+                  <mat-autocomplete #incProvAutocomplete="matAutocomplete"
                                     [displayWith]="displayFunction"
                                     (optionSelected)="onProvinciaAutocompleteSelected($event, 'inc')">
                     <mat-option *ngFor="let option of filteredProvinciasInc | async" [value]="option">
@@ -797,10 +797,10 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Distrito de Incorporação</mat-label>
-                  <input matInput formControlName="incDist" 
+                  <input matInput formControlName="incDist"
                          [matAutocomplete]="incDistAutocomplete"
                          [disabled]="!canPerformActions()">
-                  <mat-autocomplete #incDistAutocomplete="matAutocomplete" 
+                  <mat-autocomplete #incDistAutocomplete="matAutocomplete"
                                     [displayWith]="displayFunction"
                                     (optionSelected)="onDistritoAutocompleteSelected($event, 'inc')">
                     <mat-option *ngFor="let option of filteredDistritosInc | async" [value]="option">
@@ -821,10 +821,10 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Posto Administrativo</mat-label>
-                  <input matInput formControlName="incPosto" 
+                  <input matInput formControlName="incPosto"
                          [matAutocomplete]="incPostoAutocomplete"
                          [disabled]="!canPerformActions()">
-                  <mat-autocomplete #incPostoAutocomplete="matAutocomplete" 
+                  <mat-autocomplete #incPostoAutocomplete="matAutocomplete"
                                     [displayWith]="displayFunction"
                                     (optionSelected)="onPostoAutocompleteSelected($event, 'inc')">
                     <mat-option *ngFor="let option of filteredPostosInc | async" [value]="option">
@@ -845,7 +845,7 @@
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Localidade</mat-label>
-                  <input matInput formControlName="incLocal" 
+                  <input matInput formControlName="incLocal"
                          [matAutocomplete]="incLocalAutocomplete"
                          [disabled]="!canPerformActions()">
                   <mat-autocomplete #incLocalAutocomplete="matAutocomplete" [displayWith]="displayFunction">

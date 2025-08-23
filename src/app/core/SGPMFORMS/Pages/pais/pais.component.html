@@ -6,7 +6,7 @@
     <div class="row demo-full-width">
       <div class="col-sm-6 ">
         <mat-form-field appearance="outline" class="demo-full-width">
-          <input matInput matInput readonly="true"
+          <input matInput readonly="true"
                  placeholder="Clica no botão + ou tecla F2 para adicionar nova saída!" />
           <button matSuffix mat-raised-button color="accent" style="height: 35px;"
                   class="m-x-4" mat-raised-button color="primary"
@@ -17,12 +17,12 @@
       </div>
       <div class="col-sm-6 ">
         <mat-form-field appearance="outline" class="demo-full-width">
-          <input matInput matInput [(ngModel)]="query.q" name="q"
+          <input matInput [value]="query().q" name="q"
                  placeholder="Filtragem através de órgão, direção, classificador,Assunto,Nº Doc,observação"
                  class="inputpesquisa" />
           <button matSuffix mat-raised-button color="accent" style="height: 35px;"
                   (click)="search()" yup.class="btnpesquisa" type="button">
-            <mat-icon class='search-icon' color="primary" matSuffix>search</mat-icon>
+            <mat-icon class='search-icon' color="primary">search</mat-icon>
           </button>
         </mat-form-field>
       </div>
@@ -31,23 +31,14 @@
 </div>
 
 
-<mtx-grid [data]="list"
+<mtx-grid [data]="list()"
           [columns]="columns"
-
-          [loading]="isLoading"
+          [loading]="isLoading()"
           [pageOnFront]="false"
-
-
-
-
-
-          [length]="totalRecords"
+          [length]="totalRecords()"
           [pageSize]="5"
           [pageSizeOptions]="[5, 10, 20]"
-
-          [columnResizable]="columnResizable"
+          [columnResizable]="columnResizable()"
           (selectionChange)="changeSelect($event)"
-
-
-          (page)="getNextPage($event)">
+          (page)="getPage($event)">
 </mtx-grid>

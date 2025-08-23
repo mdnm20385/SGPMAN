@@ -3515,10 +3515,17 @@ export interface Pad {
   dist: Dist;
 }
 
-export interface Paises {
-  paisestamp: string;
-  codigo: string;
+export interface Pais {
+  paisStamp: string;
+  codPais: string;
   descricao: string;
+  abreviatura: string;
+  nacional: boolean;
+  pordefeito: boolean;
+  inseriu: string | null;
+  inseriuDataHora: string | null;
+  alterou: string | null;
+  alterouDataHora: string | null;
 }
 
 export interface Param {

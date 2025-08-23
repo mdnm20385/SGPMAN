@@ -2020,3 +2020,5 @@ const usrg=this.user$.pipe(share());
     );
   }
 }
+
+export { Usuario };

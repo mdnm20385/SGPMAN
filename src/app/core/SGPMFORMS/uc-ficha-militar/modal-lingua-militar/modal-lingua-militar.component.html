@@ -1,0 +1,112 @@
+<div class="modal-wrapper" mat-dialog-content>
+  <form [formGroup]="linguaForm" class="ficha-militar-form" [ngClass]="'state-edit'">
+    <!-- Header Section -->
+    <div class="form-header">
+      <h2 class="form-title">
+        <mat-icon>language</mat-icon>
+        {{ data ? 'Editar Língua Militar' : 'Nova Língua Militar' }}
+      </h2>
+      <span class="state-indicator" [ngClass]="'state-edit'">
+        {{ data ? 'Editando' : 'Nova' }}
+      </span>
+    </div>
+
+    <!-- Action buttons section -->
+    <div class="action-buttons-wrapper">
+      <div class="action-buttons">
+        <button mat-raised-button
+                color="primary"
+                type="button"
+                class="action-button save-button"
+                (click)="salvar()"
+                [disabled]="linguaForm.invalid || isSubmitting"
+                [matTooltip]="data ? 'Atualizar Língua' : 'Salvar nova Língua'">
+          <mat-icon>save</mat-icon>
+          {{ isEdit ? 'Atualizar' : 'Salvar' }}
+        </button>
+
+        <button mat-raised-button
+                type="button"
+                class="action-button cancel-button"
+                (click)="cancelar()"
+                [disabled]="isSubmitting"
+                matTooltip="Cancelar alterações">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Content -->
+    <div class="form-content">
+
+      <app-header-militar
+      [nimMilitar]="linguaForm.get('nimMilitar')?.value"
+       [nomeMilitar]="linguaForm.get('nomeMilitar')?.value"></app-header-militar>
+
+ <mat-form-field appearance="outline" class="autocomplete-field">
+                      <mat-label>Língua</mat-label>
+                      <input type="text" matInput [matAutocomplete]="autoLingua" formControlName="lingua">
+                      <button mat-icon-button *ngIf="linguaForm.get('lingua')?.value" matSuffix (click)="linguaForm.get('lingua')?.setValue('')" matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
+                      <mat-autocomplete #autoLingua="matAutocomplete">
+                        <mat-option *ngFor="let option of filteredOptions.lingua" [value]="option">{{ option }}</mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="autocomplete-field">
+                      <mat-label>Fala</mat-label>
+                      <input type="text" matInput [matAutocomplete]="autoFala" formControlName="fala">
+                      <button mat-icon-button *ngIf="linguaForm.get('fala')?.value" matSuffix (click)="linguaForm.get('fala')?.setValue('')" matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
+                      <mat-autocomplete #autoFala="matAutocomplete">
+                        <mat-option *ngFor="let option of filteredOptions.fala" [value]="option">{{ option }}</mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="autocomplete-field">
+                      <mat-label>Leitura</mat-label>
+                      <input type="text" matInput [matAutocomplete]="autoLeitura" formControlName="leitura">
+                      <button mat-icon-button *ngIf="linguaForm.get('leitura')?.value" matSuffix (click)="linguaForm.get('leitura')?.setValue('')" matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
+                      <mat-autocomplete #autoLeitura="matAutocomplete">
+                        <mat-option *ngFor="let option of filteredOptions.leitura" [value]="option">{{ option }}</mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="autocomplete-field">
+                      <mat-label>Escrita</mat-label>
+                      <input type="text" matInput [matAutocomplete]="autoEscrita" formControlName="escrita">
+                      <button mat-icon-button *ngIf="linguaForm.get('escrita')?.value" matSuffix (click)="linguaForm.get('escrita')?.setValue('')" matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
+                      <mat-autocomplete #autoEscrita="matAutocomplete">
+                        <mat-option *ngFor="let option of filteredOptions.escrita" [value]="option">{{ option }}</mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="autocomplete-field">
+                      <mat-label>Compreensão</mat-label>
+                      <input type="text" matInput [matAutocomplete]="autoCompreensao" formControlName="compreensao">
+                      <button mat-icon-button *ngIf="linguaForm.get('compreensao')?.value" matSuffix (click)="linguaForm.get('compreensao')?.setValue('')" matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
+                      </button>
+                      <mat-autocomplete #autoCompreensao="matAutocomplete">
+                        <mat-option *ngFor="let option of filteredOptions.compreensao"
+                         [value]="option">{{ option }}</mat-option>
+                      </mat-autocomplete>
+                    </mat-form-field>
+                      <!-- Checkbox destacado para Língua Materna -->
+              <div style="padding: 10px; background: #f5f5f5; border-radius: 8px; border: 2px solid #1976d2; display: flex; align-items: center;">
+                <mat-checkbox formControlName="materna" color="primary" style="font-size: 1.2em; font-weight: bold;">
+                  Língua Materna
+                </mat-checkbox>
+              </div>
+
+              </div>
+              </form>
+              </div>
+

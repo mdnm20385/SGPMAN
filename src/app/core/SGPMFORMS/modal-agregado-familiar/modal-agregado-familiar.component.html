@@ -1,0 +1,230 @@
+<div class="modal-wrapper" mat-dialog-content>
+  <form [formGroup]="agreForm" (ngSubmit)="salvar()" class="agregado-form" [ngClass]="isEdit ? 'state-edit' : 'state-new'">
+
+
+    <div class="form-header" style="display: flex; align-items: center; justify-content: space-between; background: #e3f6f5; border-radius: 12px; padding: 18px 24px 10px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 18px;">
+
+      <div style="display: flex; align-items: center; gap: 12px;">
+
+      <button mat-raised-button type="button"
+      class="action-button cancel-button"
+      (click)="Refresh()" matTooltip="Recarregar os dados das Províncias"
+      style="font-weight: 600;">
+        <mat-icon style="color: #009688;">
+          refresh</mat-icon>
+
+      </button>
+        <h2 class="form-title" style="font-weight: 650; font-size: 1.6rem; margin: 0; color: #009688;">
+          {{ isEdit ?
+         'Editar Agregado Familiar' : 'Adicionar Agregado Familiar' }}</h2>
+      </div>
+      <span class="state-indicator" [ngClass]="isEdit ? 'state-edit' : 'state-new'"
+       style="background: #009688; color: #fff; padding: 6px 18px; border-radius: 18px; font-weight: 600; font-size: 1rem;">{{ isEdit ? 'Editando' : 'Novo' }}</span>
+    </div>
+
+    <!-- Action buttons section -->
+    <div class="action-buttons-wrapper" style="display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 18px;">
+      <button mat-raised-button color="primary" type="submit" class="action-button save-button" [disabled]="agreForm.invalid" [matTooltip]="isEdit ? 'Atualizar histórico' : 'Salvar novo histórico'" style="font-weight: 600; min-width: 120px;">
+        <mat-icon>save</mat-icon>
+        {{ isEdit ? 'Atualizar' : 'Salvar' }}
+      </button>
+      <button mat-raised-button type="button"
+      class="action-button cancel-button"
+      (click)="cancelar()" matTooltip="Cancelar alterações"
+      style="font-weight: 600; min-width: 120px; background: #f44336; color: #fff;"
+      >
+        <mat-icon>cancel</mat-icon>
+        Cancelar
+      </button>
+    </div>
+
+    <div class="form-content">
+      <app-header-militar
+      [nimMilitar]="agreForm.get('nimMilitar')?.value"
+      [nomeMilitar]="agreForm.get('nomeMilitar')?.value">
+    </app-header-militar>
+    <div class="row">
+<div class="col-sm-8">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nome</mat-label>
+        <input matInput formControlName="nome">
+        <mat-error *ngIf="agreForm.get('nome')?.hasError('required')">Nome obrigatório</mat-error>
+        <mat-error *ngIf="agreForm.get('nome')?.hasError('maxlength')">Máximo de 255 caracteres</mat-error>
+      </mat-form-field>
+    </div>
+    <div class="col-sm-4">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Grau de Parentesco</mat-label>
+        <input matInput formControlName="grau">
+        <mat-error *ngIf="agreForm.get('grau')?.hasError('required')">Grau obrigatório</mat-error>
+        <mat-error *ngIf="agreForm.get('grau')?.hasError('maxlength')">Máximo de 100 caracteres</mat-error>
+      </mat-form-field>
+    </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-sm-8">
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Telefone</mat-label>
+        <input matInput formControlName="telefone">
+        <mat-error *ngIf="agreForm.get('telefone')?.hasError('maxlength')">Máximo de 20 caracteres</mat-error>
+      </mat-form-field>
+      </div>
+      <div class="col-sm-4">
+ <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Data de Nascimento</mat-label>
+        <input matInput [matDatepicker]="datePicker" formControlName="nascData">
+        <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+        <mat-datepicker #datePicker></mat-datepicker>
+        <mat-error *ngIf="agreForm.get('nascData')?.hasError('required')">Data obrigatória</mat-error>
+      </mat-form-field>
+      </div>
+    </div>
+
+
+ <div class="row">
+      <div class="col-sm-6">
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Província de Nascimento</mat-label>
+                  <input matInput formControlName="nascProv"
+                         [matAutocomplete]="autoProvinciaNasc">
+                  <mat-autocomplete #autoProvinciaNasc="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onProvinciaSelected($event.option.value, 'nasc')">
+                    <mat-option *ngFor="let option of filteredProvinciasNasc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          class="clear-button"
+                          (click)="clearLocationSelection('nascProv', 'nasc')"
+                          type="button"
+
+                          matTooltip="Limpar Província">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+      </div>
+      <div class="col-sm-6">
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Província de Residência</mat-label>
+                  <input matInput formControlName="resProv"
+                         [matAutocomplete]="autoProvinciaRes"
+                         >
+                  <mat-autocomplete #autoProvinciaRes="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onProvinciaSelected($event.option.value, 'res')">
+                    <mat-option *ngFor="let option of filteredProvinciasRes | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          class="clear-button"
+                          (click)="clearLocationSelection('resProv', 'res')"
+                          type="button"
+
+                          matTooltip="Limpar Província">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+      </div>
+    </div>
+
+
+
+ <div class="row">
+      <div class="col-sm-6">
+
+     <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Distrito de Residência</mat-label>
+                  <input matInput formControlName="resDist"
+                         [matAutocomplete]="autoDistritoRes"
+                         >
+                  <mat-autocomplete #autoDistritoRes="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onDistritoSelected($event.option.value, 'res')">
+                    <mat-option *ngFor="let option of filteredDistritosRes | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          class="clear-button"
+                          (click)="clearLocationSelection('resDist', 'res')"
+                          type="button"
+                          matTooltip="Limpar Distrito">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+      </div>
+
+      <div class="col-sm-6">
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Posto Administrativo</mat-label>
+                  <input matInput formControlName="resPosto"
+                         [matAutocomplete]="autoPostoRes"
+                         >
+                  <mat-autocomplete #autoPostoRes="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onPostoSelected($event.option.value, 'res')">
+                    <mat-option *ngFor="let option of filteredPostosRes | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          class="clear-button"
+                          (click)="clearLocationSelection('resPosto', 'res')"
+                          type="button"
+
+                          matTooltip="Limpar Posto Administrativo">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+      </div>
+ </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Localidade</mat-label>
+                  <input matInput formControlName="resLocal"
+                         [matAutocomplete]="autoLocalRes"
+                         >
+                  <mat-autocomplete #autoLocalRes="matAutocomplete"
+                                    [displayWith]="displayFunction">
+                    <mat-option *ngFor="let option of filteredLocalidadesRes | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          class="clear-button"
+                          (click)="clearLocationSelection('resLocal', 'res')"
+                          type="button"
+
+                          matTooltip="Limpar Localidade">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Observações</mat-label>
+        <textarea matInput formControlName="obs" rows="2"></textarea>
+        <mat-error *ngIf="agreForm.get('obs')?.hasError('maxlength')">Máximo de 255 caracteres</mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</div>

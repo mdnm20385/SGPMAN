@@ -78,14 +78,15 @@
           "options": {
             "buildTarget": "ng-matero:build",
             "proxyConfig": "proxy.config.js"
-
           },
           "configurations": {
             "production": {
               "buildTarget": "ng-matero:build:production"
             },
             "development": {
-              "buildTarget": "ng-matero:build:development"
+              "buildTarget": "ng-matero:build:development",
+              "port": 4200,
+              "host": "localhost"
             }
           },
           "defaultConfiguration": "development"

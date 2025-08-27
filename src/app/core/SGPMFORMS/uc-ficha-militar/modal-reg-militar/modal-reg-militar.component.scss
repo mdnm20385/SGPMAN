@@ -1,0 +1,99 @@
+.modal-wrapper {
+  min-width: 600px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+.form-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 1.5rem;
+  color: #1976d2;
+}
+
+mat-icon {
+  font-size: 24px;
+  width: 24px;
+  height: 24px;
+}
+
+.state-indicator {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.action-buttons-wrapper {
+  margin-bottom: 20px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.save-button {
+  background-color: #1976d2;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #f5f5f5;
+  color: #666;
+}
+
+.form-content {
+  padding: 16px 0;
+}
+
+.tab-content {
+  padding: 16px;
+}
+
+.form-row {
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.half-width {
+  width: 48%;
+}
+
+.row-gap {
+  display: flex;
+  gap: 4%;
+}
+
+::ng-deep .mat-dialog-container {
+  padding: 0 !important;
+  overflow: hidden;
+}
+
+::ng-deep .mat-tab-body-content {
+  padding: 0 8px;
+}

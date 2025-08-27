@@ -1,14 +1,12 @@
 import { NgClass } from '@angular/common';
 import {
-  AfterViewInit,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  HostListener,
-  NgZone,
-  OnDestroy,
-  OnInit,
-  inject,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    inject,
+    NgZone,
+    OnInit
 } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -17,16 +15,16 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { MtxProgressModule } from '@ng-matero/extensions/progress';
-import { finalize, Subscription } from 'rxjs';
+import { SecureStorageService } from 'app/core/services/secure-storage.service';
+import { Subscription } from 'rxjs';
 
-import { AuthService, SettingsService, Usuario } from '@core';
-import { BreadcrumbComponent, PageHeaderComponent } from '@shared';
-import { DashboardService } from './dashboard.service';
+import { AuthService, SettingsService } from '@core';
+import { PageHeaderComponent } from '@shared';
+import { selectsprocura } from 'app/classes/CampoSessoes';
 import { TablesRemoteDataService } from '../tables/remote-data/remote-data.service';
-import { Procura } from 'app/classes/Procura';
-import { selects, selectsprocura } from 'app/classes/CampoSessoes';
+import { DashboardService } from './dashboard.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -52,8 +50,11 @@ import { selects, selectsprocura } from 'app/classes/CampoSessoes';
 })
 export class DashboardComponent implements OnInit,AfterViewInit
 
-{isAutenticated() {
-    return (localStorage.getItem('usuario')) !== null ? true : false;
+{
+  private readonly secureStorage = inject(SecureStorageService);
+
+  isAutenticated() {
+    return this.secureStorage.hasItem('usuario');
   }
   private readonly ngZone = inject(NgZone);
   private readonly settings = inject(SettingsService);

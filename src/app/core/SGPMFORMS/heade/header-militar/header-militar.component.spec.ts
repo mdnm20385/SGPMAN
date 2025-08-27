@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { UcFichaMilitarComponent } from './uc-ficha-militar.component';
+import { HeaderMilitarComponent } from './header-militar.component';
 
-describe('UcFichaMilitarComponent', () => {
-  let component: UcFichaMilitarComponent;
-  let fixture: ComponentFixture<UcFichaMilitarComponent>;
+describe('HeaderMilitarComponent', () => {
+  let component: HeaderMilitarComponent;
+  let fixture: ComponentFixture<HeaderMilitarComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [UcFichaMilitarComponent]
+      imports: [HeaderMilitarComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(UcFichaMilitarComponent);
+    fixture = TestBed.createComponent(HeaderMilitarComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

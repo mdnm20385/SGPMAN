@@ -302,11 +302,13 @@ export interface Mil {
   milStamp?: string;
   nome?: string;
   nim?: number;
+  situacaoAtual?: string;
   nascData?: string;
   sexo?: string;
   grupSangue?: string;
   nacional?: string;
   nascPais?: string;
+  codNascPais?: number;
   nascProv?: string;
   codNascProv?: number;
   nascDist?: string;
@@ -324,6 +326,8 @@ export interface Mil {
   conjuge?: string;
   numFilhos?: number;
   habiLite?: string;
+  resPais?: string;
+  codResPais?: number;
   resProv?: string;
   codResProv?: number;
   resDist?: string;
@@ -339,6 +343,7 @@ export interface Mil {
   ramo?: string;
   codRamo?: number;
   incPais?: string;
+  codIncPais?: number;
   incProv?: string;
   codIncProv?: number;
   incDist?: string;
@@ -910,6 +915,8 @@ export interface MilSitDisc {
   medTomadas?: string;
   dataInicioMedida?: string;
   dataTerminoMedida?: string;
+  dataFimMedida?: string;
+  local?: string;
   obs?: string;
   inseriu?: string;
   inseriuDataHora?: Date;
@@ -926,6 +933,9 @@ export interface MilSitQPActivo {
   numOS?: string;
   dataOS?: string;
   localFuncao?: string;
+  dataInicio?: string;
+  dataTermino?: string;
+  motivo?: string;
   obs?: string;
   inseriu?: string;
   inseriuDataHora?: Date;
@@ -1118,6 +1128,7 @@ export interface Telefone {
   telefoneStamp?: string;
   codTelefone?: string;
   telefone1?: number;
+  tipo?: string;
   milPeEmergStamp?: string;
   inseriu?: string;
   inseriuDataHora?: Date;

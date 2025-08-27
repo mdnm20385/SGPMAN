@@ -22,11 +22,9 @@ export class ErrorInterceptor implements HttpInterceptor {
     if (error.error?.message) {
       return error.error.message;
     }
-
     if (error.error?.msg) {
       return error.error.msg;
     }
-
     return `${error.status} ${error.statusText}`;
   };
 
@@ -35,16 +33,34 @@ export class ErrorInterceptor implements HttpInterceptor {
       .handle(request)
       .pipe(catchError((error: HttpErrorResponse) => this.handleError(error)));
   }
-
   private handleError(error: HttpErrorResponse) {
     if (this.errorPages.includes(error.status)) {
       this.router.navigateByUrl(`/${error.status}`, {
         skipLocationChange: true,
       });
     } else {
-      console.error('ERROR', error);
-      this.toast.error(this.getMessage(error));
+      console.error('ERROR', error);      // Verifica se é erro relacionado ao token
+      if (error.url && (error.url.includes('/me') || error.url.includes('/auth'))) {
+        console.warn('Erro de autenticação detectado:', error.message);
+
+        // Se for erro 401 em endpoints de autenticação, não mostra toast
+        if (error.status === STATUS.UNAUTHORIZED) {
+          this.router.navigateByUrl('/auth/login');
+          return throwError(() => error);
+        }
+      }
+
+      // Para outros erros, mostra o toast
+      if (error.status !== STATUS.UNAUTHORIZED) {
+        this.toast.error(this.getMessage(error));
+      }
+
       if (error.status === STATUS.UNAUTHORIZED) {
+        // Limpa dados de autenticação antes de redirecionar
+        localStorage.removeItem('usuario');
+        localStorage.removeItem('ng-matero-token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('access_token');
         this.router.navigateByUrl('/auth/login');
       }
     }

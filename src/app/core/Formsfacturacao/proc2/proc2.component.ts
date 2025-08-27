@@ -22,6 +22,7 @@ import { Procura } from 'app/classes/Procura';
 import { TablesRemoteDataService } from 'app/routes/tables/remote-data/remote-data.service';
 import { finalize } from 'rxjs';
 import { FactModalComponent } from '../fact-modal/fact-modal.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-proc2',
@@ -68,6 +69,9 @@ implements OnInit {
     public dialogRef: MatDialogRef<Proc2Component>,
     @Inject(MAT_DIALOG_DATA) public data: Procura
     ) {
+
+
+
          this.columns=[{
       header: this.data.origem, field: this.data.campo||`Código`
       ,sortable: true},
@@ -90,6 +94,9 @@ implements OnInit {
         },
       ],
     },];
+    if(this.data.tabela?.toLowerCase()===`vBi`.toLowerCase()){
+    this.query.q=this.params.q = this.data.referencia;
+  }
     }
   columns: MtxGridColumn[] = [
   ];
@@ -126,14 +133,45 @@ implements OnInit {
 
     this.Requery();
   }
+
+  VerificaTabela():boolean{
+     if(this.data.tabela?.toLowerCase()===`vBi`.toLowerCase()){
+this.data.referencia=``;
+ if(this.params.q.length===0){
+    Swal.fire({
+      icon: 'warning',
+      title: 'Atenção',
+      text: 'Por favor, insira um valor para pesquisa.',
+    });
+    return false;
+  }
+  }
+  return true;
+}
 Requery(){
+
+ if(!this.VerificaTabela()){
+   return;
+ }
 
   const usuario=this.auth.obterSessao() as Usuario;
   usuario.inseriu=this.data.tabela;
 let condicao='';
+
+
 if(this.params.q.length>0){
+  if(this.data.tabela?.toLowerCase()===`vBi`.toLowerCase()){
+  condicao=` ${this.data.campo} = '${this.params.q}' `;
+  }else{
+    if(this.data.campo?.toLowerCase()===`nim`.toLowerCase()){
+  condicao=` ${this.data.campo} = '${this.params.q}' `;
+  }else{
   condicao=` ${this.data.campo} like '%${this.params.q}%' `;
+  }
+  }
+
 }
+
   const proc: Procura = {
     tabela: this.data.tabela,
     campo: this.data.campo,
@@ -210,13 +248,24 @@ onKey(event: KeyboardEvent) {
   }
 
   getNextPage(e: PageEvent) {
+     if(!this.VerificaTabela()){
+   return;
+ }
     const currentPage = (e.pageIndex ?? 0) + 1;
     const pageSize = e.pageSize ?? 0;
     const usuario=this.auth.obterSessao() as Usuario;
   usuario.inseriu=this.data.tabela;
 let condicao='';
+ if(this.data.tabela?.toLowerCase()===`vBi`.toLowerCase()){
+this.data.referencia=``;
+  }
 if(this.params.q.length>0){
+  if(this.data.tabela?.toLowerCase()===`vBi`.toLowerCase()){
+  condicao=` ${this.data.campo} = '${this.params.q}' `;
+  }else{
   condicao=` ${this.data.campo} like '%${this.params.q}%' `;
+  }
+
 }
   const proc: Procura = {
     tabela: this.data.tabela,

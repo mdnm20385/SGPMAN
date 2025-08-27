@@ -15,6 +15,7 @@ import { Filepdf, Procura, RecPassword, Selects } from 'app/classes/Procura';
 import { Objecto, Resposta } from 'app/classes/Resposta';
 import { GenericoService } from 'app/InterfacesSigex/generic-service';
 import { BehaviorSubject, Observable, catchError, delay, firstValueFrom, iif, map, merge, of, share, switchMap, tap } from 'rxjs';
+import { SecureStorageService } from '../services/secure-storage.service';
 import { filterObject, isEmptyObject } from './helpers';
 import { DClinicos, EmailRec, Pa, ScanDoc, Token, Trabalho, User, Usuario } from './interface';
 import { LoginService } from './login.service';
@@ -1148,6 +1149,7 @@ const txcambio = data?.length > 0 ? data[0].cambio : 0;
   }
   private readonly loginService = inject(LoginService);
   private readonly tokenService = inject(TokenService);
+  private readonly secureStorage = inject(SecureStorageService);
   private ApiUrl = `${environment.Apiurl}`;
   usr !: Usuario;
   protected readonly http = inject(HttpClient);
@@ -1523,37 +1525,27 @@ const formato = `${ano}-${mes}-${dia}`;
     localStorage.setItem('Totais', JSON.stringify(DadosTemp));
   }
   obterTotais() {
-    const dataGuardar = localStorage.getItem('Totais');
-    const utilizador = JSON.parse(dataGuardar!);
-    return utilizador;
+    return this.secureStorage.getItem('Totais');
   }
 
 
 
   isAutenticatedTotais() {
-    if (localStorage.getItem('Totais') === null) {
-      return false;
-    }
-    else{
-      return true;
-    }
+    return this.secureStorage.hasItem('Totais');
   }
-
 
   guardarentrdastamp(entradaStamp?: string) {
-    localStorage.setItem('entradaStamp', JSON.stringify(entradaStamp));
+    this.secureStorage.setItem('entradaStamp', entradaStamp);
   }
   obterentradaStamp() {
-    const dataGuardar = localStorage.getItem('entradaStamp');
-    const utilizador = JSON.parse(dataGuardar!);
-    return utilizador;
+    return this.secureStorage.getItem('entradaStamp');
   }
 
   isAutenticatedentradaStamp() {
-    return (localStorage.getItem('entradaStamp')) !== null ? true : false;
+    return this.secureStorage.hasItem('entradaStamp');
   }
  isAutenticateddatasessao() {
-    return (localStorage.getItem('datasessao')) !== null ? true : false;
+    return this.secureStorage.hasItem('datasessao');
   }
   GetEntityWithChildren(entityStamp: string, tableName: string,
   stampColumnName: string): Observable<any> {
@@ -1593,9 +1585,7 @@ const proc:Procura={
 return proc;
 }
   obterSessao() {
-    const dataGuardar = localStorage.getItem('usuario');
-    const utilizador = JSON.parse(dataGuardar!);
-    return utilizador;
+    return this.secureStorage.getItem('usuario');
   }
 
 
@@ -1624,11 +1614,11 @@ selects!:selectsprocura[];
     localStorage.removeItem('entradaStamp');
   }
   eliminarTotais() {
-    localStorage.removeItem('Totais');
+    this.secureStorage.removeItem('Totais');
   }
 
   isAutenticated() {
-    return (localStorage.getItem('usuario')) !== null ? true : false;
+    return this.secureStorage.hasItem('usuario');
   }
   createObservable(): Observable<boolean> {
     return new Observable<boolean>((subscriber) => {
@@ -1669,9 +1659,7 @@ const formato = `${ano}-${mes}-${dia}`;
 return formato;
 }
   obterdatasessao() {
-    const dataGuardar = localStorage.getItem('datasessao');
-    const utilizador = JSON.parse(dataGuardar!);
-    return utilizador;
+    return this.secureStorage.getItem('datasessao');
   }
 
       private readonly generico = inject(GenericoService);
@@ -1861,7 +1849,7 @@ const item: selects = {
   }
 
     InserirAlterarObjecto(valor: Objecto): Observable<Resposta<Unidade>>{
-    return this.http.post<Resposta<Unidade>>(`${this.ApiUrl}Save/InserirAlterarObjecto`,valor);
+    return this.http.post<Resposta<Unidade>>(`${this.ApiUrl}Save/InserirAlterarObjectos`,valor);
     }
 
     SqlCmd(valor: Selects): Observable<Resposta<Selects>>{
@@ -1963,6 +1951,7 @@ if(this.isAutenticated()===false){
    data.email='Invalido@gmail.com';
    data.id='0';
     });
+
   return usrgs;
 }
 

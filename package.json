@@ -8,7 +8,11 @@
   },
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "start": "ng serve --configuration development",
+    "start:dev": "ng serve --configuration development",
+    "start:prod": "ng serve --configuration production",
+    "start:force": "powershell -ExecutionPolicy Bypass -File start-dev.ps1",
+    "start:force-bat": "start-dev.bat",
     "test": "ng test",
     "test:ci": "ng test --browsers=ChromeHeadless --watch=false --code-coverage",
     "e2e": "ng e2e",

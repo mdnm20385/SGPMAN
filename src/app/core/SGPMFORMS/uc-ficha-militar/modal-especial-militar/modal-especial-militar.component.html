@@ -1,0 +1,113 @@
+<div class="modal-wrapper" mat-dialog-content>
+  <form [formGroup]="especialForm" class="ficha-militar-form" [ngClass]="getStateClass()">
+    <!-- Header Section -->
+    <div class="form-header">
+      <h2 class="form-title">
+        <mat-icon>military_tech</mat-icon>
+        {{ isEdit ? 'Editar Especialidade' : 'Nova Especialidade' }}
+      </h2>
+      <span class="state-indicator" [ngClass]="getStateClass()">
+        {{ isEdit ? 'Editando' : 'Novo' }}
+      </span>
+    </div>
+
+    <!-- Action buttons section -->
+    <div class="action-buttons-wrapper">
+      <div class="action-buttons">
+        <button mat-raised-button
+                color="primary"
+                type="button"
+                class="action-button save-button"
+                (click)="onSubmit()"
+                [disabled]="!especialForm.valid || isSubmitting"
+                [matTooltip]="isEdit ? 'Atualizar especialidade' : 'Salvar nova especialidade'">
+          <mat-icon>save</mat-icon>
+          {{ isEdit ? 'Atualizar' : 'Salvar' }}
+        </button>
+
+        <button mat-raised-button
+                type="button"
+                class="action-button cancel-button"
+                (click)="onCancel()"
+                [disabled]="isSubmitting"
+                matTooltip="Cancelar alterações">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Content -->
+    <div class="form-content">
+
+      <app-header-militar
+      [nimMilitar]="especialForm.get('nimMilitar')?.value"
+       [nomeMilitar]="especialForm.get('nomeMilitar')?.value"></app-header-militar>
+
+      <mat-tab-group>
+        <mat-tab label="Informações da Especialidade">
+          <div class="tab-content">
+            <!-- Ramo -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Ramo</mat-label>
+                <input matInput formControlName="ramo">
+              </mat-form-field>
+            </div>
+
+            <!-- Especialidade -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Especialidade</mat-label>
+                <input matInput formControlName="especial" required>
+                <mat-error *ngIf="hasError('especial', 'required')">
+                  Especialidade é obrigatória
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Sub-Especialidade -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Sub-Especialidade</mat-label>
+                <input matInput formControlName="subEspecial">
+              </mat-form-field>
+            </div>
+
+            <!-- Data da Especialidade -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Data da Especialidade</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="dataEspecial" required>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="hasError('dataEspecial', 'required')">
+                  Data da especialidade é obrigatória
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Número da OS -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Número da OS</mat-label>
+                <input matInput formControlName="numOS" required>
+                <mat-error *ngIf="hasError('numOS', 'required')">
+                  Número da OS é obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Observações -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Observações</mat-label>
+                <textarea matInput formControlName="obs" rows="4"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </form>
+</div>

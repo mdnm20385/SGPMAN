@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,16 +10,17 @@ import { BehaviorSubject, debounceTime, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { AuthService, SettingsService, User, Usuario } from '@core';
+import { SecureStorageService } from '@core/services/secure-storage.service';
 import { environment } from '@env/environment';
 
 @Component({
   selector: 'app-user',
   template: `
-    <button class="r-full" mat-button [matMenuTriggerFor]="menu">
+    <button class="r-full" mat-button [matMenuTriggerFor]="menu" *ngIf="user">
       <img matButtonIcon class="avatar"
-       [src]="safeUrl ? safeUrl :  user.avatar"
+       [src]="safeUrl ? safeUrl : (user?.avatar || './assets/images/heros/12.jpg')"
        width="24" alt="avatar" />
-      <span class="m-x-8">{{ user.name }}</span>
+      <span class="m-x-8">{{ user?.name || 'Usuário' }}</span>
     </button>
 
     <mat-menu #menu="matMenu">
@@ -123,7 +125,7 @@ import { environment } from '@env/environment';
   ],
   standalone: true,
   //imports: [RouterLink, MatButtonModule, MatIconModule, MatMenuModule, TranslateModule],
-  imports: [ MatButtonModule, MatIconModule, MatMenuModule, TranslateModule],
+  imports: [CommonModule, MatButtonModule, MatIconModule, MatMenuModule, TranslateModule],
 })
 export class UserComponent implements OnInit {
   private readonly cdr = inject(ChangeDetectorRef);
@@ -131,10 +133,11 @@ export class UserComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly settings = inject(SettingsService);
   private readonly http = inject(HttpClient);
+  private readonly secureStorage = inject(SecureStorageService);
 constructor(private sanitizer: DomSanitizer, private _cdr: ChangeDetectorRef){
 
 }
-  user!: User;
+  user: User | null = null;
 
 safeUrl: SafeResourceUrl | null = null;imageUrl!: string;
 
@@ -176,12 +179,14 @@ updateUrl(url: string) {
 
   ngOnInit(): void {
 
+
     this.auth
       .user()
       .pipe(
         tap(user => {
           this.user = user;
-          if(this.auth.isAutenticated()==true)
+
+          if(this.auth.isAutenticated() == true && this.user)
             {
 
          const users=this.auth.obterSessao() as Usuario;
@@ -199,7 +204,7 @@ updateUrl(url: string) {
         debounceTime(10)
       )
       .subscribe(() => {
-        if(this.auth.isAutenticated()==true)
+        if(this.auth.isAutenticated() == true && this.user)
           {
        const users=this.auth.obterSessao() as Usuario;
         this.user.name =users.login;
@@ -233,18 +238,16 @@ updateUrl(url: string) {
   }
 
   isAutenticareload() {
-    return (localStorage.getItem('reload')) !== null ? true : false;
+    return this.secureStorage.hasItem('reload');
   }
   obterreload() {
-    const dataGuardar = localStorage.getItem('reload');
-    const utilizador = JSON.parse(dataGuardar!);
-    return utilizador;
+    return this.secureStorage.getItem('reload');
   }
   eliminarReload() {
-    localStorage.removeItem('reload');
+    this.secureStorage.removeItem('reload');
   }
   guardarreload() {
-    localStorage.setItem('reload', JSON.stringify('true'));
+    this.secureStorage.setItem('reload', 'true');
   }
   restore() {
     this.settings.reset();

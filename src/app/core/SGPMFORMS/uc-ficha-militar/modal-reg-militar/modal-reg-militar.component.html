@@ -1,0 +1,97 @@
+<div class="modal-wrapper" mat-dialog-content>
+  <form [formGroup]="regForm" class="ficha-militar-form" [ngClass]="getStateClass()">
+    <!-- Header Section -->
+    <div class="form-header">
+      <h2 class="form-title">
+        <mat-icon>assignment</mat-icon>
+        {{ isEdit ? 'Editar Registro' : 'Novo Registro' }}
+      </h2>
+      <span class="state-indicator" [ngClass]="getStateClass()">
+        {{ isEdit ? 'Editando' : 'Novo' }}
+      </span>
+    </div>
+
+    <!-- Action buttons section -->
+    <div class="action-buttons-wrapper">
+      <div class="action-buttons">
+        <button mat-raised-button
+                color="primary"
+                type="button"
+                class="action-button save-button"
+                (click)="onSubmit()"
+                [disabled]="!regForm.valid || isSubmitting"
+                [matTooltip]="isEdit ? 'Atualizar registro' : 'Salvar novo registro'">
+          <mat-icon>save</mat-icon>
+          {{ isEdit ? 'Atualizar' : 'Salvar' }}
+        </button>
+
+        <button mat-raised-button
+                type="button"
+                class="action-button cancel-button"
+                (click)="onCancel()"
+                [disabled]="isSubmitting"
+                matTooltip="Cancelar alterações">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Content -->
+    <div class="form-content">
+
+      <app-header-militar
+      [nimMilitar]="regForm.get('nimMilitar')?.value"
+       [nomeMilitar]="regForm.get('nomeMilitar')?.value"></app-header-militar>
+
+      <mat-tab-group>
+        <mat-tab label="Informações do Registro">
+          <div class="tab-content">
+            <!-- Regime -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Regime</mat-label>
+                <input matInput formControlName="regime" required>
+                <mat-error *ngIf="hasError('regime', 'required')">
+                  Regime é obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Data do Registo -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Data do Registro</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="dataReg" required>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="hasError('dataReg', 'required')">
+                  Data do registro é obrigatória
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Número da OS -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Número da OS</mat-label>
+                <input matInput formControlName="numOS" required>
+                <mat-error *ngIf="hasError('numOS', 'required')">
+                  Número da OS é obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Observações -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Observações</mat-label>
+                <textarea matInput formControlName="obs" rows="4"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </form>
+</div>

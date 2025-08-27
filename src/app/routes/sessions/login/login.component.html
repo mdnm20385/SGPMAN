@@ -1,63 +1,192 @@
-<div class="d-flex w-full h-full">
-  <mat-card class="m-auto" style="max-width: 380px;">
-    <mat-card-header class="m-b-24  header-center">
-      <mat-card-title  >Bem Vindo ao SJM!</mat-card-title>
-    </mat-card-header>
+<!-- Modern Login Page with Enhanced Design -->
+<div class="login-background">
+  <div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+    <div class="shape shape-4"></div>
+    <div class="shape shape-5"></div>
+    <div class="shape shape-6"></div>
+  </div>
+</div>
 
-    <mat-card-content>
-      <form class="form-field-full" [formGroup]="loginForm">
-        <mat-form-field appearance="outline">
-          <mat-label>Usuário</mat-label>
-          <input matInput placeholder="Usuário" formControlName="username" required>
-          @if (username.invalid) {
-            <mat-error>
-              @if (username.errors?.required) {
-                <span>{{'please_enter' }}
-                  <strong>SJM</strong>
-                </span>
-              }
-              @if (username.errors?.remote) {
-                <span>{{ username.errors?.remote }}</span>
-              }
-            </mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Senha</mat-label>
-          <input matInput placeholder="Senha" type="password"
-            formControlName="password" required>
-          @if (password.invalid) {
-            <mat-error>
-              @if (password.errors?.required) {
-                <span>Por favor introduza
-                  <strong>SJM</strong>
-                </span>
-              }
-              @if (password.errors?.remote) {
-                <span>{{ password.errors?.remote }}</span>
-              }
-            </mat-error>
-          }
-        </mat-form-field>
-<!--
-        <mat-checkbox formControlName="rememberMe">Rembrar a senha
-        </mat-checkbox> -->
-
-        <button class="w-full m-y-16" mat-raised-button color="primary"
-          [disabled]="!!loginForm.invalid" [loading]="isSubmitting"
-        (click)="login()">{{'login' }}</button>
-
-        <div>Esqueceu senha?
-          <a routerLink="/auth/register">Recuperar</a>
+<div class="login-container">
+  <div class="login-card">
+    <!-- Header Section -->
+    <div class="login-header">
+      <div class="logo-section">
+        <div class="logo-wrapper">
+          <img src="assets/images/Mdn/EmblemaDeMoz.png" alt="Emblema de Moçambique" class="logo-image">
         </div>
-        <div class="button-container">
-          <button mat-raised-button color="accent" style="height: 35px;"
-            (click)="Refresh()" class="btnpesquisa">
-            <mat-icon class='refresh-icon' color="primary" matSuffix>refresh</mat-icon>
+        <div class="system-info">
+          <h1 class="system-title">SGPM</h1>
+          <p class="system-subtitle">Sistema de Gestão de Pessoal Militar</p>
+          <div class="title-accent"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="login-form-section">
+      <form class="login-form" [formGroup]="loginForm" (ngSubmit)="login()">
+        <!-- Welcome Message -->
+        <div class="welcome-section">
+          <h2 class="welcome-title">Bem-vindo de volta!</h2>
+          <p class="welcome-description">Acesse sua conta para continuar</p>
+        </div>
+
+        <!-- Username Field -->
+        <div class="input-group">
+          <mat-form-field appearance="outline" class="modern-field fix-truncate">
+            <mat-label>Nome de Usuário</mat-label>
+            <input
+              matInput
+              placeholder="Digite o usuário"
+              formControlName="username"
+              autocomplete="username"
+              required
+              class="modern-input"
+            >
+            <mat-icon matPrefix class="input-icon">person_outline</mat-icon>
+            @if (username.invalid && username.touched) {
+              <mat-error class="error-text">
+                @if (username.errors?.['required']) {
+                  <span class="error-content">
+                    <mat-icon class="error-icon">warning</mat-icon>
+                    Nome de usuário é obrigatório
+                  </span>
+                }
+                @if (username.errors?.['minlength']) {
+                  <span class="error-content">
+                    <mat-icon class="error-icon">warning</mat-icon>
+                    Mínimo de 3 caracteres
+                  </span>
+                }
+                @if (username.errors?.['remote']) {
+                  <span class="error-content">
+                    <mat-icon class="error-icon">error</mat-icon>
+                    {{ username.errors?.['remote'] }}
+                  </span>
+                }
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Password Field -->
+        <div class="input-group">
+          <mat-form-field appearance="outline" class="modern-field fix-truncate">
+            <mat-label>Senha</mat-label>
+            <input
+              matInput
+              placeholder="Digite a senha"
+              [type]="hidePassword ? 'password' : 'text'"
+              formControlName="password"
+              autocomplete="current-password"
+              required
+              class="modern-input"
+            >
+            <mat-icon matPrefix class="input-icon">lock_outline</mat-icon>
+            <button
+              mat-icon-button
+              matSuffix
+              type="button"
+              (click)="hidePassword = !hidePassword"
+              [attr.aria-label]="'Hide password'"
+              [attr.aria-pressed]="hidePassword"
+              class="toggle-password"
+            >
+              <mat-icon class="toggle-icon">{{hidePassword ? 'visibility_off' : 'visibility'}}</mat-icon>
+            </button>
+            @if (password.invalid && password.touched) {
+              <mat-error class="error-text">
+                @if (password.errors?.['required']) {
+                  <span class="error-content">
+                    <mat-icon class="error-icon">warning</mat-icon>
+                    Senha é obrigatória
+                  </span>
+                }
+                @if (password.errors?.['minlength']) {
+                  <span class="error-content">
+                    <mat-icon class="error-icon">warning</mat-icon>
+                    Mínimo de 4 caracteres
+                  </span>
+                }
+                @if (password.errors?.['remote']) {
+                  <span class="error-content">
+                    <mat-icon class="error-icon">error</mat-icon>
+                    {{ password.errors?.['remote'] }}
+                  </span>
+                }
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
+
+        <!-- Remember & Forgot -->
+        <div class="form-options">
+          <mat-checkbox class="remember-checkbox" color="primary">
+            Lembrar-me
+          </mat-checkbox>
+          <a routerLink="/auth/register" class="forgot-link">
+            Esqueceu a senha?
+          </a>
+        </div>
+
+        <!-- Login Button -->
+        <div class="button-section">
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            class="login-button"
+            [disabled]="loginForm.invalid || isSubmitting"
+          >
+            @if (isSubmitting) {
+              <div class="button-content loading">
+                <mat-spinner diameter="20" class="button-spinner"></mat-spinner>
+                <span class="button-text">Entrando...</span>
+              </div>
+            } @else {
+              <div class="button-content">
+                <mat-icon class="button-icon">login</mat-icon>
+                <span class="button-text">Entrar no Sistema</span>
+              </div>
+            }
           </button>
         </div>
+
+        <!-- Additional Actions -->
+        <div class="form-footer">
+
+          <div class="footer-actions">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="refresh()"
+              [disabled]="isSubmitting"
+              class="refresh-button"
+              matTooltip="Atualizar página"
+            >
+              <mat-icon>refresh</mat-icon>
+              <span>Atualizar</span>
+            </button>
+          </div>
+        </div>
       </form>
-    </mat-card-content>
-  </mat-card>
+    </div>
+
+    <!-- System Info Footer -->
+    <div class="system-footer">
+      <div class="version-info">
+        <span class="version-text">SISTEMA DE GESTÃO DE PESSOAL MILITAR VERSÃO {{ appVersion }}</span>
+        <span class="separator">•</span>
+        <span class="year-text">{{ currentYear }}</span>
+      </div>
+      <div class="security-badge">
+        <mat-icon class="security-icon">security</mat-icon>
+        <span class="security-text">Conexão Segura</span>
+      </div>
+    </div>
+  </div>
 </div>

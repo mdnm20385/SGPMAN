@@ -1,20 +1,21 @@
+import { formatDate } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { environment } from '@env/environment';
+import { MtxDialog } from '@ng-matero/extensions/dialog';
+import { busca } from 'app/classes/busca';
+import { CampoSessoes, condicoesprocura, selectsprocura, selectview } from 'app/classes/CampoSessoes';
+import { EntradaProcesso, SaidaProcesso, Unidade } from 'app/classes/ClassesSIGEX';
+import { LoginModel } from 'app/classes/LoginModel';
+import { Filepdf, RecPassword, Selects } from 'app/classes/Procura';
+import { Objecto, Resposta } from 'app/classes/Resposta';
 import { BehaviorSubject, Observable, catchError, delay, iif, map, merge, of, share, switchMap, tap } from 'rxjs';
 import { filterObject, isEmptyObject } from './helpers';
-import {  EmailRec, Token, Trabalho, User, Usuario } from './interface';
+import { EmailRec, Token, Trabalho, User, Usuario } from './interface';
 import { LoginService } from './login.service';
+import { SecureStorageService } from './services/secure-storage.service';
 import { TokenService } from './token.service';
-import { environment } from '@env/environment';
-import { CampoSessoes, condicoesprocura, selects, selectsprocura, selectview } from 'app/classes/CampoSessoes';
-import { LoginModel } from 'app/classes/LoginModel';
-import { Objecto, Resposta } from 'app/classes/Resposta';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { busca } from 'app/classes/busca';
-import { Cliente, EntradaProcesso, SaidaProcesso, Unidade } from 'app/classes/ClassesSIGEX';
-import { formatDate } from '@angular/common';
-import { Condicoesprocura, Filepdf, RecPassword, Selects } from 'app/classes/Procura';
-import { Router } from '@angular/router';
-import { MtxDialog } from '@ng-matero/extensions/dialog';
 
 @Injectable({
   providedIn: 'root',
@@ -22,6 +23,7 @@ import { MtxDialog } from '@ng-matero/extensions/dialog';
 export class AuthService {
   private readonly loginService = inject(LoginService);
   private readonly tokenService = inject(TokenService);
+  private readonly secureStorage = inject(SecureStorageService);
   private usuarioAutenticado: boolean = false;
   private ApiUrl = `${environment.Apiurl}`;
   usr !: Usuario;
@@ -150,12 +152,10 @@ export class AuthService {
   }
 
   isAutenticatedentradaStamp() {
-    return (localStorage.getItem('entradaStamp')) !== null ? true : false;
+    return this.secureStorage.hasItem('entradaStamp');
   }
   obterSessao() {
-    const dataGuardar = localStorage.getItem('usuario');
-    const utilizador = JSON.parse(dataGuardar!);
-    return utilizador;
+    return this.secureStorage.getItem('usuario');
   }
 
 selects!:selectsprocura[];
@@ -179,14 +179,14 @@ selects!:selectsprocura[];
   }
 
   eliminarentradaStamp() {
-    localStorage.removeItem('entradaStamp');
+    this.secureStorage.removeItem('entradaStamp');
   }
   eliminarTotais() {
-    localStorage.removeItem('Totais');
+    this.secureStorage.removeItem('Totais');
   }
 
   isAutenticated() {
-    return (localStorage.getItem('usuario')) !== null ? true : false;
+    return this.secureStorage.hasItem('usuario');
   }
   createObservable(): Observable<boolean> {
     return new Observable<boolean>((subscriber) => {
@@ -197,7 +197,7 @@ selects!:selectsprocura[];
       subscriber.complete();
 
       // Cleanup logic (optional)
-      return () => console.log('');
+      return () => {};
     });
   }
   private readonly router = inject(Router);

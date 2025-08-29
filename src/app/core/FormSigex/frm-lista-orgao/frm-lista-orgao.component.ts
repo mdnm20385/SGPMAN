@@ -9,7 +9,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MtxGridModule, MtxGridColumn } from '@ng-matero/extensions/grid';
 import { PageHeaderComponent } from '@shared';
 import { Procura } from 'app/classes/Procura';
-import { TablesKitchenSinkEditComponent } from 'app/routes/tables/kitchen-sink/edit/edit.component';
 import { TablesRemoteDataService } from 'app/routes/tables/remote-data/remote-data.service';
 import { finalize } from 'rxjs';
 import { MtxDialog } from '@ng-matero/extensions/dialog';
@@ -19,8 +18,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { FrmModalOrgaoComponent } from '../frm-modal-orgao/frm-modal-orgao.component';
 import { AuthService, Usuario } from '@core/authentication';
 import { condicoesprocura } from 'app/classes/CampoSessoes';
-import { Orgao, Unidade } from 'app/classes/ClassesSIGEX';
-import { FrmModalDirecaoComponent } from '../frm-modal-direcao/frm-modal-direcao.component';
+import { Orgao } from 'app/classes/ClassesSIGEX';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -31,7 +29,6 @@ import { MatIconModule } from '@angular/material/icon';
   providers: [TablesRemoteDataService],
   standalone: true,
   imports: [
-
     FormsModule,
     MatButtonModule,
     MatFormFieldModule,
@@ -43,13 +40,10 @@ import { MatIconModule } from '@angular/material/icon';
     MatCheckboxModule,
     MatRadioModule,
     MatIconModule,
-     MatSlideToggleModule
+    MatSlideToggleModule,
   ],
 })
-export class FrmListaOrgaoComponent
-
-
-implements OnInit {
+export class FrmListaOrgaoComponent implements OnInit {
   private readonly remoteSrv = inject(TablesRemoteDataService);
 
   private readonly translate = inject(TranslateService);
@@ -67,102 +61,84 @@ implements OnInit {
   expandable = false;
   columnResizable = false;
 
-
-
   AddNew() {
-    if(this.auth.isAutenticated()===false){
+    if (this.auth.isAutenticated() === false) {
       return;
+    }
+
+    const processoStamps = this.auth.Stamp();
+    const proc: condicoesprocura = {
+      tabela: 'orgao',
+      campo1: 'codorgao',
+      campo2: 'descricao',
+      condicao: `1=1`,
+      campochave: null,
+    };
+    //let numero=0;
+    this.remoteSrv
+      .GetMax(proc)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe(res => {
+        if (res.sucesso === true) {
+          const nume = res.dados.ordem;
+          const usr: Orgao = {
+            orgaoStamp: processoStamps,
+            codOrgao: Number(nume),
+            descricao: '',
+            inseriu: 'inserindo',
+            inseriuDataHora: this.auth.ConvertDate(new Date()),
+            alterou: '',
+            alterouDataHora: this.auth.ConvertDate(new Date()),
+            organica: 0,
+            totalOf: 0,
+            totalOfGen: 0,
+            totalGenEx: 0,
+            totalTteGen: 0,
+            totalMajGen: 0,
+            totalBrigadeiro: 0,
+            totalOfSup: 0,
+            totalCor: 0,
+            totalTteCor: 0,
+            totalMaj: 0,
+            totalOfSub: 0,
+            totalCap: 0,
+            totalTte: 0,
+            totalTteMil: 0,
+            totalAlf: 0,
+            totalAlfMil: 0,
+            totalSarg: 0,
+            totalInt: 0,
+            totalSub: 0,
+            totalPriSar: 0,
+            totalSegSar: 0,
+            totalTerSar: 0,
+            totalFur: 0,
+            totalPra: 0,
+            totalPriCab: 0,
+            totalSegCab: 0,
+            totalSold: 0,
+          };
+          const dialogRef = this.dialog.originalOpen(FrmModalOrgaoComponent, {
+            width: '600px',
+            disableClose: true,
+            autoFocus: false,
+            enterAnimationDuration: '1000ms',
+            exitAnimationDuration: '1000ms',
+            data: { record: usr },
+          });
+          dialogRef.afterClosed().subscribe(() => {
+            this.requery();
+          });
+          this.isLoading = false;
+        } else {
+          this.dialog.alert(`Ocorreu um erro ao tentar carregar o valor máximo!`);
+        }
+      });
   }
-
-  const processoStamps=this.auth.Stamp();
-  const proc: condicoesprocura = {
-    tabela: 'orgao',
-    campo1: 'codorgao',
-    campo2: 'descricao',
-    condicao: `1=1`,
-    campochave: null
-  };
-  //let numero=0;
-  this.remoteSrv
-  .GetMax(proc)
-  .pipe(
-    finalize(() => {
-      this.isLoading = false;
-    })
-  )
-  .subscribe(res => {
-
-    if(res.sucesso===true){
-
-const nume=res.dados.ordem;
-const usr:Orgao={
-  orgaoStamp: processoStamps,
-  codOrgao: Number(nume),
-  descricao: '',
-  inseriu: 'inserindo',
-  inseriuDataHora: this.auth.ConvertDate(new Date()),
-  alterou: '',
-  alterouDataHora: this.auth.ConvertDate(new Date()),
-  organica: 0,
-  totalOf: 0,
-  totalOfGen: 0,
-  totalGenEx: 0,
-  totalTteGen: 0,
-  totalMajGen: 0,
-  totalBrigadeiro: 0,
-  totalOfSup: 0,
-  totalCor: 0,
-  totalTteCor: 0,
-  totalMaj: 0,
-  totalOfSub: 0,
-  totalCap: 0,
-  totalTte: 0,
-  totalTteMil: 0,
-  totalAlf: 0,
-  totalAlfMil: 0,
-  totalSarg: 0,
-  totalInt: 0,
-  totalSub: 0,
-  totalPriSar: 0,
-  totalSegSar: 0,
-  totalTerSar: 0,
-  totalFur: 0,
-  totalPra: 0,
-  totalPriCab: 0,
-  totalSegCab: 0,
-  totalSold: 0,
-};
-const dialogRef = this.dialog.originalOpen(FrmModalOrgaoComponent, {
-  width: '600px',
- disableClose: true,
- autoFocus: false,
- enterAnimationDuration: '1000ms',
- exitAnimationDuration: '1000ms',
- data: { record: usr},
-});
-dialogRef.afterClosed().subscribe(() => {
- this.requery();
-});
-    this.isLoading = false;
-  }
-
-  else{
-    this.dialog.alert(`Ocorreu um erro ao tentar carregar o valor máximo!`);
-  }
-  }
-
-
-
-
-);
-
-
-
-
-
-
-
-      }
   columns: MtxGridColumn[] = [
     // {
     //   header: 'Name',
@@ -201,7 +177,7 @@ dialogRef.afterClosed().subscribe(() => {
           click: record => this.delete(record),
         },
       ],
-    }
+    },
     // { header: 'Stars', field: 'stargazers_count', type: 'number' },
     // { header: 'Forks', field: 'forks_count', type: 'number' },
     // { header: 'Score', field: 'score', type: 'number' },
@@ -226,7 +202,7 @@ dialogRef.afterClosed().subscribe(() => {
   total = 0;
   pageSize = 0;
   //total = 0;
-  pageIndex=0;
+  pageIndex = 0;
   isLoading = true;
   totalRecords: number = 0;
 
@@ -249,34 +225,32 @@ dialogRef.afterClosed().subscribe(() => {
     p.page += 1;
     return p;
   }
-  requery(){
-    const usuario=this.auth.obterSessao() as Usuario;
-    usuario.inseriu='orgao';
-let condicao='';
+  requery() {
+    const usuario = this.auth.obterSessao() as Usuario;
+    usuario.inseriu = 'orgao';
+    let condicao = '';
 
-if(this.params.q.length>0){
-  condicao=` descricao like '%${this.params.q}%'
-   `;
-}
+    if (this.params.q.length > 0) {
+      condicao = ` descricao like '%${this.params.q}%'`;
+    }
 
-
-  const proc: Procura = {
-     tabela: 'orgao',
-     campo: 'descricao',
-       campo1: 'codorgao',
-    camposseleccionados: ' * ',
-    valorprocurado: '',
-    pagesize: 5,
-    marcar: false,
-    currentNumber: 1,
-    condicoes: `${condicao}`,
-    alunoestamp: 'descricao asc',
-    rhstamp: '',
-    descricao: '',
-    origem: '',
-    referencia: '',
-    usuario
-  };
+    const proc: Procura = {
+      tabela: 'orgao',
+      campo: 'descricao',
+      campo1: 'codorgao',
+      camposseleccionados: ' * ',
+      valorprocurado: '',
+      pagesize: 5,
+      marcar: false,
+      currentNumber: 1,
+      condicoes: `${condicao}`,
+      alunoestamp: 'descricao asc',
+      rhstamp: '',
+      descricao: '',
+      origem: '',
+      referencia: '',
+      usuario,
+    };
     this.remoteSrv
       .MetodoGenerico(proc)
       .pipe(
@@ -290,13 +264,13 @@ if(this.params.q.length>0){
         this.totalRecords = res.totalCount;
         this.pagenumber = 0;
         this.pagesize = 5;
-        this.pagetotalrecord=res.totalCount;
+        this.pagetotalrecord = res.totalCount;
         this.isLoading = false;
       });
   }
   private readonly auth = inject(AuthService);
   ngOnInit() {
-   this.requery();
+    this.requery();
   }
   edit(value: any) {
     const dialogRef = this.dialog.originalOpen(FrmModalOrgaoComponent, {
@@ -312,27 +286,25 @@ if(this.params.q.length>0){
       campo1: 'codOrgao',
       campo2: 'descricao',
       condicao: `orgaoStamp='${value.orgaoStamp}'`,
-      campochave: null
+      campochave: null,
     };
     this.remoteSrv
-    .Delete(proc)
-    .pipe(
-      finalize(() => {
-        this.isLoading = false;
-      })
-    )
-    .subscribe(res => {
-      if(res.sucesso===true){
-        this.dialog.alert(`o registo: ${value.descricao}, foi eliminado com sucesso!`);
-        this.requery();
-
-    }else
-    this.dialog.alert(`Não foi possível apagar o registo ${value.descricao}!\nTenta novamente e se o erro persistir\ncontacte o administrador`);
-
+      .Delete(proc)
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe(res => {
+        if (res.sucesso === true) {
+          this.dialog.alert(`o registo: ${value.descricao}, foi eliminado com sucesso!`);
+          this.requery();
+        } else
+          this.dialog.alert(
+            `Não foi possível apagar o registo ${value.descricao}!\nTenta novamente e se o erro persistir\ncontacte o administrador`
+          );
+      });
   }
-  );
-  }
-
 
   changeSelect(e: any) {
     console.log(e);
@@ -345,7 +317,7 @@ if(this.params.q.length>0){
     const currentPage = (e.pageIndex ?? 0) + 1;
 
     const pageSize = e.pageSize ?? 0;
-    const usuario=this.auth.obterSessao() as Usuario;
+    const usuario = this.auth.obterSessao() as Usuario;
     const proc: Procura = {
       tabela: 'orgao',
       campo: 'descricao',
@@ -361,18 +333,21 @@ if(this.params.q.length>0){
       descricao: '',
       origem: '',
       referencia: '',
-      usuario
+      usuario,
     };
-    this.remoteSrv.MetodoGenerico(proc).pipe(
+    this.remoteSrv
+      .MetodoGenerico(proc)
+      .pipe(
         finalize(() => {
           this.isLoading = false;
         })
-      ).subscribe(res => {
+      )
+      .subscribe(res => {
         this.list = res.data;
         this.totalRecords = res.totalCount;
         this.pagenumber = currentPage;
         this.pagesize = pageSize;
-        this.pagetotalrecord=res.totalCount;
+        this.pagetotalrecord = res.totalCount;
         this.isLoading = false;
       });
   }
@@ -386,10 +361,10 @@ if(this.params.q.length>0){
   }
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
-    if(event.key === 'F2'){
+    if (event.key === 'F2') {
       this.AddNew();
-    } else if (event.key === 'Enter' ){
-       this.requery();
+    } else if (event.key === 'Enter') {
+      this.requery();
     }
   }
 }

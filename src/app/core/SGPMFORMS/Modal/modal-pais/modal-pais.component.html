@@ -1,0 +1,52 @@
+<div mat-dialog-actions align="end">
+
+  <button mat-raised-button mat-dialog-close color="warn" (click)="dialogRef.close()">Close
+    <mat-icon matSuffix>close</mat-icon>
+  </button>
+
+</div>
+<div mat-dialog-content>
+  <div class="d-flex w-full h-full">
+    <mat-card class="m-auto" >
+      <mat-card-header class="m-b-24">
+        <mat-card-title>
+          Dados do País...
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form class="form-field-full" [formGroup]="paisForm">
+          <mat-form-field   appearance="outline">
+            <mat-label>Código do País</mat-label>
+            <input matInput [readonly]="true"  formControlName="codPais">
+            <mat-icon matSuffix>info</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Descrição do País</mat-label>
+            <input matInput formControlName="descricao" required >
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Abreviatura</mat-label>
+            <input matInput formControlName="abreviatura" />
+          </mat-form-field>
+
+          <mat-checkbox formControlName="nacional">Nacional</mat-checkbox>
+
+          <mat-checkbox formControlName="pordefeito">Por defeito</mat-checkbox>
+
+          <mat-form-field *ngIf="visivel()">
+            <mat-label></mat-label>
+            <input matInput formControlName="paisStamp"  [hidden]="true">
+          </mat-form-field>
+
+          <button class="w-full m-y-16" mat-raised-button color="primary"
+          [disabled]="!!paisForm.invalid" (click)="gravar()">
+          Salvar <mat-icon matSuffix>save</mat-icon>
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</div>

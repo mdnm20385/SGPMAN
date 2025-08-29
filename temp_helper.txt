@@ -1,0 +1,16 @@
+/**
+   * Helper function to ensure datasource is updated correctly after modal operations
+   * @param arrayName The name of the form array (e.g. 'milDoc')
+   */
+  private ensureDataSourceUpdate(arrayName: string): void {
+    const dataSourceName = this.getDataSourceName(arrayName);
+    const formArrayName = arrayName === 'telefone' ? 'telefoneFormArray' :
+                          arrayName.replace('mil', '').toLowerCase() + 'FormArray';
+
+    if (dataSourceName && (this as any)[formArrayName]) {
+      this.ngZone.run(() => {
+        (this as any)[dataSourceName] = [...(this as any)[formArrayName].controls];
+        this.cdr.detectChanges();
+      });
+    }
+  }

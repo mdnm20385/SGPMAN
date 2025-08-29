@@ -148,3 +148,121 @@
     background-color: white;
   }
 }
+
+// Global Footer Styles
+.app-footer {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-top: 1px solid #dee2e6;
+  padding: 20px 0;
+  margin-top: auto;
+  position: sticky;
+  bottom: 0;
+  z-index: 100;
+
+  .footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+
+    @include breakpoints.bp-lt(medium) {
+      flex-direction: column;
+      text-align: center;
+      gap: 12px;
+    }
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    font-size: 14px;
+    color: #6c757d;
+
+    @include breakpoints.bp-lt(medium) {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #0056b3;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .footer-policies {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #6c757d;
+
+    @include breakpoints.bp-lt(medium) {
+      flex-direction: column;
+      gap: 4px;
+
+      span:nth-child(2) {
+        display: none; // Hide separator on mobile
+      }
+    }
+
+    .privacy-link {
+      color: #007bff;
+      text-decoration: none;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: #0056b3;
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Ensure content area has proper spacing for footer
+.matero-content-wrap {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--mat-toolbar-standard-height));
+
+  @include breakpoints.bp-lt(small) {
+    min-height: calc(100vh - var(--mat-toolbar-mobile-height));
+  }
+}
+
+.matero-content {
+  flex: 1 0 auto;
+}
+
+// Dark theme adjustments
+body.dark-theme {
+  .app-footer {
+    background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+    border-top-color: #3d3d3d;
+
+    .footer-links,
+    .footer-policies {
+      color: #b0b0b0;
+    }
+
+    .footer-links a,
+    .footer-policies .privacy-link {
+      color: #4dabf7;
+
+      &:hover {
+        color: #74c0fc;
+      }
+    }
+  }
+}

@@ -1,8 +1,293 @@
+// Habilitações Literárias field should span the combined width of Sexo and Grupo Sanguíneo
+.field-habilitacoes-wide {
+  min-width: 400px;
+  flex: 2 1 400px;
+  max-width: 100%;
+}
 // Ficha Militar Component Styles
 .ficha-militar-container {
   padding: 16px;
   max-width: 100%;
   margin: 0 auto;
+
+  // Estilos para grupos de abas
+  .inner-tab-group {
+    margin-top: 16px;
+
+    // Estilos específicos para a aba Carreira Militar
+    &.carreira-militar-tabs {
+      .mat-tab-header {
+        border-bottom: 2px solid #1976d2;
+      }
+
+      .mat-tab-label {
+        min-width: 120px;
+        padding: 0 16px;
+
+        &.mat-tab-label-active {
+          background-color: #e3f2fd;
+          color: #1976d2;
+          opacity: 1;
+        }
+      }
+    }
+
+    // Estilos gerais para todas as abas internas
+    .inner-tab-group {
+      margin-top: 16px;
+
+      ::ng-deep {
+        .mat-tab-header {
+          background-color: #f8f9fa;
+          border-radius: 4px 4px 0 0;
+        }
+
+        .mat-tab-label {
+          height: 48px;
+          padding: 0 24px;
+          opacity: 1;
+          color: rgba(0, 0, 0, 0.87);
+
+          &.mat-tab-label-active {
+            background-color: #1976d2 !important;
+            color: #fff !important;
+            font-weight: 500;
+            border-radius: 4px 4px 0 0;
+          }
+        }
+
+        .mat-ink-bar {
+          background-color: #1976d2;
+        }
+      }
+
+      .tab-content {
+        padding: 24px 16px;
+        background-color: white;
+        border-radius: 0 0 4px 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+
+  .section-container {
+    margin: 16px;
+
+    .table-card {
+      margin-bottom: 24px;
+
+      mat-card-header {
+        .section-header {
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 16px;
+
+          .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+
+            mat-icon {
+              color: #1976d2;
+            }
+          }
+        }
+      }
+
+      .table-container {
+        overflow-x: auto;
+
+        .data-table {
+          width: 100%;
+
+          th.mat-header-cell {
+            font-weight: 500;
+            color: rgba(0, 0, 0, 0.87);
+            background-color: #f5f5f5;
+          }
+
+          .mat-column-actions {
+            width: 100px;
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+
+  // Action buttons wrapper - ensures right alignment
+  .action-buttons-wrapper {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+    margin: 8px 0;
+
+    .action-buttons {
+      grid-column: 2;
+      display: flex !important;
+      justify-content: flex-end !important;
+      align-items: center !important;
+      gap: 12px;
+      padding: 12px;
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      border: 1px solid #e9ecef;
+
+      // Alternative flexbox approach for extra safety
+      margin-left: auto;
+      width: fit-content;
+
+      // Force all visible buttons to align right
+      > * {
+        flex-shrink: 0;
+      }
+
+      // When buttons are visible, they should be pushed to the right
+      .action-button[style*="visibility: visible"],
+      .action-button:not([style*="visibility: hidden"]) {
+        display: inline-flex !important;
+      }
+
+      .action-button[style*="visibility: hidden"] {
+        display: none !important; // Completely hide hidden buttons to prevent layout issues
+      }
+
+      // Responsive design for smaller screens
+      @media (max-width: 768px) {
+        flex-wrap: wrap;
+        justify-content: flex-end !important;
+        gap: 8px;
+      }
+
+      @media (max-width: 480px) {
+        justify-content: flex-end !important;
+        flex-direction: row;
+        gap: 6px;
+      }
+
+      .action-button {
+        min-width: 120px;
+        height: 40px;
+        border-radius: 6px;
+        font-weight: 500;
+        text-transform: none;
+        transition: all 0.3s ease;
+
+        // Responsive button sizing
+        @media (max-width: 768px) {
+          min-width: 100px;
+          height: 36px;
+          font-size: 13px;
+        }
+
+        @media (max-width: 480px) {
+          min-width: 80px;
+          height: 32px;
+          font-size: 12px;
+        }
+
+        &.new-button {
+          background-color: #28a745;
+          color: white;
+          border: none;
+
+          &:hover:not(:disabled) {
+            background-color: #218838;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+          }
+        }
+
+        &.edit-button {
+          background-color: #007bff;
+          color: white;
+          border: none;
+
+          &:hover:not(:disabled) {
+            background-color: #0056b3;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+          }
+        }
+
+        &.cancel-button {
+          background-color: #6c757d;
+          color: white;
+          border: none;
+
+          &:hover:not(:disabled) {
+            background-color: #545b62;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(108, 117, 125, 0.3);
+          }
+        }
+
+        &.save-button {
+          background-color: #fd7e14;
+          color: white;
+          border: none;
+
+          &:hover:not(:disabled) {
+            background-color: #e8650c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(253, 126, 20, 0.3);
+          }
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+
+        mat-icon {
+          margin-right: 8px;
+          font-size: 18px;
+
+          @media (max-width: 480px) {
+            margin-right: 4px;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+  }
+
+  // Additional utility classes for ensuring right alignment
+  .buttons-right-force {
+    display: flex !important;
+    justify-content: flex-end !important;
+    width: 100% !important;
+
+    > * {
+      margin-left: auto !important;
+    }
+  }
+
+  // Override any conflicting Material styles
+  ::ng-deep {
+    .action-buttons-wrapper {
+      display: flex !important;
+      justify-content: flex-end !important;
+
+      .action-buttons {
+        margin-left: auto !important;
+        display: flex !important;
+        justify-content: flex-end !important;
+      }
+    }
+  }
+
+  // Additional utility classes for button alignment
+  .buttons-right {
+    display: flex !important;
+    justify-content: flex-end !important;
+    align-items: center !important;
+  }
 
   // CORREÇÃO GLOBAL DE ALINHAMENTO - Aplicar em todos os form-fields do componente
   ::ng-deep .mat-mdc-form-field {
@@ -115,8 +400,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
-  padding: 16px;
+    margin-bottom: 6px !important;
+  padding: 12px;
   background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
   color: white;
   border-radius: 8px;
@@ -153,10 +438,10 @@
 
 // Main Fields Section (sempre visível no topo) - Melhorada
 .main-fields-section {
-  margin-bottom: 32px;
+  margin-bottom: 20px;
   background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
   border-radius: 16px;
-  padding: 24px;
+  padding: 16px;
   border: 2px solid #e3f2fd;
   box-shadow: 0 4px 20px rgba(25, 118, 210, 0.08);
   transition: all 0.3s ease;
@@ -183,8 +468,8 @@
   }
 
   .section-header {
-    margin-bottom: 24px;
-    padding-bottom: 16px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
     border-bottom: 2px solid #e3f2fd;
     position: relative;
 
@@ -205,7 +490,7 @@
         width: 28px;
         height: 28px;
         background: rgba(25, 118, 210, 0.1);
-        border-radius: 50%;
+      margin: 6px 0 !important;
         padding: 8px;
         box-sizing: content-box;
         transition: all 0.3s ease;
@@ -330,6 +615,7 @@
               color: #ecf0f1;
               cursor: not-allowed;
               transform: none;
+                margin-top: 6px !important;
               box-shadow: none;
             }
           }
@@ -535,65 +821,6 @@
   }
 }
 
-// Action Buttons - Alinhados à direita
-.action-buttons {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 24px;
-  padding: 0 16px;
-  justify-content: flex-end; // Alinha todos os botões à direita
-  align-items: center;
-
-  .action-button {
-    min-width: 120px;
-    height: 40px;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-
-    &.new-button {
-      background-color: #4caf50;
-      color: white;
-
-      &:hover:not(:disabled) {
-        background-color: #45a049;
-      }
-    }
-
-    &.edit-button {
-      background-color: #2196f3;
-      color: white;
-
-      &:hover:not(:disabled) {
-        background-color: #1976d2;
-      }
-    }
-
-    &.cancel-button {
-      background-color: #f44336;
-      color: white;
-
-      &:hover:not(:disabled) {
-        background-color: #d32f2f;
-      }
-    }
-
-    &.save-button {
-      background-color: #ff9800;
-      color: white;
-
-      &:hover:not(:disabled) {
-        background-color: #f57c00;
-      }
-    }
-
-    &:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-  }
-}
-
 // Form Content
 .form-content {
   background: white;
@@ -626,15 +853,15 @@
   }
 
   .tab-content {
-    padding: 24px;
+    padding: 16px;
     min-height: 400px;
 
     .section-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
-      padding-bottom: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
       border-bottom: 2px solid #e3f2fd;
 
       .section-title {
@@ -771,7 +998,11 @@
   }
 }
 
-// Table Styles - Versão Simplificada e Funcional
+.milmed-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}// Table Styles - Versão Simplificada e Funcional
 .table-container {
   margin-top: 16px;
   overflow-x: auto;
@@ -781,8 +1012,16 @@
   .data-table {
     width: 100%;
     min-width: 600px;
+  }
 
-    .mat-mdc-header-cell {
+  .empty-table {
+    text-align: center;
+    padding: 16px;
+    color: #666;
+    font-style: italic;
+  }
+
+  .mat-mdc-header-cell {
       background-color: #f5f5f5;
       font-weight: 600;
       color: #333;
@@ -850,6 +1089,121 @@
         }
       }
 
+      // Campos de autocomplete na tabela
+      .table-input-autocomplete {
+        width: 100%;
+
+        ::ng-deep .mat-mdc-form-field-wrapper {
+          padding-bottom: 0 !important;
+        }
+
+        ::ng-deep .mdc-text-field {
+          height: 32px !important;
+          min-height: 32px !important;
+        }
+
+        ::ng-deep .mdc-floating-label {
+          display: none !important;
+        }
+
+        ::ng-deep .mat-mdc-form-field-infix {
+          padding: 8px 0 !important;
+          min-height: 16px !important;
+        }
+
+        ::ng-deep .mat-mdc-text-field--outlined .mdc-notched-outline {
+          border-color: #dee2e6;
+        }
+
+        ::ng-deep .mat-mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mdc-notched-outline {
+          border-color: #adb5bd;
+        }
+
+        // Botão de clear na tabela
+        ::ng-deep .mat-mdc-icon-button {
+          width: 24px !important;
+          height: 24px !important;
+          padding: 0 !important;
+
+          .mat-mdc-button-touch-target {
+            width: 24px !important;
+            height: 24px !important;
+          }
+
+          mat-icon {
+            font-size: 16px !important;
+            width: 16px !important;
+            height: 16px !important;
+          }
+        }
+      }
+
+      // Campos normais da tabela com mat-form-field
+      .table-input-field {
+        width: 100%;
+
+        ::ng-deep .mat-mdc-form-field-wrapper {
+          padding-bottom: 0 !important;
+        }
+
+        ::ng-deep .mdc-text-field {
+          height: 32px !important;
+          min-height: 32px !important;
+        }
+
+        ::ng-deep .mdc-floating-label {
+          display: none !important;
+        }
+
+        ::ng-deep .mat-mdc-form-field-infix {
+          padding: 8px 0 !important;
+          min-height: 16px !important;
+        }
+
+        ::ng-deep .mat-mdc-text-field--outlined .mdc-notched-outline {
+          border-color: #dee2e6;
+        }
+
+        ::ng-deep .mat-mdc-text-field--outlined:not(.mdc-text-field--disabled):hover .mdc-notched-outline {
+          border-color: #adb5bd;
+        }
+
+        ::ng-deep .mat-mdc-form-field-error-wrapper {
+          padding-top: 2px;
+        }
+      }
+
+      // Botão de ação na tabela (remover)
+      .table-action-button {
+        font-size: 12px !important;
+        padding: 6px 12px !important;
+        min-width: auto !important;
+        height: 32px !important;
+        line-height: 1 !important;
+
+        mat-icon {
+          font-size: 16px !important;
+          width: 16px !important;
+          height: 16px !important;
+          margin-right: 4px !important;
+        }
+
+        &.mat-warn {
+          border-color: #dc3545 !important;
+          color: #dc3545 !important;
+
+          &:hover:not(:disabled) {
+            background-color: rgba(220, 53, 69, 0.1) !important;
+          }
+
+          &:disabled {
+            border-color: #dee2e6 !important;
+            color: #6c757d !important;
+            opacity: 0.6;
+          }
+        }
+      }
+
       // Campos simples sem botão
       .table-field {
         width: 100%;
@@ -897,9 +1251,44 @@
           cursor: not-allowed;
         }
 
+        // Estilo para campo com erro
+        &.error {
+          border-color: #f44336;
+          background-color: #ffebee;
+
+          &:focus {
+            border-color: #f44336;
+            box-shadow: 0 0 0 2px rgba(244, 67, 54, 0.2);
+          }
+        }
+
         &::placeholder {
           color: rgba(0, 0, 0, 0.4);
           font-style: italic;
+        }
+      }
+
+      // Container para input com validação
+      .input-container {
+        position: relative;
+        width: 100%;
+
+        .error-message {
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          font-size: 11px;
+          color: #f44336;
+          background-color: #ffebee;
+          padding: 2px 4px;
+          border: 1px solid #f44336;
+          border-top: none;
+          border-radius: 0 0 4px 4px;
+          z-index: 10;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
       }
 
@@ -934,7 +1323,6 @@
       }
     }
   }
-}
 
 // Responsive Design
 @media (max-width: 768px) {
@@ -1297,6 +1685,18 @@
       }
     }
   }
+}
+
+// Adicione este estilo no final do arquivo
+.empty-table {
+  text-align: center;
+  padding: 16px;
+  color: #666;
+  font-style: italic;
+}
+
+.full-width-table {
+  width: 100%;
 }
 
 // Garantir que os botões não quebrem o layout

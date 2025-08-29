@@ -1,29 +1,36 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { SecureStorageService } from '@core/services/secure-storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LocalStorageService {
+  private secureStorage = inject(SecureStorageService);
+
   get(key: string) {
-    return JSON.parse(localStorage.getItem(key) || '{}') || {};
+    try {
+      const value = this.secureStorage.getItem(key);
+      return value || {};
+    } catch {
+      return {};
+    }
   }
 
   set(key: string, value: any): boolean {
-    localStorage.setItem(key, JSON.stringify(value));
-
+    this.secureStorage.setItem(key, value);
     return true;
   }
 
   has(key: string): boolean {
-    return !!localStorage.getItem(key);
+    return this.secureStorage.hasItem(key);
   }
 
   remove(key: string) {
-    localStorage.removeItem(key);
+    this.secureStorage.removeItem(key);
   }
 
   clear() {
-    localStorage.clear();
+    this.secureStorage.clearSensitiveData();
   }
 }
 

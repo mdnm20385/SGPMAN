@@ -1,0 +1,118 @@
+<div class="modal-wrapper" mat-dialog-content>
+  <form [formGroup]="form" class="ficha-militar-form" [ngClass]="'state-edit'">
+    <!-- Header Section -->
+    <div class="form-header">
+      <h2 class="form-title">
+        <mat-icon>military_tech</mat-icon>
+        {{ isEdit ? 'Editar Promoção' : 'Nova Promoção' }}
+      </h2>
+      <span class="state-indicator" [ngClass]="'state-edit'">
+        {{ isEdit ? 'Editando' : 'Novo' }}
+      </span>
+    </div>
+
+    <!-- Action buttons section -->
+    <div class="action-buttons-wrapper">
+      <div class="action-buttons">
+        <button mat-raised-button
+                color="primary"
+                type="button"
+                class="action-button save-button"
+                (click)="onSubmit()"
+                [disabled]="form.invalid || isSubmitting"
+                [matTooltip]="isEdit ? 'Atualizar promoção' : 'Salvar nova promoção'">
+          <mat-icon>save</mat-icon>
+          {{ isEdit ? 'Atualizar' : 'Salvar' }}
+        </button>
+
+        <button mat-raised-button
+                type="button"
+                class="action-button cancel-button"
+                (click)="onCancel()"
+                [disabled]="isSubmitting"
+                matTooltip="Cancelar alterações">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Content -->
+    <div class="form-content">
+      <app-header-militar
+      [nimMilitar]="form.get('nimMilitar')?.value"
+       [nomeMilitar]="form.get('nomeMilitar')?.value"></app-header-militar>
+
+      <mat-tab-group>
+        <mat-tab label="Informações da Promoção">
+          <div class="tab-content">
+            <!-- Categoria -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Categoria</mat-label>
+                <input matInput formControlName="categoria" required>
+                <mat-error *ngIf="form.get('categoria')?.errors?.required">
+                  Categoria é obrigatória
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Patente -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Patente</mat-label>
+                <input matInput formControlName="patente" required>
+                <mat-error *ngIf="form.get('patente')?.errors?.required">
+                  Patente é obrigatória
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Tipo de Promoção -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Tipo de Promoção</mat-label>
+                <input matInput formControlName="tipoPromocao" required>
+                <mat-error *ngIf="form.get('tipoPromocao')?.errors?.required">
+                  Tipo de promoção é obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Data OS -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Data OS</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="dataOS" required>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+                <mat-error *ngIf="form.get('dataOS')?.errors?.required">
+                  Data OS é obrigatória
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Número OS -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Número OS</mat-label>
+                <input matInput formControlName="numOS" required>
+                <mat-error *ngIf="form.get('numOS')?.errors?.required">
+                  Número OS é obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Observações -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Observações</mat-label>
+                <textarea matInput formControlName="obs" rows="4"></textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </form>
+</div>

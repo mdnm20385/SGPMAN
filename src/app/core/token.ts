@@ -70,16 +70,41 @@ export class JwtToken extends SimpleToken {
       return this._payload;
     }
 
-    const [, payload] = this.access_token.split('.');
+    try {
+      const [, payload] = this.access_token.split('.');
 
-    const data = JSON.parse(base64.decode(payload));
-    if (!data.exp) {
-      data.exp = this.attributes.exp;
+      if (!payload) {
+        console.error('Token payload is empty');
+        return {};
+      }
+
+      const data = JSON.parse(base64.decode(payload));
+
+      if (!data.exp) {
+        data.exp = this.attributes.exp;
+      }
+
+      // ✅ CORREÇÃO: Verificar e criar objeto user se não existir
+      if (!data.user) {
+        data.user = {};
+      }
+
+      // ✅ CORREÇÃO: Verificar se attributes.usuario existe
+      if (this.attributes.usuario) {
+        data.user.username = this.attributes.usuario.login || '';
+        data.user.name = this.attributes.usuario.nome || '';
+        data.user.email = this.attributes.usuario.email || `${this.attributes.usuario.login}@gmail.com`;
+      } else {
+        // Valores padrão caso usuario não exista
+        data.user.username = '';
+        data.user.name = '';
+        data.user.email = '';
+      }
+
+      return (this._payload = data);
+    } catch (error) {
+      console.error('Error parsing token payload:', error);
+      return {};
     }
-data.user.username=this.attributes.usuario?.login;
-data.user.name=this.attributes.usuario?.nome;
-data.user.email=`${this.attributes.usuario?.login}@gmail.com`;
-
-    return (this._payload = data);
   }
 }

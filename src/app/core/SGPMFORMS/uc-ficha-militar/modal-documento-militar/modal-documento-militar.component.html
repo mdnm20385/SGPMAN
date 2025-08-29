@@ -1,0 +1,122 @@
+<div class="modal-wrapper" mat-dialog-content>
+  <form [formGroup]="form" class="ficha-militar-form" [ngClass]="'state-edit'">
+    <!-- Header Section -->
+    <div class="form-header">
+        <button mat-icon-button type="button"  (click)="reloadFormData()">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <h2 class="form-title">
+        <mat-icon>description</mat-icon>
+        {{ isEdit ? 'Editar Documento' : 'Novo Documento' }}
+      </h2>
+      <span class="state-indicator" [ngClass]="'state-edit'">
+        {{ isEdit ? 'Editando' : 'Novo' }}
+      </span>
+    </div>
+
+    <!-- Action buttons section -->
+    <div class="action-buttons-wrapper">
+      <div class="action-buttons">
+        <button mat-raised-button
+                color="primary"
+                type="button"
+                class="action-button save-button"
+                (click)="onSubmit()"
+                [disabled]="form.invalid || isSubmitting"
+                [matTooltip]="isEdit ? 'Atualizar documento' : 'Salvar novo documento'">
+          <mat-icon>save</mat-icon>
+          {{ isEdit ? 'Atualizar' : 'Salvar' }}
+        </button>
+
+        <button mat-raised-button
+                type="button"
+                class="action-button cancel-button"
+                (click)="onCancel()"
+                [disabled]="isSubmitting"
+                matTooltip="Cancelar alterações">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Content -->
+    <div class="form-content">
+      <app-header-militar
+      [nimMilitar]="form.get('nimMilitar')?.value"
+       [nomeMilitar]="form.get('nomeMilitar')?.value"></app-header-militar>
+
+      <mat-tab-group>
+        <mat-tab label="Informações do Documento">
+          <div class="tab-content">
+            <!-- Tipo de Documento -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Tipo de Documento</mat-label>
+                <mat-select formControlName="tipoDocumento" required>
+                  <mat-option *ngFor="let tipo of tipoDocumentoOptions" [value]="tipo">
+                    {{tipo}}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>folder</mat-icon>
+                <mat-error *ngIf="getFormControl('tipoDocumento')?.hasError('required')">
+                  Campo obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Número do Documento -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Número do Documento</mat-label>
+                <input matInput formControlName="numeroDoc" required>
+                <mat-icon matSuffix>tag</mat-icon>
+                <mat-error *ngIf="getFormControl('numeroDoc')?.hasError('required')">
+                  Campo obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Local de Emissão -->
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Local de Emissão</mat-label>
+                <mat-select formControlName="localemissao" required>
+                  <mat-option *ngFor="let provincia of provinciasOptions" [value]="provincia">
+                    {{provincia}}
+                  </mat-option>
+                </mat-select>
+                <mat-icon matSuffix>location_on</mat-icon>
+                <mat-error *ngIf="getFormControl('localemissao')?.hasError('required')">
+                  Campo obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+
+            <!-- Data de Emissão e Validade na mesma linha -->
+            <div class="form-row two-cols">
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Data de Emissão</mat-label>
+                <input matInput [matDatepicker]="emissaoPicker" formControlName="dataemissao" required>
+                <mat-datepicker-toggle matSuffix [for]="emissaoPicker"></mat-datepicker-toggle>
+                <mat-datepicker #emissaoPicker></mat-datepicker>
+                <mat-error *ngIf="getFormControl('dataemissao')?.hasError('required')">
+                  Campo obrigatório
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline" class="half-width">
+                <mat-label>Data de Validade</mat-label>
+                <input matInput [matDatepicker]="validadePicker" formControlName="datavalid" required>
+                <mat-datepicker-toggle matSuffix [for]="validadePicker"></mat-datepicker-toggle>
+                <mat-datepicker #validadePicker></mat-datepicker>
+                <mat-error *ngIf="getFormControl('datavalid')?.hasError('required')">
+                  Campo obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,239 @@
+<div class="modal-wrapper" mat-dialog-content>
+  <form [formGroup]="funcaoForm" class="ficha-militar-form" [ngClass]="'state-edit'">
+    <!-- Header Section -->
+    <div class="form-header">
+      <h2 class="form-title">
+        <mat-icon>work</mat-icon>
+        {{ data ? 'Editar Função Militar' : 'Nova Função Militar' }}
+      </h2>
+      <span class="state-indicator" [ngClass]="'state-edit'">
+        {{ data ? 'Editando' : 'Nova' }}
+      </span>
+    </div>
+
+    <!-- Action buttons section -->
+    <div class="action-buttons-wrapper">
+      <div class="action-buttons">
+        <button mat-raised-button
+                color="primary"
+                type="button"
+                class="action-button save-button"
+                (click)="salvar()"
+                [disabled]="funcaoForm.invalid || isSubmitting"
+                [matTooltip]="data ? 'Atualizar função' : 'Salvar nova função'">
+          <mat-icon>save</mat-icon>
+          {{ data ? 'Atualizar' : 'Salvar' }}
+        </button>
+
+        <button mat-raised-button
+                type="button"
+                class="action-button cancel-button"
+                (click)="cancelar()"
+                [disabled]="isSubmitting"
+                matTooltip="Cancelar alterações">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Content -->
+    <div class="form-content">
+      <mat-tab-group>
+        <!-- Aba 1: Informações da Função -->
+        <mat-tab label="Informações da Função">
+          <div class="tab-content">
+            <div class="dados-funcao-section">
+              <!-- Primeira linha: Função -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Função</mat-label>
+                  <mtx-select
+                    [items]="selectFuncoes || []"
+                    formControlName="funcao"
+                    bindLabel="descricao"
+                    [loading]="loading"
+                    [hideSelected]="true"
+                    (change)="onFuncaoChange($event)"
+                    (clear)="clearFuncao()"
+                    [clearable]="true"
+                    placeholder="Selecione uma função">
+                  </mtx-select>
+                  <mat-icon matSuffix>work</mat-icon>
+                  <mat-error *ngIf="funcaoForm.get('funcao')?.hasError('required')">
+                    Função é obrigatória
+                  </mat-error>
+                </mat-form-field>
+              </div>
+
+              <!-- Segunda linha: Número OS e Data OS -->
+              <div class="form-row two-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Número da Ordem de Serviço</mat-label>
+                  <input matInput formControlName="numOS" placeholder="Número da OS">
+                  <mat-icon matSuffix>assignment</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Data da OS</mat-label>
+                  <input matInput
+                         type="date"
+                         formControlName="dataOS"
+                         placeholder="Data da ordem de serviço">
+                  <mat-icon matSuffix>event</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <!-- Terceira linha: Data Início e Data Fim -->
+              <div class="form-row two-columns">
+                <mat-form-field appearance="outline">
+                  <mat-label>Data de Início</mat-label>
+                  <input matInput
+                         type="date"
+                         formControlName="dataInicio"
+                         placeholder="Data de início da função">
+                  <mat-icon matSuffix>play_arrow</mat-icon>
+                  <mat-error *ngIf="funcaoForm.get('dataInicio')?.hasError('dataFutura')">
+                    A data de início não pode ser superior à data atual
+                  </mat-error>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                  <mat-label>Data de Fim</mat-label>
+                  <input matInput
+                         type="date"
+                         formControlName="dataTermino"
+                         placeholder="Data de fim da função">
+                  <mat-icon matSuffix>stop</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <!-- Observações -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Observações</mat-label>
+                  <textarea matInput
+                           formControlName="obs"
+                           rows="3"
+                           placeholder="Observações sobre a função militar"></textarea>
+                  <mat-icon matSuffix>notes</mat-icon>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Aba 2: Lotação/Local de Afectação -->
+        <mat-tab label="Lotação/Local de Afectação">
+          <div class="tab-content">
+            <div class="hierarchy-section">
+              <h3 class="section-title">
+                <mat-icon>location_on</mat-icon>
+                Local de Afectação
+              </h3>
+
+              <!-- Órgão -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Órgão</mat-label>
+                  <mtx-select
+                    [items]="selectOrgaos || []"
+                    formControlName="orgao"
+                    bindLabel="descricao"
+                    [loading]="loading"
+                    [hideSelected]="true"
+                    (change)="onOrgaoChange($event)"
+                    (clear)="clearOrgao()"
+                    [clearable]="true"
+                    placeholder="Selecione um órgão">
+                  </mtx-select>
+                  <mat-icon matSuffix>business</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <!-- Unidade -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Unidade</mat-label>
+                  <mtx-select
+                    [items]="selectUnidades || []"
+                    formControlName="unidade"
+                    bindLabel="descricao"
+                    [loading]="loading"
+                    [hideSelected]="true"
+                    [disabled]="!funcaoForm.get('orgaoStamp')?.value"
+                    (change)="onUnidadeChange($event)"
+                    (clear)="clearUnidade()"
+                    [clearable]="true"
+                    placeholder="Selecione uma unidade">
+                  </mtx-select>
+                  <mat-icon matSuffix>domain</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <!-- Subunidade -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Subunidade</mat-label>
+                  <mtx-select
+                    [items]="selectSubunidades || []"
+                    formControlName="subunidade"
+                    bindLabel="descricao"
+                    [loading]="loading"
+                    [hideSelected]="true"
+                    [disabled]="!funcaoForm.get('unidadeStamp')?.value"
+                    (change)="onSubunidadeChange($event)"
+                    (clear)="clearSubunidade()"
+                    [clearable]="true"
+                    placeholder="Selecione uma subunidade">
+                  </mtx-select>
+                  <mat-icon matSuffix>layers</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <!-- Subunidade 1 -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Subunidade 1</mat-label>
+                  <mtx-select
+                    [items]="selectSubunidades1 || []"
+                    formControlName="subunidade1"
+                    bindLabel="descricao"
+                    [loading]="loading"
+                    [hideSelected]="true"
+                    [disabled]="!funcaoForm.get('subunidadeStamp')?.value"
+                    (change)="onSubunidade1Change($event)"
+                    (clear)="clearSubunidade1()"
+                    [clearable]="true"
+                    placeholder="Selecione uma subunidade 1">
+                  </mtx-select>
+                  <mat-icon matSuffix>filter_1</mat-icon>
+                </mat-form-field>
+              </div>
+
+              <!-- Subunidade 2 -->
+              <div class="form-row">
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Subunidade 2</mat-label>
+                  <mtx-select
+                    [items]="selectSubunidades2 || []"
+                    formControlName="subunidade2"
+                    bindLabel="descricao"
+                    [loading]="loading"
+                    [hideSelected]="true"
+                    [disabled]="!funcaoForm.get('subunidade1Stamp')?.value"
+                    (change)="onSubunidade2Change($event)"
+                    (clear)="clearSubunidade2()"
+                    [clearable]="true"
+                    placeholder="Selecione uma subunidade 2">
+                  </mtx-select>
+                  <mat-icon matSuffix>filter_2</mat-icon>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+  </form>
+</div>

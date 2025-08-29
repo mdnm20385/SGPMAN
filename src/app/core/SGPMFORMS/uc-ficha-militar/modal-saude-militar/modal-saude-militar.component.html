@@ -1,0 +1,65 @@
+<div class="modal-container">
+  <h2 mat-dialog-title>{{ dialogTitle }}</h2>
+  <form [formGroup]="saudeForm" (ngSubmit)="salvar()">
+    <div mat-dialog-content>
+      <div class="form-container">
+
+      <app-header-militar
+      [nimMilitar]="form.get('nimMilitar')?.value"
+       [nomeMilitar]="form.get('nomeMilitar')?.value"></app-header-militar>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Doença Atual</mat-label>
+          <input matInput formControlName="doencaSofre">
+          <mat-error *ngIf="saudeForm.get('doencaSofre')?.hasError('maxlength')">
+            Máximo de 255 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Doença Anterior</mat-label>
+          <input matInput formControlName="doencaSofrida">
+          <mat-error *ngIf="saudeForm.get('doencaSofrida')?.hasError('maxlength')">
+            Máximo de 255 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Cirurgia</mat-label>
+          <input matInput formControlName="cirurgiaSofrida">
+          <mat-error *ngIf="saudeForm.get('cirurgiaSofrida')?.hasError('maxlength')">
+            Máximo de 255 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Motivo</mat-label>
+          <input matInput formControlName="motivoDoenca">
+          <mat-error *ngIf="saudeForm.get('motivoDoenca')?.hasError('maxlength')">
+            Máximo de 255 caracteres
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Data de Início</mat-label>
+          <input matInput [matDatepicker]="datePicker" formControlName="datainicioDoenca">
+          <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+          <mat-datepicker #datePicker></mat-datepicker>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Observações</mat-label>
+          <textarea matInput formControlName="obs" rows="3"></textarea>
+          <mat-error *ngIf="saudeForm.get('obs')?.hasError('maxlength')">
+            Máximo de 500 caracteres
+          </mat-error>
+        </mat-form-field>
+      </div>
+    </div>
+
+    <div mat-dialog-actions align="end">
+      <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="saudeForm.invalid">Salvar</button>
+    </div>
+  </form>
+</div>

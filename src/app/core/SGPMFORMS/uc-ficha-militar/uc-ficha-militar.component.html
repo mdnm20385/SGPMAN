@@ -1,58 +1,65 @@
 <div class="ficha-militar-container">
-  <form [formGroup]="fichaForm" class="ficha-militar-form"
-   [ngClass]="'state-' + formState" (ngSubmit)="onSubmit()">
+  <form [formGroup]="fichaForm" class="ficha-militar-form" [ngClass]="'state-' + formState" (ngSubmit)="onSubmit()">
 
     <!-- Header Section -->
     <div class="form-header">
+
       <h2 class="form-title">{{ displayTitle }}</h2>
-      <!-- State indicator -->
+
       <span class="state-indicator" [ngClass]="'state-' + formState">
         {{ getFormStateLabel() }}
       </span>
+
     </div>
 
     <!-- Action buttons section -->
-    <div class="action-buttons">
-      <button
-        mat-raised-button type="button"
-        class="action-button new-button"
-        (click)="onNew()"
-        [disabled]="formState === 'insert'"
-        matTooltip="Novo registro">
-        <mat-icon>add</mat-icon>
-        Novo
-      </button>
+    <div class="action-buttons-wrapper" style="display: flex; justify-content: flex-end; width: 100%;">
+      <div class="action-buttons" style="margin-left: auto;">
+        <button
+          mat-raised-button type="button"
+          class="action-button new-button"
+          (click)="onNew()"
+          [disabled]="formState === 'insert'"
+          [style.visibility]="isNewButtonVisible() ? 'visible' : 'hidden'"
+          matTooltip="Novo registro">
+          <mat-icon>add</mat-icon>
+          Novo
+        </button>
 
-      <button
-        mat-raised-button type="button"
-        class="action-button edit-button"
-        (click)="onEdit()"
-        [disabled]="formState === 'update' || !isDocumentLoaded"
-        matTooltip="Editar registro atual">
-        <mat-icon>edit</mat-icon>
-        Editar
-      </button>
+        <button
+          mat-raised-button type="button"
+          class="action-button edit-button"
+          (click)="onEdit()"
+          [disabled]="formState === 'update' || !isDocumentLoaded"
+          [style.visibility]="isEditButtonVisible() ? 'visible' : 'hidden'"
+          matTooltip="Editar registro atual">
+          <mat-icon>edit</mat-icon>
+          Editar
+        </button>
 
-      <button
-        mat-raised-button type="button"
-        class="action-button cancel-button"
-        (click)="onCancel()"
-        [disabled]="formState === 'cancel'"
-        matTooltip="Cancelar alterações">
-        <mat-icon>cancel</mat-icon>
-        Cancelar
-      </button>
+        <button
+          mat-raised-button type="button"
+          class="action-button cancel-button"
+          (click)="onCancel()"
+          [disabled]="formState === 'cancel'"
+          [style.visibility]="isCancelButtonVisible() ? 'visible' : 'hidden'"
+          matTooltip="Cancelar alterações">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
 
-      <button
-        mat-raised-button
-        type="submit"
-        color="primary"
-        class="action-button save-button"
-        [disabled]="!canPerformActions() || fichaForm.invalid"
-        matTooltip="Salvar alterações"  >
-        <mat-icon>save</mat-icon>
-        Salvar
-      </button>
+        <button
+          mat-raised-button
+          type="submit"
+          color="primary"
+          class="action-button save-button"
+          [disabled]="!canPerformActions() || fichaForm.invalid"
+          [style.visibility]="isSaveButtonVisible() ? 'visible' : 'hidden'"
+          matTooltip="Salvar alterações">
+          <mat-icon>save</mat-icon>
+          Salvar
+        </button>
+      </div>
     </div>
 
     <!-- Main Form Content -->
@@ -68,19 +75,21 @@
         </div>
 
         <div class="main-fields-grid">
-
           <!-- NIM - Campo col-sm-3 -->
           <div class="form-group field-nim">
             <mat-form-field appearance="outline">
               <mat-label>NIM</mat-label>
-              <input matInput formControlName="nim" type="number" [disabled]="!canPerformActions()">
+              <input matInput formControlName="nim" readonly [value]="formState === 'insert' ? 0 : fichaForm.get('nim')?.value">
               <button mat-icon-button matSuffix
                       class="search-button document-search"
                       (click)="onMilitarSearchClick('nim,nome,milstamp')"
                       type="button"
-                      [disabled]="formState !== 'cancel'">
+                      [disabled]="canPerformActions()"
+                      matTooltip="Procurar por NIM">
                 <mat-icon>search</mat-icon>
               </button>
+               <mat-hint>Este campo é gerado automaticamente pelo sistema.</mat-hint>
+
              </mat-form-field>
           </div>
 
@@ -93,7 +102,8 @@
                       class="search-button document-search"
                       (click)="onMilitarSearchClick('nome,nim,milstamp')"
                       type="button"
-                      [disabled]="formState !== 'cancel'">
+                      [disabled]="canPerformActions()"
+                      matTooltip="Procurar por Nome">
                 <mat-icon>search</mat-icon>
               </button>
             </mat-form-field>
@@ -105,16 +115,10 @@
               <mat-label>Situação Atual</mat-label>
               <input matInput
                      formControlName="situacaoAtual"
-                     [disabled]="!canPerformActions()"
-                     [matAutocomplete]="autoSituacao"
-                     placeholder="Digite para procurar...">
-              <mat-autocomplete #autoSituacao="matAutocomplete">
-                <mat-option *ngFor="let situacao of filteredSituacao | async" [value]="situacao">
-                  {{situacao}}
-                </mat-option>
-              </mat-autocomplete>
+                     readonly
+                     placeholder="Carregada automaticamente da última situação">
               <mat-icon matSuffix>assignment_ind</mat-icon>
-              <mat-hint>Situação militar atual</mat-hint>
+              <mat-hint>Situação militar atual (somente leitura)</mat-hint>
             </mat-form-field>
           </div>
         </div>
@@ -125,9 +129,15 @@
       <!-- Tab Group -->
       <mat-tab-group class="custom-tab-group" dynamicHeight>
 
-        <!-- Tab 1: Dados Pessoais -->
+        <mat-tab label="Dados gerais">
+
+          <div class="tab-content">
+          <mat-tab-group>
+             <!-- Tab 1: Dados Pessoais -->
         <mat-tab label="Dados Pessoais">
           <div class="tab-content">
+            <!-- Campo de busca por Nim ou Nome do militar -->
+
             <div class="section-header">
               <h3 class="section-title">
                 <mat-icon>person</mat-icon>
@@ -228,14 +238,24 @@
                   <div class="form-group form-group-half">
                     <mat-form-field appearance="outline">
                       <mat-label>Nacionalidade</mat-label>
-                      <input matInput formControlName="nacional" [disabled]="!canPerformActions()">
+                      <input matInput
+                             formControlName="nacional"
+                             [disabled]="!canPerformActions()"
+                             [matAutocomplete]="autoNacionalidade"
+                             placeholder="Digite para procurar...">
+                      <mat-autocomplete #autoNacionalidade="matAutocomplete"
+                                        [displayWith]="displayFunction"
+                                        (optionSelected)="onOptionSelected('nacional', $event)">
+                        <mat-option *ngFor="let nacionalidade of filteredNacionalidades | async" [value]="nacionalidade">
+                          {{nacionalidade}}
+                        </mat-option>
+                      </mat-autocomplete>
                       <button mat-icon-button matSuffix
-                              class="search-button document-search"
-                              (click)="searchNacionalidade()"
                               type="button"
-                              [disabled]="!canPerformActions()"
-                              matTooltip="Procurar Nacionalidade">
-                        <mat-icon>menu_vert</mat-icon>
+                              (click)="clearSelectionWithReset('nacional', autoNacionalidade)"
+                              [disabled]="!canPerformActions() || !fichaForm.get('nacional')?.value"
+                              matTooltip="Limpar seleção">
+                        <mat-icon>clear</mat-icon>
                       </button>
                     </mat-form-field>
                   </div>
@@ -280,7 +300,7 @@
                   </div>
 
                   <div class="form-group">
-                    <mat-form-field appearance="outline">
+                    <mat-form-field appearance="outline" class="form-group-half">
                       <mat-label>Habilitações Literárias</mat-label>
                       <input matInput
                              formControlName="habiLite"
@@ -290,8 +310,8 @@
                       <mat-autocomplete #autoHabilitacoes="matAutocomplete"
                                         [displayWith]="displayFunction"
                                         (optionSelected)="onOptionSelected('habiLite', $event)">
-                        <mat-option *ngFor="let habilitacao of filteredHabilitacoes | async" [value]="habilitacao">
-                          {{habilitacao}}
+                        <mat-option *ngFor="let hab of filteredHabilitacoes | async" [value]="hab">
+                          {{hab}}
                         </mat-option>
                       </mat-autocomplete>
                       <button mat-icon-button matSuffix
@@ -304,64 +324,30 @@
                     </mat-form-field>
                   </div>
 
-                  <div class="form-group">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Ramo</mat-label>
-                      <input matInput formControlName="ramo" [disabled]="!canPerformActions()">
-                      <button mat-icon-button matSuffix
-                              class="search-button document-search"
-                              (click)="searchRamo()"
-                              type="button"
-                              [disabled]="!canPerformActions()"
-                              matTooltip="Procurar Ramo">
-                        <mat-icon>menu_vert</mat-icon>
-                      </button>
-                    </mat-form-field>
-                  </div>
+                  <!-- ...outros campos... -->
                 </div>
               </div>
 
               <!-- Coluna da foto (col-sm-2) -->
               <div class="col-sm-2">
                 <div class="photo-section">
-                  <h5 class="photo-title">
-                    <mat-icon>photo_camera</mat-icon>
-                    Foto do Militar
-                  </h5>
+                  <h5 class="photo-title" style="text-align:center;font-weight:600;margin-bottom:12px;">Foto Militar</h5>
+                  <div class="photo-container" style="display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f7f9fc;border-radius:12px;padding:18px 10px;box-shadow:0 2px 8px rgba(0,0,0,0.07);border:1px solid #e0e4ea;min-height:240px;">
+                    <img *ngIf="militarPhoto" [src]="militarPhoto" alt="Foto do Militar" style="max-width:120px;max-height:160px;border-radius:10px;border:2px solid #1976d2;box-shadow:0 2px 8px rgba(25,118,210,0.08);margin-bottom:10px;object-fit:cover;" />
 
-                  <div class="photo-container">
-                    <!-- Preview da imagem -->
-                    <div class="photo-preview" [class.has-photo]="militarPhoto">
-                      <div *ngIf="!militarPhoto" class="no-photo-placeholder">
-                        <mat-icon>person</mat-icon>
-                        <span>Sem foto</span>
-                      </div>
 
-                      <img *ngIf="militarPhoto"
-                           [src]="militarPhoto"
-                           alt="Foto do militar"
-                           class="militar-image">
+
+
+                    <div *ngIf="!militarPhoto" style="color:#b0b5be;font-size:15px;padding:18px 0;text-align:center;">
+                      <mat-icon style="font-size:38px;color:#b0b5be;">person</mat-icon><br>
+                      Nenhuma foto carregada
                     </div>
-
-                    <!-- Ações da foto -->
-                    <div class="photo-actions">
-                      <button mat-mini-fab
-                              color="primary"
-                              type="button"
-                              (click)="openPhotoCapture()"
-                              [disabled]="!canPerformActions()"
-                              matTooltip="{{ militarPhoto ? 'Alterar Foto' : 'Adicionar Foto' }}">
-                        <mat-icon>{{ militarPhoto ? 'edit' : 'add_a_photo' }}</mat-icon>
+                    <div style="margin-top:10px;display:flex;flex-direction:column;gap:8px;width:100%;align-items:center;">
+                      <button mat-raised-button color="primary" type="button" (click)="openPhotoCapture()" [disabled]="!canPerformActions()" matTooltip="Capturar ou carregar foto" style="width:90%;min-width:120px;">
+                        <mat-icon>photo_camera</mat-icon> <span style="margin-left:4px;">Capturar/Carregar Foto</span>
                       </button>
-
-                      <button mat-mini-fab
-                              color="warn"
-                              type="button"
-                              (click)="removePhoto()"
-                              [disabled]="!canPerformActions() || !militarPhoto"
-                              *ngIf="militarPhoto"
-                              matTooltip="Remover Foto">
-                        <mat-icon>delete</mat-icon>
+                      <button *ngIf="militarPhoto" mat-raised-button color="warn" type="button" (click)="removePhoto()" [disabled]="!canPerformActions()" matTooltip="Remover Foto" style="width:90%;min-width:120px;">
+                        <mat-icon>delete</mat-icon> <span style="margin-left:4px;">Remover Foto</span>
                       </button>
                     </div>
                   </div>
@@ -382,17 +368,27 @@
             </div>
 
             <div class="form-grid form-grid-three-columns">
+
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>País de Nascimento</mat-label>
-                  <input matInput formControlName="nascPais" [disabled]="!canPerformActions()">
+                  <input matInput formControlName="nascPais"
+                         [matAutocomplete]="autoPaisNasc"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoPaisNasc="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onPaisSelected($event.option.value, 'nasc')">
+                    <mat-option *ngFor="let option of filteredPaisesNasc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
                   <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchPais('nascPais')"
+                          class="clear-button"
+                          (click)="clearLocationSelection('nascPais', 'nasc')"
                           type="button"
                           [disabled]="!canPerformActions()"
-                          matTooltip="Procurar País">
-                    <mat-icon>menu_vert</mat-icon>
+                          matTooltip="Limpar País">
+                    <mat-icon>clear</mat-icon>
                   </button>
                 </mat-form-field>
               </div>
@@ -505,6 +501,22 @@
         <!-- Tab 3: Documentos -->
         <mat-tab label="Documentos">
           <div class="tab-content">
+  <div class="form-group field-nome">
+           <mat-form-field appearance="outline">
+  <mat-label>Procura Por BI</mat-label>
+  <input matInput formControlName="procBi"
+       [disabled]="!canPerformActions()">
+    <button mat-icon-button matSuffix
+            class="search-button document-search"
+            (click)="onMilitarBiSearchClick('bi')"
+            type="button"
+            [disabled]="!fichaForm.get('procBi')?.value"
+            matTooltip="Procurar por BI">
+      <mat-icon>search</mat-icon>
+    </button>
+  </mat-form-field>
+          </div>
+
             <div class="section-header">
               <h3 class="section-title">
                 <mat-icon>description</mat-icon>
@@ -524,75 +536,48 @@
                 <!-- Tipo de Documento Column -->
                 <ng-container matColumnDef="tipoDocumento">
                   <th mat-header-cell *matHeaderCellDef>Tipo de Documento</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <div class="input-with-search">
-                      <input class="table-input"
-                             [formControl]="$any(docFormArray.at(i)).get('tipoDocumento')"
-                             [disabled]="!canPerformActions()"
-                             placeholder="Tipo de documento">
-                      <button mat-icon-button
-                              type="button"
-                              (click)="selectedDocIndex = i; searchTipoDocumento(i)"
-                              [disabled]="!canPerformActions()"
-                              matTooltip="Procurar Tipo de Documento">
-                        <mat-icon>menu_vert</mat-icon>
-                      </button>
-                    </div>
-                  </td>
+                  <td mat-cell *matCellDef="let element">{{element.tipoDocumento}}</td>
                 </ng-container>
 
                 <!-- Número do Documento Column -->
                 <ng-container matColumnDef="numeroDoc">
                   <th mat-header-cell *matHeaderCellDef>Número</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input"
-                           [formControl]="$any(docFormArray.at(i)).get('numeroDoc')"
-                           [disabled]="!canPerformActions()"
-                           placeholder="Número do documento">
-                  </td>
+                  <td mat-cell *matCellDef="let element">{{element.numeroDoc}}</td>
                 </ng-container>
 
                 <!-- Local de Emissão Column -->
                 <ng-container matColumnDef="localemissao">
                   <th mat-header-cell *matHeaderCellDef>Local de Emissão</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <div class="input-with-search">
-                      <input class="table-input"
-                             [formControl]="$any(docFormArray.at(i)).get('localemissao')"
-                             [disabled]="!canPerformActions()"
-                             placeholder="Local de emissão">
-                      <button mat-icon-button
-                              type="button"
-                              (click)="selectedDocIndex = i; searchLocalEmissao(i)"
-                              [disabled]="!canPerformActions()"
-                              matTooltip="Procurar Local de Emissão">
-                        <mat-icon>menu_vert</mat-icon>
-                      </button>
-                    </div>
-                  </td>
+                  <td mat-cell *matCellDef="let element">{{element.localemissao}}</td>
                 </ng-container>
 
                 <!-- Data de Emissão Column -->
                 <ng-container matColumnDef="dataemissao">
                   <th mat-header-cell *matHeaderCellDef>Data de Emissão</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input"
-                           [formControl]="$any(docFormArray.at(i)).get('dataemissao')"
-                           [disabled]="!canPerformActions()"
-                           placeholder="Data de emissão"
-                           type="date">
-                  </td>
+                  <td mat-cell *matCellDef="let element">{{element.dataemissao | date:'dd/MM/yyyy'}}</td>
+                </ng-container>
+
+                <!-- Data de Validade Column -->
+                <ng-container matColumnDef="datavalid">
+                  <th mat-header-cell *matHeaderCellDef>Data de Validade</th>
+                  <td mat-cell *matCellDef="let element">{{element.datavalid | date:'dd/MM/yyyy'}}</td>
                 </ng-container>
 
                 <!-- Actions Column -->
+ <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
                   <th mat-header-cell *matHeaderCellDef>Ações</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <button mat-icon-button color="warn"
-                            type="button"
+                    <button mat-icon-button color="primary"  type="button"
+                            (click)="editarDocumento(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button color="warn" type="button"
                             (click)="removerDocumento(i)"
                             [disabled]="!canPerformActions()"
-                            matTooltip="Remover">
+                            matTooltip="Excluir">
                       <mat-icon>delete</mat-icon>
                     </button>
                   </td>
@@ -602,22 +587,147 @@
                 <tr mat-row *matRowDef="let row; columns: docColumns; let i = index"
                     [class.selected]="selectedDocIndex === i"
                     (click)="selectDocumento(i)"></tr>
+
+                <!-- <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="docColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: docColumns"></tr> -->
+
+
+
               </table>
             </div>
           </div>
         </mat-tab>
 
-        <!-- Tab 4: Dados de Residência -->
-        <mat-tab label="Residência">
+          </mat-tab-group>
+</div>
+        </mat-tab>
+
+<mat-tab label="Dados Complementares">
+<div class="tab-content">
+
+        <mat-tab-group>
+ <!-- Tab 5: Funções Desempenhadas -->
+        <mat-tab label="Funções Desempenhadas">
           <div class="tab-content">
             <div class="section-header">
               <h3 class="section-title">
+                <mat-icon>work</mat-icon>
+                Funções Militares
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="adicionarFuncao()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Função
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="funcaoDataSource" class="data-table">
+                <!-- Função Column -->
+                <ng-container matColumnDef="funcao">
+                  <th mat-header-cell *matHeaderCellDef>Função</th>
+                  <td mat-cell *matCellDef="let element">{{element.funcao}}</td>
+                </ng-container>
+
+                <!-- orgao Column -->
+                <ng-container matColumnDef="orgao">
+                  <th mat-header-cell *matHeaderCellDef>Órgão</th>
+                  <td mat-cell *matCellDef="let element">{{element.orgao}}</td>
+                </ng-container>
+                <!-- Unidade Column -->
+                <ng-container matColumnDef="unidade">
+                  <th mat-header-cell *matHeaderCellDef>Unidade</th>
+                  <td mat-cell *matCellDef="let element">{{element.unidade}}</td>
+                </ng-container>
+
+                <!-- Data de Início Column -->
+                <ng-container matColumnDef="dataInicio">
+                  <th mat-header-cell *matHeaderCellDef>Data de Início</th>
+                  <td mat-cell *matCellDef="let element">{{element.dataInicio | date:'dd/MM/yyyy'}}</td>
+                </ng-container>
+
+                <!-- Data de Fim Column -->
+                <ng-container matColumnDef="dataTermino">
+                  <th mat-header-cell *matHeaderCellDef>Data de Fim</th>
+                  <td mat-cell *matCellDef="let element">{{element.dataTermino | date:'dd/MM/yyyy'}}</td>
+                </ng-container>
+
+                <!-- Observações Column -->
+                <ng-container matColumnDef="obs">
+                  <th mat-header-cell *matHeaderCellDef>Observações</th>
+                  <td mat-cell *matCellDef="let element">{{element.obs}}</td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button type="button"color="primary"
+                            (click)="editFuncao(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button"color="warn"
+                            (click)="removerFuncao(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Excluir">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="funcaoColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: funcaoColumns; let i = index"
+                    [class.selected]="selectedFuncaoIndex === i"
+                    (click)="selectFuncao(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+          <!-- Tab 4: Dados de Residência -->
+          <mat-tab label="Residência">
+            <div class="tab-content">
+              <div class="section-header">
+                <h3 class="section-title">
                 <mat-icon>home</mat-icon>
                 Informações de Residência
               </h3>
             </div>
 
             <div class="form-grid">
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>País de Residência</mat-label>
+                  <input matInput formControlName="resPais"
+                         [matAutocomplete]="autoPaisRes"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoPaisRes="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onPaisSelected($event.option.value, 'res')">
+                    <mat-option *ngFor="let option of filteredPaisesRes | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          class="clear-button"
+                          (click)="clearLocationSelection('resPais', 'res')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Limpar País">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+
               <div class="form-group">
                 <mat-form-field appearance="outline">
                   <mat-label>Província de Residência</mat-label>
@@ -744,810 +854,7 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 5: Incorporação -->
-        <mat-tab label="Incorporação">
-          <div class="tab-content">
-            <div class="section-header">
-              <h3 class="section-title">
-                <mat-icon>military_tech</mat-icon>
-                Dados de Incorporação
-              </h3>
-            </div>
-
-            <div class="form-grid form-grid-three-columns">
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>País de Incorporação</mat-label>
-                  <input matInput formControlName="incPais" [disabled]="!canPerformActions()">
-                  <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchPais('incPais')"
-                          type="button"
-                          [disabled]="!canPerformActions()"
-                          matTooltip="Procurar País">
-                    <mat-icon>menu_vert</mat-icon>
-                  </button>
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Província de Incorporação</mat-label>
-                  <input matInput formControlName="incProv"
-                         [matAutocomplete]="incProvAutocomplete"
-                         [disabled]="!canPerformActions()">
-                  <mat-autocomplete #incProvAutocomplete="matAutocomplete"
-                                    [displayWith]="displayFunction"
-                                    (optionSelected)="onProvinciaAutocompleteSelected($event, 'inc')">
-                    <mat-option *ngFor="let option of filteredProvinciasInc | async" [value]="option">
-                      {{ option }}
-                    </mat-option>
-                  </mat-autocomplete>
-                  <button mat-icon-button matSuffix
-                          class="clear-button"
-                          (click)="clearLocationSelection('incProv', 'inc')"
-                          type="button"
-                          [disabled]="!canPerformActions()"
-                          matTooltip="Limpar seleção">
-                    <mat-icon>clear</mat-icon>
-                  </button>
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Distrito de Incorporação</mat-label>
-                  <input matInput formControlName="incDist"
-                         [matAutocomplete]="incDistAutocomplete"
-                         [disabled]="!canPerformActions()">
-                  <mat-autocomplete #incDistAutocomplete="matAutocomplete"
-                                    [displayWith]="displayFunction"
-                                    (optionSelected)="onDistritoAutocompleteSelected($event, 'inc')">
-                    <mat-option *ngFor="let option of filteredDistritosInc | async" [value]="option">
-                      {{ option }}
-                    </mat-option>
-                  </mat-autocomplete>
-                  <button mat-icon-button matSuffix
-                          class="clear-button"
-                          (click)="clearLocationSelection('incDist', 'inc')"
-                          type="button"
-                          [disabled]="!canPerformActions()"
-                          matTooltip="Limpar seleção">
-                    <mat-icon>clear</mat-icon>
-                  </button>
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Posto Administrativo</mat-label>
-                  <input matInput formControlName="incPosto"
-                         [matAutocomplete]="incPostoAutocomplete"
-                         [disabled]="!canPerformActions()">
-                  <mat-autocomplete #incPostoAutocomplete="matAutocomplete"
-                                    [displayWith]="displayFunction"
-                                    (optionSelected)="onPostoAutocompleteSelected($event, 'inc')">
-                    <mat-option *ngFor="let option of filteredPostosInc | async" [value]="option">
-                      {{ option }}
-                    </mat-option>
-                  </mat-autocomplete>
-                  <button mat-icon-button matSuffix
-                          class="clear-button"
-                          (click)="clearLocationSelection('incPosto', 'inc')"
-                          type="button"
-                          [disabled]="!canPerformActions()"
-                          matTooltip="Limpar seleção">
-                    <mat-icon>clear</mat-icon>
-                  </button>
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Localidade</mat-label>
-                  <input matInput formControlName="incLocal"
-                         [matAutocomplete]="incLocalAutocomplete"
-                         [disabled]="!canPerformActions()">
-                  <mat-autocomplete #incLocalAutocomplete="matAutocomplete" [displayWith]="displayFunction">
-                    <mat-option *ngFor="let option of filteredLocalidadesInc | async" [value]="option">
-                      {{ option }}
-                    </mat-option>
-                  </mat-autocomplete>
-                  <button mat-icon-button matSuffix
-                          class="clear-button"
-                          (click)="clearLocationSelection('incLocal', 'inc')"
-                          type="button"
-                          [disabled]="!canPerformActions()"
-                          matTooltip="Limpar seleção">
-                    <mat-icon>clear</mat-icon>
-                  </button>
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Data de Incorporação</mat-label>
-                  <input matInput [matDatepicker]="incData" formControlName="incData" [disabled]="!canPerformActions()">
-                  <mat-datepicker-toggle matSuffix [for]="incData" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
-                  <mat-datepicker #incData [disabled]="!canPerformActions()"></mat-datepicker>
-                </mat-form-field>
-              </div>
-            </div>
-          </div>
-        </mat-tab>
-
-        <!-- Tab 6: Treino Militar -->
-        <mat-tab label="Treino">
-          <div class="tab-content">
-            <div class="section-header">
-              <h3 class="section-title">
-                <mat-icon>fitness_center</mat-icon>
-                Informações de Treino
-              </h3>
-            </div>
-
-            <div class="form-grid form-grid-three-columns">
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Início do Treino</mat-label>
-                  <input matInput [matDatepicker]="inicioTreino" formControlName="inicioTreino" [disabled]="!canPerformActions()">
-                  <mat-datepicker-toggle matSuffix [for]="inicioTreino" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
-                  <mat-datepicker #inicioTreino [disabled]="!canPerformActions()"></mat-datepicker>
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Término do Treino</mat-label>
-                  <input matInput [matDatepicker]="terminoTreino" formControlName="terminoTreino" [disabled]="!canPerformActions()">
-                  <mat-datepicker-toggle matSuffix [for]="terminoTreino" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
-                  <mat-datepicker #terminoTreino [disabled]="!canPerformActions()"></mat-datepicker>
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Duração do Treino</mat-label>
-                  <input matInput formControlName="duracaoTreino" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Centro de Treino</mat-label>
-                  <input matInput formControlName="centroTreino" [disabled]="!canPerformActions()">
-                  <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchCentroTreino()"
-                          type="button"
-                          [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Centro de Treino">
-                    <mat-icon>menu_vert</mat-icon>
-                  </button>
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Curso de Treino</mat-label>
-                  <input matInput formControlName="cursoTreino" [disabled]="!canPerformActions()">
-                  <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchCurso('cursoTreino')"
-                          type="button"
-                          [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Curso">
-                    <mat-icon>menu_vert</mat-icon>
-                  </button>
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Especialidade Adquirida</mat-label>
-                  <input matInput formControlName="adquirEspecial" [disabled]="!canPerformActions()">
-                  <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchEspecialidade('adquirEspecial')"
-                          type="button"
-                          [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Especialidade">
-                    <mat-icon>menu_vert</mat-icon>
-                  </button>
-                </mat-form-field>
-              </div>
-            </div>
-          </div>
-        </mat-tab>
-
-        <!-- Tab 7: Dados Médicos -->
-        <mat-tab label="Dados Médicos">
-          <div class="tab-content" formGroupName="milMed">
-            <div class="section-header">
-              <h3 class="section-title">
-                <mat-icon>medical_services</mat-icon>
-                Informações Médicas
-              </h3>
-            </div>
-
-            <div class="form-grid">
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Altura (cm)</mat-label>
-                  <input matInput formControlName="altura" type="number" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Peso (kg)</mat-label>
-                  <input matInput formControlName="peso" type="number" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Braço (cm)</mat-label>
-                  <input matInput formControlName="braco" type="number" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Cabeça (cm)</mat-label>
-                  <input matInput formControlName="cabeca" type="number" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Pescoço (cm)</mat-label>
-                  <input matInput formControlName="pescoco" type="number" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Peito (cm)</mat-label>
-                  <input matInput formControlName="peito" type="number" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Cintura (cm)</mat-label>
-                  <input matInput formControlName="cintura" type="number" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Ancas (cm)</mat-label>
-                  <input matInput formControlName="ancas" type="number" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Entrepernas (cm)</mat-label>
-                  <input matInput formControlName="entrepernas" type="number" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Calçado (nº)</mat-label>
-                  <input matInput formControlName="calcado" type="number" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Ombros (cm)</mat-label>
-                  <input matInput formControlName="ombros" type="number" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-            </div>
-          </div>
-        </mat-tab>
-
-        <!-- Tab 8: Salário -->
-        <mat-tab label="Dados Salariais">
-          <div class="tab-content" formGroupName="milSalario">
-            <div class="section-header">
-              <h3 class="section-title">
-                <mat-icon>payments</mat-icon>
-                Informações Salariais
-              </h3>
-            </div>
-
-            <!-- Checkboxes section - mantém layout original -->
-            <div class="form-grid">
-              <div class="form-group">
-                <mat-checkbox formControlName="uCerimonial" [disabled]="!canPerformActions()">
-                  Uniforme Cerimonial
-                </mat-checkbox>
-              </div>
-
-              <div class="form-group">
-                <mat-checkbox formControlName="saudeMilitar" [disabled]="!canPerformActions()">
-                  Saúde Militar
-                </mat-checkbox>
-              </div>
-
-              <div class="form-group">
-                <mat-checkbox formControlName="recebePatente" [disabled]="!canPerformActions()">
-                  Recebe por Patente
-                </mat-checkbox>
-              </div>
-
-              <div class="form-group">
-                <mat-checkbox formControlName="recebeSqtc" [disabled]="!canPerformActions()">
-                  Recebe SQTC
-                </mat-checkbox>
-              </div>
-            </div>
-
-            <!-- Campos de input - layout de 3 colunas -->
-            <div class="form-grid form-grid-three-columns">
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Escalão</mat-label>
-                  <input matInput formControlName="escalao" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>SQTC</mat-label>
-                  <input matInput formControlName="sQTC" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Nível Salarial</mat-label>
-                  <input matInput formControlName="nivelSalarial" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Nome do Banco</mat-label>
-                  <input matInput formControlName="nomeBanco" [disabled]="!canPerformActions()">
-                  <button mat-icon-button matSuffix
-                          class="search-button document-search"
-                          (click)="searchBanco()"
-                          type="button"
-                          [disabled]="!canPerformActions()"
-                          matTooltip="Procurar Banco">
-                    <mat-icon>menu_vert</mat-icon>
-                  </button>
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>Número da Conta</mat-label>
-                  <input matInput formControlName="nrConta" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group">
-                <mat-form-field appearance="outline">
-                  <mat-label>NIB</mat-label>
-                  <input matInput formControlName="nib" [disabled]="!canPerformActions()">
-                </mat-form-field>
-              </div>
-
-              <div class="form-group form-group-full">
-                <mat-form-field appearance="outline">
-                  <mat-label>Observações</mat-label>
-                  <textarea matInput formControlName="obs" rows="3" [disabled]="!canPerformActions()"></textarea>
-                </mat-form-field>
-              </div>
-            </div>
-          </div>
-        </mat-tab>
-
-        <!-- Tab 9: Agregados Familiares -->
-        <mat-tab label="Agregados Familiares">
-          <div class="tab-content">
-            <div class="section-header">
-              <h3 class="section-title">
-                <mat-icon>family_restroom</mat-icon>
-                Agregados Familiares
-              </h3>
-              <button mat-raised-button color="primary"
-                      type="button"
-                      (click)="adicionarAgregado()"
-                      [disabled]="!canPerformActions()">
-                <mat-icon>add</mat-icon>
-                Adicionar Agregado
-              </button>
-            </div>
-
-            <div class="table-container">
-              <table mat-table [dataSource]="agreDataSource" class="data-table">
-                <!-- Nome Column -->
-                <ng-container matColumnDef="nome">
-                  <th mat-header-cell *matHeaderCellDef>Nome</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input"
-                           [formControl]="$any(agreFormArray.at(i)).get('nome')"
-                           [disabled]="!canPerformActions()"
-                           placeholder="Nome completo">
-                  </td>
-                </ng-container>
-
-                <!-- Grau Column -->
-                <ng-container matColumnDef="grau">
-                  <th mat-header-cell *matHeaderCellDef>Grau de Parentesco</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <div class="input-with-search">
-                      <input class="table-input"
-                             [formControl]="$any(agreFormArray.at(i)).get('grau')"
-                             [disabled]="!canPerformActions()"
-                             placeholder="Grau de parentesco">
-                      <button mat-icon-button
-                              type="button"
-                              (click)="selectedAgreIndex = i; searchGrauParentesco(i)"
-                              [disabled]="!canPerformActions()"
-                              matTooltip="Procurar Grau de Parentesco">
-                        <mat-icon>menu_vert</mat-icon>
-                      </button>
-                    </div>
-                  </td>
-                </ng-container>
-
-                <!-- Data Nascimento Column -->
-                <ng-container matColumnDef="nascData">
-                  <th mat-header-cell *matHeaderCellDef>Data de Nascimento</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input"
-                           [formControl]="$any(agreFormArray.at(i)).get('nascData')"
-                           [disabled]="!canPerformActions()"
-                           placeholder="Data de nascimento"
-                           type="date">
-                  </td>
-                </ng-container>
-
-                <!-- Telefone Column -->
-                <ng-container matColumnDef="telefone">
-                  <th mat-header-cell *matHeaderCellDef>Telefone</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input"
-                           [formControl]="$any(agreFormArray.at(i)).get('telefone')"
-                           [disabled]="!canPerformActions()"
-                           placeholder="Telefone"
-                           type="tel">
-                  </td>
-                </ng-container>
-
-                <!-- Actions Column -->
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Ações</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <button mat-icon-button color="warn"
-                            type="button"
-                            (click)="removerAgregado(i)"
-                            [disabled]="!canPerformActions()"
-                            matTooltip="Remover">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="agreColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: agreColumns; let i = index"
-                    [class.selected]="selectedAgreIndex === i"
-                    (click)="selectAgregado(i)"></tr>
-              </table>
-            </div>
-          </div>
-        </mat-tab>
-
-        <!-- Tab 9: Condecorações -->
-        <mat-tab label="Condecorações">
-          <div class="tab-content">
-            <div class="section-header">
-              <h3 class="section-title">
-                <mat-icon>military_tech</mat-icon>
-                Condecorações e Galardões
-              </h3>
-              <button mat-raised-button color="primary"
-                      type="button"
-                      (click)="adicionarCondecoracoes()"
-                      [disabled]="!canPerformActions()">
-                <mat-icon>add</mat-icon>
-                Adicionar Condecoração
-              </button>
-            </div>
-
-            <div class="table-container">
-              <table mat-table [dataSource]="condeDataSource" class="data-table">
-                <!-- Galardão Column -->
-                <ng-container matColumnDef="galardoa">
-                  <th mat-header-cell *matHeaderCellDef>Galardão</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input"
-                           [formControl]="$any(condeFormArray.at(i)).get('galardoa')"
-                           [disabled]="!canPerformActions()"
-                           placeholder="Galardão">
-                  </td>
-                </ng-container>
-
-                <!-- Espécie Column -->
-                <ng-container matColumnDef="especie">
-                  <th mat-header-cell *matHeaderCellDef>Espécie</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input"
-                           [formControl]="$any(condeFormArray.at(i)).get('especie')"
-                           [disabled]="!canPerformActions()"
-                           placeholder="Espécie">
-                  </td>
-                </ng-container>
-
-                <!-- Grau da Medalha Column -->
-                <ng-container matColumnDef="grauMedalha">
-                  <th mat-header-cell *matHeaderCellDef>Grau da Medalha</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input"
-                           [formControl]="$any(condeFormArray.at(i)).get('grauMedalha')"
-                           [disabled]="!canPerformActions()"
-                           placeholder="Grau da medalha">
-                  </td>
-                </ng-container>
-
-                <!-- Data de Galardoação Column -->
-                <ng-container matColumnDef="dataGalardoacao">
-                  <th mat-header-cell *matHeaderCellDef>Data de Galardoação</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <input class="table-input"
-                           [formControl]="$any(condeFormArray.at(i)).get('dataGalardoacao')"
-                           [disabled]="!canPerformActions()"
-                           placeholder="Data de galardoação"
-                           type="date">
-                  </td>
-                </ng-container>
-
-                <!-- Actions Column -->
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Ações</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <button mat-icon-button color="warn"
-                            type="button"
-                            (click)="removerCondecoracoes(i)"
-                            [disabled]="!canPerformActions()"
-                            matTooltip="Remover">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="condeColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: condeColumns; let i = index"
-                    [class.selected]="selectedCondeIndex === i"
-                    (click)="selectCondecoracoes(i)"></tr>
-              </table>
-            </div>
-          </div>
-        </mat-tab>
-
-        <!-- Tab 10: Emails -->
-        <mat-tab label="Emails">
-          <div class="tab-content">
-            <div class="section-header">
-              <h3 class="section-title">
-                <mat-icon>email</mat-icon>
-                Endereços de Email
-              </h3>
-              <button mat-raised-button color="primary"
-                      type="button"
-                      (click)="adicionarEmail()"
-                      [disabled]="!canPerformActions()">
-                <mat-icon>add</mat-icon>
-                Adicionar Email
-              </button>
-            </div>
-
-            <div class="table-container">
-              <table mat-table [dataSource]="emailDataSource" class="data-table">
-                <!-- Email Column -->
-                <ng-container matColumnDef="email">
-                  <th mat-header-cell *matHeaderCellDef>Email</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(emailFormArray.at(i)).get('email')"
-                             type="email" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
-                </ng-container>
-
-                <!-- Actions Column -->
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Ações</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <button mat-icon-button color="warn"
-                            type="button"
-                            (click)="removerEmail(i)"
-                            [disabled]="!canPerformActions()"
-                            matTooltip="Remover">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="emailColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: emailColumns; let i = index"
-                    [class.selected]="selectedEmailIndex === i"
-                    (click)="selectEmail(i)"></tr>
-              </table>
-            </div>
-          </div>
-        </mat-tab>
-
-        <!-- Tab 11: Telefones -->
-        <mat-tab label="Telefones">
-          <div class="tab-content">
-            <div class="section-header">
-              <h3 class="section-title">
-                <mat-icon>phone</mat-icon>
-                Números de Telefone
-              </h3>
-              <button mat-raised-button color="primary"
-                      type="button"
-                      (click)="adicionarTelefone()"
-                      [disabled]="!canPerformActions()">
-                <mat-icon>add</mat-icon>
-                Adicionar Telefone
-              </button>
-            </div>
-
-            <div class="table-container">
-              <table mat-table [dataSource]="telefoneDataSource" class="data-table">
-                <!-- Número Column -->
-                <ng-container matColumnDef="numero">
-                  <th mat-header-cell *matHeaderCellDef>Número</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(telefoneFormArray.at(i)).get('numero')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
-                </ng-container>
-
-                <!-- Tipo Column -->
-                <ng-container matColumnDef="tipo">
-                  <th mat-header-cell *matHeaderCellDef>Tipo</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput
-                             [formControl]="$any(telefoneFormArray.at(i)).get('tipo')"
-                             [disabled]="!canPerformActions()"
-                             [matAutocomplete]="autoTipoTelefone"
-                             placeholder="Digite para procurar...">
-                      <mat-autocomplete #autoTipoTelefone="matAutocomplete">
-                        <mat-option *ngFor="let tipo of getFilteredTipoTelefone($any(telefoneFormArray.at(i)).get('tipo')) | async" [value]="tipo">
-                          {{tipo}}
-                        </mat-option>
-                      </mat-autocomplete>
-                      <button mat-icon-button matSuffix
-                              type="button"
-                              (click)="clearArrayControlSelection('telefones', i, 'tipo')"
-                              [disabled]="!canPerformActions() || !$any(telefoneFormArray.at(i)).get('tipo')?.value"
-                              matTooltip="Limpar seleção">
-                        <mat-icon>clear</mat-icon>
-                      </button>
-                    </mat-form-field>
-                  </td>
-                </ng-container>
-
-                <!-- Actions Column -->
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Ações</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <button mat-icon-button color="warn"
-                            type="button"
-                            (click)="removerTelefone(i)"
-                            [disabled]="!canPerformActions()"
-                            matTooltip="Remover">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="telefoneColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: telefoneColumns; let i = index"
-                    [class.selected]="selectedTelefoneIndex === i"
-                    (click)="selectTelefone(i)"></tr>
-              </table>
-            </div>
-          </div>
-        </mat-tab>
-
-        <!-- Tab 12: Formação -->
-        <mat-tab label="Formação">
-          <div class="tab-content">
-            <div class="section-header">
-              <h3 class="section-title">
-                <mat-icon>school</mat-icon>
-                Formação Acadêmica
-              </h3>
-              <button mat-raised-button color="primary"
-                      type="button"
-                      (click)="adicionarFormacao()"
-                      [disabled]="!canPerformActions()">
-                <mat-icon>add</mat-icon>
-                Adicionar Formação
-              </button>
-            </div>
-
-            <div class="table-container">
-              <table mat-table [dataSource]="forDataSource" class="data-table">
-                <!-- Curso Column -->
-                <ng-container matColumnDef="curso">
-                  <th mat-header-cell *matHeaderCellDef>Curso</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(forFormArray.at(i)).get('curso')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
-                </ng-container>
-
-                <!-- Instituição Column -->
-                <ng-container matColumnDef="instituicao">
-                  <th mat-header-cell *matHeaderCellDef>Instituição</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(forFormArray.at(i)).get('instituicao')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
-                </ng-container>
-
-                <!-- Data Início Column -->
-                <ng-container matColumnDef="dataInicio">
-                  <th mat-header-cell *matHeaderCellDef>Data de Início</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(forFormArray.at(i)).get('dataInicio')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
-                </ng-container>
-
-                <!-- Data Término Column -->
-                <ng-container matColumnDef="dataTermino">
-                  <th mat-header-cell *matHeaderCellDef>Data de Término</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(forFormArray.at(i)).get('dataTermino')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
-                </ng-container>
-
-                <!-- Actions Column -->
-                <ng-container matColumnDef="actions">
-                  <th mat-header-cell *matHeaderCellDef>Ações</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <button mat-icon-button color="warn"
-                            type="button"
-                            (click)="removerFormacao(i)"
-                            [disabled]="!canPerformActions()"
-                            matTooltip="Remover">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="forColumns"></tr>
-                <tr mat-row *matRowDef="let row; columns: forColumns; let i = index"
-                    [class.selected]="selectedForIndex === i"
-                    (click)="selectFormacao(i)"></tr>
-              </table>
-            </div>
-          </div>
-        </mat-tab>
-
-        <!-- Tab 13: Línguas -->
+ <!-- Tab 15: Línguas -->
         <mat-tab label="Línguas">
           <div class="tab-content">
             <div class="section-header">
@@ -1569,109 +876,47 @@
                 <!-- Língua Column -->
                 <ng-container matColumnDef="lingua">
                   <th mat-header-cell *matHeaderCellDef>Língua</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(linguaFormArray.at(i)).get('lingua')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
+                  <td mat-cell *matCellDef="let element">{{element.lingua}}</td>
                 </ng-container>
 
                 <!-- Fala Column -->
                 <ng-container matColumnDef="fala">
                   <th mat-header-cell *matHeaderCellDef>Fala</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput
-                             [formControl]="$any(linguaFormArray.at(i)).get('fala')"
-                             [disabled]="!canPerformActions()"
-                             [matAutocomplete]="autoFala"
-                             placeholder="Digite para procurar...">
-                      <mat-autocomplete #autoFala="matAutocomplete">
-                        <mat-option *ngFor="let nivel of getFilteredNivelLingua($any(linguaFormArray.at(i)).get('fala')) | async" [value]="nivel">
-                          {{nivel}}
-                        </mat-option>
-                      </mat-autocomplete>
-                      <button mat-icon-button matSuffix
-                              type="button"
-                              (click)="clearArrayControlSelection('linguas', i, 'fala')"
-                              [disabled]="!canPerformActions() || !$any(linguaFormArray.at(i)).get('fala')?.value"
-                              matTooltip="Limpar seleção">
-                        <mat-icon>clear</mat-icon>
-                      </button>
-                    </mat-form-field>
-                  </td>
+                  <td mat-cell *matCellDef="let element">{{element.fala}}</td>
                 </ng-container>
 
                 <!-- Leitura Column -->
                 <ng-container matColumnDef="leitura">
                   <th mat-header-cell *matHeaderCellDef>Leitura</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput
-                             [formControl]="$any(linguaFormArray.at(i)).get('leitura')"
-                             [disabled]="!canPerformActions()"
-                             [matAutocomplete]="autoLeitura"
-                             placeholder="Digite para procurar...">
-                      <mat-autocomplete #autoLeitura="matAutocomplete">
-                        <mat-option *ngFor="let nivel of getFilteredNivelLingua($any(linguaFormArray.at(i)).get('leitura')) | async" [value]="nivel">
-                          {{nivel}}
-                        </mat-option>
-                      </mat-autocomplete>
-                      <button mat-icon-button matSuffix
-                              type="button"
-                              (click)="clearArrayControlSelection('linguas', i, 'leitura')"
-                              [disabled]="!canPerformActions() || !$any(linguaFormArray.at(i)).get('leitura')?.value"
-                              matTooltip="Limpar seleção">
-                        <mat-icon>clear</mat-icon>
-                      </button>
-                    </mat-form-field>
-                  </td>
+                  <td mat-cell *matCellDef="let element">{{element.leitura}}</td>
                 </ng-container>
 
                 <!-- Escrita Column -->
                 <ng-container matColumnDef="escrita">
                   <th mat-header-cell *matHeaderCellDef>Escrita</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput
-                             [formControl]="$any(linguaFormArray.at(i)).get('escrita')"
-                             [disabled]="!canPerformActions()"
-                             [matAutocomplete]="autoEscrita"
-                             placeholder="Digite para procurar...">
-                      <mat-autocomplete #autoEscrita="matAutocomplete">
-                        <mat-option *ngFor="let nivel of getFilteredNivelLingua($any(linguaFormArray.at(i)).get('escrita')) | async" [value]="nivel">
-                          {{nivel}}
-                        </mat-option>
-                      </mat-autocomplete>
-                      <button mat-icon-button matSuffix
-                              type="button"
-                              (click)="clearArrayControlSelection('linguas', i, 'escrita')"
-                              [disabled]="!canPerformActions() || !$any(linguaFormArray.at(i)).get('escrita')?.value"
-                              matTooltip="Limpar seleção">
-                        <mat-icon>clear</mat-icon>
-                      </button>
-                    </mat-form-field>
-                  </td>
+                  <td mat-cell *matCellDef="let element">{{element.escrita}}</td>
                 </ng-container>
 
                 <!-- Materna Column -->
                 <ng-container matColumnDef="materna">
                   <th mat-header-cell *matHeaderCellDef>Materna</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-checkbox [formControl]="$any(linguaFormArray.at(i)).get('materna')" [disabled]="!canPerformActions()">
-                    </mat-checkbox>
-                  </td>
+                  <td mat-cell *matCellDef="let element">{{element.materna ? 'Sim' : 'Não'}}</td>
                 </ng-container>
 
                 <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
                   <th mat-header-cell *matHeaderCellDef>Ações</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <button mat-icon-button color="warn"
-                            type="button"
+                    <button mat-icon-button type="button"color="primary"
+                            (click)="editLingua(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button"color="warn"
                             (click)="removerLingua(i)"
                             [disabled]="!canPerformActions()"
-                            matTooltip="Remover">
+                            matTooltip="Excluir">
                       <mat-icon>delete</mat-icon>
                     </button>
                   </td>
@@ -1686,7 +931,849 @@
           </div>
         </mat-tab>
 
-        <!-- Tab 14: Situações -->
+        </mat-tab-group>
+        </div>
+        </mat-tab>
+
+        <mat-tab label="Incorporação">
+<div class="tab-content">
+
+          <mat-tab-group>
+ <!-- Tab 6: Incorporação -->
+        <mat-tab label="Incorporação">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>military_tech</mat-icon>
+                Dados de Incorporação
+              </h3>
+            </div>
+
+            <div class="form-grid form-grid-three-columns">
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>País de Incorporação</mat-label>
+                  <input matInput formControlName="incPais"
+                         [matAutocomplete]="autoPaisInc"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoPaisInc="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onPaisSelected($event.option.value, 'inc')">
+                    <mat-option *ngFor="let option of filteredPaisesInc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          class="clear-button"
+                          (click)="clearLocationSelection('incPais', 'inc')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Limpar País">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Província de Incorporação</mat-label>
+                  <input matInput formControlName="incProv"
+                         [matAutocomplete]="autoProvinciaInc"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoProvinciaInc="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onProvinciaSelected($event.option.value, 'inc')">
+                    <mat-option *ngFor="let option of filteredProvinciasInc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          class="clear-button"
+                          (click)="clearLocationSelection('incProv', 'inc')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Limpar Província">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Distrito de Incorporação</mat-label>
+                  <input matInput formControlName="incDist"
+                         [matAutocomplete]="autoDistritoInc"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoDistritoInc="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onDistritoSelected($event.option.value, 'inc')">
+                    <mat-option *ngFor="let option of filteredDistritosInc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          class="clear-button"
+                          (click)="clearLocationSelection('incDist', 'inc')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Limpar Distrito">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Posto Administrativo</mat-label>
+                  <input matInput formControlName="incPosto"
+                         [matAutocomplete]="autoPostoInc"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoPostoInc="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onPostoSelected($event.option.value, 'inc')">
+                    <mat-option *ngFor="let option of filteredPostosInc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          class="clear-button"
+                          (click)="clearLocationSelection('incPosto', 'inc')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Limpar Posto Administrativo">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Localidade</mat-label>
+                  <input matInput formControlName="incLocal"
+                         [matAutocomplete]="autoLocalInc"
+                         [disabled]="!canPerformActions()">
+                  <mat-autocomplete #autoLocalInc="matAutocomplete"
+                                    [displayWith]="displayFunction">
+                    <mat-option *ngFor="let option of filteredLocalidadesInc | async" [value]="option">
+                      {{ option }}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          class="clear-button"
+                          (click)="clearLocationSelection('incLocal', 'inc')"
+                          type="button"
+                          [disabled]="!canPerformActions()"
+                          matTooltip="Limpar Localidade">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Data de Incorporação</mat-label>
+                  <input matInput [matDatepicker]="incData" formControlName="incData" [disabled]="!canPerformActions()">
+                  <mat-datepicker-toggle matSuffix [for]="incData" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+                  <mat-datepicker #incData [disabled]="!canPerformActions()"></mat-datepicker>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 7: Treino -->
+        <mat-tab label="Treino">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>fitness_center</mat-icon>
+                Informações de Treino
+              </h3>
+            </div>
+
+            <div class="form-grid form-grid-three-columns">
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Início do Treino</mat-label>
+                  <input matInput [matDatepicker]="inicioTreino" formControlName="inicioTreino" [disabled]="!canPerformActions()">
+                  <mat-datepicker-toggle matSuffix [for]="inicioTreino" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+                  <mat-datepicker #inicioTreino [disabled]="!canPerformActions()"></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Término do Treino</mat-label>
+                  <input matInput [matDatepicker]="terminoTreino" formControlName="terminoTreino" [disabled]="!canPerformActions()">
+                  <mat-datepicker-toggle matSuffix [for]="terminoTreino" [disabled]="!canPerformActions()"></mat-datepicker-toggle>
+                  <mat-datepicker #terminoTreino [disabled]="!canPerformActions()"></mat-datepicker>
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Duração do Treino</mat-label>
+                  <input matInput formControlName="duracaoTreino" readonly placeholder="Ex: 3 meses">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Centro de Instrução Básica Militar</mat-label>
+                  <input matInput
+                         formControlName="centroTreino"
+                         [disabled]="!canPerformActions()"
+                         [matAutocomplete]="autoCentroTreino"
+                         placeholder="Digite para procurar...">
+                  <mat-autocomplete #autoCentroTreino="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onOptionSelected('centroTreino', $event)">
+                    <mat-option *ngFor="let centro of filteredCentroTreino | async" [value]="centro">
+                      {{centro}}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          type="button"
+                          (click)="clearSelectionWithReset('centroTreino', autoCentroTreino)"
+                          [disabled]="!canPerformActions() || !fichaForm.get('centroTreino')?.value"
+                          matTooltip="Limpar seleção">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Designação do Curso</mat-label>
+                  <input matInput
+                         formControlName="cursoTreino"
+                         [disabled]="!canPerformActions()"
+                         [matAutocomplete]="autoCursoTreino"
+                         placeholder="Digite para procurar...">
+                  <mat-autocomplete #autoCursoTreino="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onOptionSelected('cursoTreino', $event)">
+                    <mat-option *ngFor="let curso of filteredCursoTreino | async" [value]="curso">
+                      {{curso}}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          type="button"
+                          (click)="clearSelectionWithReset('cursoTreino', autoCursoTreino)"
+                          [disabled]="!canPerformActions() || !fichaForm.get('cursoTreino')?.value"
+                          matTooltip="Limpar seleção">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Ramo</mat-label>
+                  <input matInput
+                         formControlName="ramo"
+                         [disabled]="!canPerformActions()"
+                         [matAutocomplete]="autoRamos"
+                         placeholder="Digite para procurar...">
+                  <mat-autocomplete #autoRamos="matAutocomplete"
+                                    [displayWith]="ramoDisplay"
+                                    (optionSelected)="onOptionSelected('ramo', $event)">
+                    <mat-option *ngFor="let ramo of filteredRamos | async" [value]="ramo?.descricao">
+                      {{ramo?.descricao}}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          type="button"
+                          (click)="clearSelectionWithReset('ramo', autoRamos)"
+                          [disabled]="!canPerformActions() || !fichaForm.get('ramo')?.value"
+                          matTooltip="Limpar seleção">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Especialidade</mat-label>
+                  <input matInput
+                         formControlName="adquirEspecial"
+                         [disabled]="!canPerformActions()"
+                         [matAutocomplete]="autoEspecialidade"
+                         placeholder="Digite para procurar...">
+                  <mat-autocomplete #autoEspecialidade="matAutocomplete"
+                                    [displayWith]="displayFunction"
+                                    (optionSelected)="onOptionSelected('especialidade', $event)">
+                    <mat-option *ngFor="let especialidade of filteredEspecialidade | async" [value]="especialidade">
+                      {{especialidade}}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <button mat-icon-button matSuffix
+                          type="button"
+                          (click)="clearSelectionWithReset('adquirEspecial', autoEspecialidade)"
+                          [disabled]="!canPerformActions() || !fichaForm.get('adquirEspecial')?.value"
+                          matTooltip="Limpar seleção">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </mat-tab>
+
+        </mat-tab-group>
+</div>
+  </mat-tab>
+
+        <!-- Tab 8: Dados Médicos -->
+        <mat-tab label="Dados Médicos">
+          <div class="tab-content">
+<mat-tab-group>
+  <mat-tab label="Antropometria do Militar">
+<div class="tab-content">
+ <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>fitness_center</mat-icon>
+                Antropometria do Militar
+              </h3>
+            </div>
+ <div [formGroup]="milMedForm" class="milmed-fields-grid milmed-grid-4">
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Altura (cm)</mat-label>
+                  <input matInput type="number" formControlName="altura" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Peso (kg)</mat-label>
+                  <input matInput type="number" formControlName="peso" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Braço (cm)</mat-label>
+                  <input matInput type="number" formControlName="braco" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Cabeça (cm)</mat-label>
+                  <input matInput type="number" formControlName="cabeca" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Pescoco (cm)</mat-label>
+                  <input matInput type="number" formControlName="pescoco" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Peito (cm)</mat-label>
+                  <input matInput type="number" formControlName="peito" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Cintura (cm)</mat-label>
+                  <input matInput type="number" formControlName="cintura" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Ancas (cm)</mat-label>
+                  <input matInput type="number" formControlName="ancas" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Entrepernas (cm)</mat-label>
+                  <input matInput type="number" formControlName="entrepernas" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Calçado (nº)</mat-label>
+                  <input matInput type="number" formControlName="calcado" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+              <div class="form-group">
+                <mat-form-field appearance="outline">
+                  <mat-label>Ombros (cm)</mat-label>
+                  <input matInput type="number" formControlName="ombros" [disabled]="!canPerformActions()">
+                </mat-form-field>
+              </div>
+
+
+            </div>
+</div>
+
+  </mat-tab>
+  <mat-tab label="Saúde do Militar">
+    <div class="tab-content">
+        <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>medical_services</mat-icon>
+                Saúde do Militar
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="adicionarSaude()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Registro
+              </button>
+            </div>
+            <div class="table-container">
+              <table mat-table [dataSource]="saDataSource" class="data-table">
+                <!-- Doença Sofre Column -->
+                <ng-container matColumnDef="doencaSofre">
+                  <th mat-header-cell *matHeaderCellDef>Doença Sofre</th>
+                  <td mat-cell *matCellDef="let element">{{element.doencaSofre}}</td>
+                </ng-container>
+                <!-- Doença Sofrida Column -->
+                <ng-container matColumnDef="doencaSofrida">
+                  <th mat-header-cell *matHeaderCellDef>Doença Sofrida</th>
+                  <td mat-cell *matCellDef="let element">{{element.doencaSofrida}}</td>
+                </ng-container>
+                <!-- Cirurgia Sofrida Column -->
+                <ng-container matColumnDef="cirurgiaSofrida">
+                  <th mat-header-cell *matHeaderCellDef>Cirurgia Sofrida</th>
+                  <td mat-cell *matCellDef="let element">{{element.cirurgiaSofrida}}</td>
+                </ng-container>
+                <!-- Motivo Doença Column -->
+                <ng-container matColumnDef="motivoDoenca">
+                  <th mat-header-cell *matHeaderCellDef>Motivo</th>
+                  <td mat-cell *matCellDef="let element">{{element.motivoDoenca}}</td>
+                </ng-container>
+                <!-- Data Início Column -->
+                <ng-container matColumnDef="datainicioDoenca">
+                  <th mat-header-cell *matHeaderCellDef>Data Início</th>
+                  <td mat-cell *matCellDef="let element">{{element.datainicioDoenca | date:'dd/MM/yyyy'}}</td>
+                </ng-container>
+                <!-- Observações Column -->
+                <ng-container matColumnDef="obs">
+                  <th mat-header-cell *matHeaderCellDef>Observações</th>
+                  <td mat-cell *matCellDef="let element">{{element.obs}}</td>
+                </ng-container>
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button type="button"color="primary"
+                            (click)="editSaude(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button"color="warn"
+                            (click)="removerSaude(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Excluir">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="['doencaSofre','doencaSofrida','cirurgiaSofrida','motivoDoenca','datainicioDoenca','obs','actions']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['doencaSofre','doencaSofrida','cirurgiaSofrida','motivoDoenca','datainicioDoenca','obs','actions']; let i = index"
+                    [class.selected]="selectedSaIndex === i"
+                    (click)="selectSaude(i)"></tr>
+              </table>
+            </div>
+          </div>
+  </mat-tab>
+
+  <mat-tab label="Situação de óbito">
+    <div class="tab-content">
+        <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon color="warn">heart_broken</mat-icon>
+                Situação de óbito
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="adicionarobito()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Registro
+              </button>
+            </div>
+            <div class="table-container">
+                <table mat-table [dataSource]="MilfaDataSource" class="data-table">
+                <!-- Doença Sofre Column -->
+                <ng-container matColumnDef="falecLocal">
+                  <th mat-header-cell *matHeaderCellDef>Local do Falecimento</th>
+                  <td mat-cell *matCellDef="let element">{{element.falecLocal}}</td>
+                </ng-container>
+                <!-- Doença Sofrida Column -->
+                <ng-container matColumnDef="circunstancias">
+                  <th mat-header-cell *matHeaderCellDef>circunstncias</th>
+                  <td mat-cell *matCellDef="let element">{{element.circunstancias}}</td>
+                </ng-container>
+                <!-- Cirurgia Sofrida Column -->
+                <ng-container matColumnDef="falecData">
+                  <th mat-header-cell *matHeaderCellDef>Data do Falecimento</th>
+                  <td mat-cell *matCellDef="let element">{{element.falecData | date:'dd/MM/yyyy'}}</td>
+                </ng-container>
+                <!-- Motivo Doença Column -->
+                <ng-container matColumnDef="enterroData">
+                  <th mat-header-cell *matHeaderCellDef>Data do enterro</th>
+                  <td mat-cell *matCellDef="let element">{{element.enterroData | date:'dd/MM/yyyy'}}</td>
+                </ng-container>
+                <!-- Data Início Column -->
+                <ng-container matColumnDef="numCampa">
+                  <th mat-header-cell *matHeaderCellDef>Nº da campa</th>
+                  <td mat-cell *matCellDef="let element">{{element.numCampa}}</td>
+                </ng-container>
+                <!-- Observações Column -->
+                <ng-container matColumnDef="numCertObito">
+                  <th mat-header-cell *matHeaderCellDef>Nº do Certificado de Óbito</th>
+                  <td mat-cell *matCellDef="let element">{{element.numCertObito}}</td>
+                </ng-container>
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button type="button"color="primary"
+                            (click)="editMilfa(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button"color="warn"
+                            (click)="removerObito(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Excluir">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+                <tr mat-header-row *matHeaderRowDef="['falecLocal','circunstancias','falecData','enterroData','numCampa','numCertObito','actions']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['falecLocal','circunstancias','falecData','enterroData','numCampa','numCertObito','actions']; let i = index"
+                    [class.selected]="selectedObitoIndex === i"
+                    (click)="selectObito(i)"></tr>
+              </table>
+
+            </div>
+          </div>
+  </mat-tab>
+</mat-tab-group>
+
+
+
+
+
+          </div>
+
+        </mat-tab>
+<mat-tab label="Contactos">
+<div class="tab-content">
+  <mat-tab-group>
+     <!-- Tab 10: Agregados Familiares -->
+        <mat-tab label="Agregados Familiares">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>family_restroom</mat-icon>
+                Agregados Familiares
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="adicionarAgregado()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Agregado
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="agreDataSource" class="data-table">
+                <!-- Nome Column -->
+                <ng-container matColumnDef="nome">
+                  <th mat-header-cell *matHeaderCellDef>Nome</th>
+                  <td mat-cell *matCellDef="let element">{{element.nome}}</td>
+                </ng-container>
+
+                <!-- Grau Column -->
+                <ng-container matColumnDef="grau">
+                  <th mat-header-cell *matHeaderCellDef>Grau</th>
+                  <td mat-cell *matCellDef="let element">{{element.grau}}</td>
+                </ng-container>
+
+                <!-- Data Nascimento Column -->
+                <ng-container matColumnDef="nascData">
+                  <th mat-header-cell *matHeaderCellDef>Data de Nascimento</th>
+                  <td mat-cell *matCellDef="let element">{{element.nascData | date:'dd/MM/yyyy'}}</td>
+                </ng-container>
+
+                <!-- Telefone Column -->
+                <ng-container matColumnDef="telefone">
+                  <th mat-header-cell *matHeaderCellDef>Telefone</th>
+                  <td mat-cell *matCellDef="let element">{{element.telefone}}</td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button type="button"color="primary"
+                            (click)="editAgregado(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button"color="warn"
+                            (click)="removerAgregado(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Excluir">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="agreColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: agreColumns; let i = index"
+                    [class.selected]="selectedAgreIndex === i"
+                    (click)="selectAgregado(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+ <!-- Tab 12: Emails -->
+        <mat-tab label="Emails">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>email</mat-icon>
+                Endereços de Email
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="adicionarEmail()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Email
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="emailDataSource" class="data-table">
+                <!-- Email Column -->
+                <ng-container matColumnDef="email">
+                  <th mat-header-cell *matHeaderCellDef>Email</th>
+                  <td mat-cell *matCellDef="let element">{{element.email}}</td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button type="button"color="primary"
+                            (click)="editEmail(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button"color="warn"
+                            (click)="removerEmail(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Excluir">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="emailColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: emailColumns; let i = index"
+                    [class.selected]="selectedEmailIndex === i"
+                    (click)="selectEmail(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+        <!-- Tab 13: Telefones -->
+        <mat-tab label="Telefones">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>phone</mat-icon>
+                Números de Telefone
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="adicionarTelefone()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Telefone
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="telefoneDataSource" class="data-table">
+
+                <!-- Número Column -->
+                <ng-container matColumnDef="telefone1">
+                  <th mat-header-cell *matHeaderCellDef>Número</th>
+                  <td mat-cell *matCellDef="let element">{{element.telefone1}}</td>
+                </ng-container>
+
+                <!-- Tipo Column -->
+                <!-- <ng-container matColumnDef="tipo">
+                  <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                  <td mat-cell *matCellDef="let element">{{element.tipo}}</td>
+                </ng-container> -->
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button type="button"color="primary"
+                            (click)="editTelefone(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button"color="warn"
+                            (click)="removerTelefone(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Excluir">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="telefoneColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: telefoneColumns; let i = index"
+                    [class.selected]="selectedTelefoneIndex === i"
+                    (click)="selectTelefone(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+
+  </mat-tab-group>
+</div>
+</mat-tab>
+
+
+        <!-- Tab 11: Condecorações -->
+       <mat-tab-group>
+         <mat-tab label="Condecorações">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon color="accent">emoji_events</mat-icon>
+                Condecorações e Galardões
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="adicionarCondecoracoes()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Condecoração
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="condeDataSource" class="data-table">
+                <!-- Galardão Column -->
+                <ng-container matColumnDef="galardoa">
+                  <th mat-header-cell *matHeaderCellDef>Galardão</th>
+                  <td mat-cell *matCellDef="let element">{{element.galardoa}}</td>
+                </ng-container>
+
+                <!-- Espécie Column -->
+                <ng-container matColumnDef="especie">
+                  <th mat-header-cell *matHeaderCellDef>Espécie</th>
+                  <td mat-cell *matCellDef="let element">{{element.especie}}</td>
+                </ng-container>
+
+                <!-- Grau da Medalha Column -->
+                <ng-container matColumnDef="grauMedalha">
+                  <th mat-header-cell *matHeaderCellDef>Grau da Medalha</th>
+                  <td mat-cell *matCellDef="let element">{{element.grauMedalha}}</td>
+                </ng-container>
+
+                <!-- Data de Galardoação Column -->
+                <ng-container matColumnDef="dataGalardoacao">
+                  <th mat-header-cell *matHeaderCellDef>Data de Galardoação</th>
+                  <td mat-cell *matCellDef="let element">{{element.dataGalardoacao | date:'dd/MM/yyyy'}}</td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button type="button"color="primary"
+                            (click)="editCondecoracoes(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button"color="warn"
+                            (click)="removerCondecoracoes(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Excluir">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="condeColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: condeColumns; let i = index"
+                    [class.selected]="selectedCondeIndex === i"
+                    (click)="selectCondecoracoes(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+         <mat-tab label="Recompensas">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>military_tech</mat-icon>
+               Recompensas
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="adicionarCondecoracoes()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Condecoração
+              </button>
+            </div>
+
+            <div class="table-container">
+
+            </div>
+          </div>
+        </mat-tab>
+         <mat-tab label="Licenças">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon color="primary">workspace_premium</mat-icon>
+               Licenças
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="adicionarCondecoracoes()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Condecoração
+              </button>
+            </div>
+
+            <div class="table-container">
+
+            </div>
+          </div>
+        </mat-tab>
+       </mat-tab-group>
+
+
+
+
+
+<mat-tab-group>
+
+        <!-- Tab 16: Situações -->
         <mat-tab label="Situações">
           <div class="tab-content">
             <div class="section-header">
@@ -1708,42 +1795,35 @@
                 <!-- Situação Column -->
                 <ng-container matColumnDef="situacao">
                   <th mat-header-cell *matHeaderCellDef>Situação</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(sitFormArray.at(i)).get('situacao')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
+                  <td mat-cell *matCellDef="let element">{{element.situacao}}</td>
                 </ng-container>
 
                 <!-- Data OS Column -->
                 <ng-container matColumnDef="dataOS">
-                  <th mat-header-cell *matHeaderCellDef>Data da OS</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(sitFormArray.at(i)).get('dataOS')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
+                  <th mat-header-cell *matHeaderCellDef>Data OS</th>
+                  <td mat-cell *matCellDef="let element">{{element.dataOS | date:'dd/MM/yyyy'}}</td>
                 </ng-container>
 
                 <!-- Número OS Column -->
                 <ng-container matColumnDef="numOS">
-                  <th mat-header-cell *matHeaderCellDef>Nº OS</th>
-                  <td mat-cell *matCellDef="let element; let i = index">
-                    <mat-form-field appearance="outline" class="table-field">
-                      <input matInput [formControl]="$any(sitFormArray.at(i)).get('numOS')" [disabled]="!canPerformActions()">
-                    </mat-form-field>
-                  </td>
+                  <th mat-header-cell *matHeaderCellDef>Número OS</th>
+                  <td mat-cell *matCellDef="let element">{{element.numOS}}</td>
                 </ng-container>
 
                 <!-- Actions Column -->
                 <ng-container matColumnDef="actions">
                   <th mat-header-cell *matHeaderCellDef>Ações</th>
                   <td mat-cell *matCellDef="let element; let i = index">
-                    <button mat-icon-button color="warn"
-                            type="button"
+                    <button mat-icon-button type="button"color="primary"
+                            (click)="editSituacao(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button"color="warn"
                             (click)="removerSituacao(i)"
                             [disabled]="!canPerformActions()"
-                            matTooltip="Remover">
+                            matTooltip="Excluir">
                       <mat-icon>delete</mat-icon>
                     </button>
                   </td>
@@ -1755,6 +1835,533 @@
                     (click)="selectSituacao(i)"></tr>
               </table>
             </div>
+          </div>
+        </mat-tab>
+
+              <!-- Tab: Situação QP Ativo -->
+              <mat-tab label="Situação QP Ativo">
+                <div class="section-table">
+                  <mat-card class="table-card">
+                    <mat-card-content>
+                      <!-- Situação QP Ativo content here -->
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </mat-tab>
+
+</mat-tab-group>
+        <!-- Tab : Dados de carreira -->
+        <mat-tab label="Dados de carreira">
+          <div class="tab-content">
+            <!-- Inner Tab Group -->
+            <mat-tab-group class="inner-tab-group">
+              <!-- Tab: Promoções -->
+              <mat-tab label="Promoções">
+                <div class="section-table">
+                  <div class="section-header">
+                    <h3 class="section-title">
+                      <mat-icon>military_tech</mat-icon>
+                      Promoções
+                    </h3>
+                    <button mat-raised-button color="primary"
+                            type="button"
+                            (click)="addProm()"
+                            [disabled]="!canPerformActions()">
+                      <mat-icon>add</mat-icon>
+                      Adicionar Promoção
+                    </button>
+                  </div>
+                  <mat-card class="table-card">
+                    <mat-card-content>
+                      <div class="table-container">
+                        <table mat-table [dataSource]="promDataSource" class="mat-elevation-z2">
+                          <ng-container matColumnDef="categoria">
+                            <th mat-header-cell *matHeaderCellDef>Categoria</th>
+                            <td mat-cell *matCellDef="let element">{{element.categoria}}</td>
+                          </ng-container>
+
+                          <ng-container matColumnDef="patente">
+                            <th mat-header-cell *matHeaderCellDef>Patente</th>
+                            <td mat-cell *matCellDef="let element">{{element.patente}}</td>
+                          </ng-container>
+
+                          <ng-container matColumnDef="tipoPromocao">
+                            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+                            <td mat-cell *matCellDef="let element">{{element.tipoPromocao}}</td>
+                          </ng-container>
+
+                          <ng-container matColumnDef="dataOS">
+                            <th mat-header-cell *matHeaderCellDef>Data OS</th>
+                            <td mat-cell *matCellDef="let element">{{element.dataOS | date:'dd/MM/yyyy'}}</td>
+                          </ng-container>
+
+                          <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef>Ações</th>
+                            <td mat-cell *matCellDef="let element; let i = index">
+                              <button mat-icon-button type="button"
+                               color="primary"
+                                     (click)="editProm(element)"
+                                     [disabled]="!canPerformActions()"
+                                     matTooltip="Editar">
+                                <mat-icon>edit</mat-icon>
+                              </button>
+                              <button mat-icon-button type="button"color="warn"
+                                     (click)="deleteProm(element)"
+                                     [disabled]="!canPerformActions()"
+                                     matTooltip="Excluir">
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                            </td>
+                          </ng-container>
+
+                          <tr mat-header-row *matHeaderRowDef="promColumns"></tr>
+                          <tr mat-row *matRowDef="let row; columns: promColumns;"></tr>
+                        </table>
+                      </div>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </mat-tab>
+
+              <!-- Tab: Registros -->
+              <mat-tab label="Regime de prestação de serviço">
+                <div class="section-table">
+                  <div class="section-header">
+                    <h3 class="section-title">
+                      <mat-icon>assignment</mat-icon>
+                      Regime de prestação de serviço
+                    </h3>
+                    <button mat-raised-button color="primary"
+                            type="button"
+                            (click)="addReg()"
+                            [disabled]="!canPerformActions()">
+                      <mat-icon>add</mat-icon>
+                      Adicionar Registro
+                    </button>
+                  </div>
+                  <mat-card class="table-card">
+                    <mat-card-content>
+                      <div class="table-container">
+                        <table mat-table [dataSource]="regDataSource" class="mat-elevation-z2">
+                          <ng-container matColumnDef="regime">
+                            <th mat-header-cell *matHeaderCellDef>Regime</th>
+                            <td mat-cell *matCellDef="let element">{{element.regime}}</td>
+                          </ng-container>
+
+                          <ng-container matColumnDef="dataReg">
+                            <th mat-header-cell *matHeaderCellDef>Data do Registro</th>
+                            <td mat-cell *matCellDef="let element">{{element.dataReg | date:'dd/MM/yyyy'}}</td>
+                          </ng-container>
+
+                          <ng-container matColumnDef="numOS">
+                            <th mat-header-cell *matHeaderCellDef>Número OS</th>
+                            <td mat-cell *matCellDef="let element">{{element.numOS}}</td>
+                          </ng-container>
+
+                          <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef>Ações</th>
+                            <td mat-cell *matCellDef="let element; let i = index">
+                              <button mat-icon-button type="button"color="primary"
+                                     (click)="editReg(element)"
+                                     [disabled]="!canPerformActions()"
+                                     matTooltip="Editar">
+                                <mat-icon>edit</mat-icon>
+                              </button>
+                              <button mat-icon-button type="button"color="warn"
+                                     (click)="deleteReg(element)"
+                                     [disabled]="!canPerformActions()"
+                                     matTooltip="Excluir">
+                                <mat-icon>delete</mat-icon>
+                              </button>
+                            </td>
+                          </ng-container>
+
+                          <tr mat-header-row *matHeaderRowDef="regColumns"></tr>
+                          <tr mat-row *matRowDef="let row; columns: regColumns;"></tr>
+                                               </table>
+                      </div>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </mat-tab>
+
+              <!-- Tab: Especialidades -->
+              <mat-tab label="Especializações">
+                <div class="section-table">
+                  <div class="section-header">
+                    <h2>Especializações do Militar</h2>
+                    <button mat-raised-button color="primary" *ngIf="isEditing || formState"
+                      (click)="addEspecial()">
+                      <mat-icon>add</mat-icon>
+                      Adicionar Especialidade
+                    </button>
+                  </div>
+
+                  <div class="table-container mat-elevation-z2">
+                    <table mat-table [dataSource]="especialDataSource" class="full-width-table">
+                      <!-- Especialidade Column -->
+                      <ng-container matColumnDef="especial">
+                        <th mat-header-cell *matHeaderCellDef>Especialidade</th>
+                        <td mat-cell *matCellDef="let element">{{ element.especial }}</td>
+                      </ng-container>
+
+                      <!-- Data Column -->
+                      <ng-container matColumnDef="dataEspecial">
+                        <th mat-header-cell *matHeaderCellDef>Data</th>
+                        <td mat-cell *matCellDef="let element">{{ element.dataEspecial | date: 'dd/MM/yyyy' }}</td>
+                      </ng-container>
+
+                      <!-- NumOS Column -->
+                      <ng-container matColumnDef="numOS">
+                        <th mat-header-cell *matHeaderCellDef>Número OS</th>
+                        <td mat-cell *matCellDef="let element">{{ element.numOS }}</td>
+                      </ng-container>
+
+                      <!-- Actions Column -->
+                      <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef>Ações</th>
+                        <td mat-cell *matCellDef="let element">
+                          <button mat-icon-button type="button"color="primary" *ngIf="isEditing || formState"
+                            (click)="editEspecial(element)" title="Editar">
+                            <mat-icon>edit</mat-icon>
+                          </button>
+                          <button mat-icon-button type="button"color="warn" *ngIf="isEditing || formState"
+                            (click)="deleteEspecial(element)" title="Excluir">
+                            <mat-icon>delete</mat-icon>
+                          </button>
+                        </td>
+                      </ng-container>
+
+                      <tr mat-header-row *matHeaderRowDef="['especial', 'dataEspecial', 'numOS', 'actions']"></tr>
+                      <tr mat-row *matRowDef="let row; columns: ['especial', 'dataEspecial', 'numOS', 'actions']"></tr>
+
+                      <!-- Empty state row -->
+                      <tr class="mat-row" *matNoDataRow>
+                        <td class="mat-cell empty-table" colspan="4">
+                          Nenhuma especialidade cadastrada
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+          </div>
+        </mat-tab>
+        <!-- Tab 18: Situações do Militar -->
+        <mat-tab label="Ocorrências do Militar">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>history</mat-icon>
+               Ocorrências
+              </h3>
+            </div>
+
+            <!-- Inner Tab Group for situações -->
+            <mat-tab-group class="inner-tab-group">
+
+               <mat-tab label="Formações concluídas">
+          <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>school</mat-icon>
+                Formações concluídas"
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="addFormacao()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar Formação
+              </button>
+            </div>
+
+            <div class="table-container">
+              <table mat-table [dataSource]="forDataSource" class="data-table">
+                <!-- Curso Column -->
+                <ng-container matColumnDef="curso">
+                  <th mat-header-cell *matHeaderCellDef>Curso</th>
+                  <td mat-cell *matCellDef="let element">{{element.curso}}</td>
+                </ng-container>
+
+                <!-- Instituição Column -->
+                <ng-container matColumnDef="instituicao">
+                  <th mat-header-cell *matHeaderCellDef>Instituição</th>
+                  <td mat-cell *matCellDef="let element">{{element.instituicao}}</td>
+                </ng-container>
+
+                <!-- Data Início Column -->
+                <ng-container matColumnDef="dataInicio">
+                  <th mat-header-cell *matHeaderCellDef>Data Início</th>
+                  <td mat-cell *matCellDef="let element">{{element.dataInicio | date:'dd/MM/yyyy'}}</td>
+                </ng-container>
+
+                <!-- Data Término Column -->
+                <ng-container matColumnDef="dataTermino">
+                  <th mat-header-cell *matHeaderCellDef>Data Término</th>
+                  <td mat-cell *matCellDef="let element">{{element.dataTermino | date:'dd/MM/yyyy'}}</td>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Ações</th>
+                  <td mat-cell *matCellDef="let element; let i = index">
+                    <button mat-icon-button type="button"color="primary"
+                            (click)="editFormacao(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Editar">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                    <button mat-icon-button type="button"color="warn"
+                            (click)="removerFormacao(i)"
+                            [disabled]="!canPerformActions()"
+                            matTooltip="Excluir">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="forColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: forColumns; let i = index"
+                    [class.selected]="selectedForIndex === i"
+                    (click)="selectFormacao(i)"></tr>
+              </table>
+            </div>
+          </div>
+        </mat-tab>
+
+              <!-- Tab: Situação Criminal -->
+              <mat-tab label="Situação Criminal">
+                <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>school</mat-icon>
+               situações crimini
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="addSitCrim()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar situação criminal
+              </button>
+            </div>
+
+            <div class="table-container">
+
+<table mat-table [dataSource]="sitCrimDataSource" class="data-table">
+  <!-- Órgão Column -->
+  <ng-container matColumnDef="orgao">
+    <th mat-header-cell *matHeaderCellDef>Órgão</th>
+    <td mat-cell *matCellDef="let element">{{element.orgao}}</td>
+  </ng-container>
+
+  <!-- Infração Column -->
+  <ng-container matColumnDef="infraccao">
+    <th mat-header-cell *matHeaderCellDef>Infração</th>
+    <td mat-cell *matCellDef="let element">{{element.infraccao}}</td>
+  </ng-container>
+
+  <!-- Número do Processo Column -->
+  <ng-container matColumnDef="numProcesso">
+    <th mat-header-cell *matHeaderCellDef>Nº Processo</th>
+    <td mat-cell *matCellDef="let element">{{element.numProcesso}}</td>
+  </ng-container>
+
+  <!-- Data do Processo Column -->
+  <ng-container matColumnDef="processodata">
+    <th mat-header-cell *matHeaderCellDef>Data do Processo</th>
+    <td mat-cell *matCellDef="let element">{{element.processodata | date:'dd/MM/yyyy'}}</td>
+  </ng-container>
+
+  <!-- Pena Column -->
+  <ng-container matColumnDef="pena">
+    <th mat-header-cell *matHeaderCellDef>Pena</th>
+    <td mat-cell *matCellDef="let element">{{element.pena}}</td>
+  </ng-container>
+
+  <!-- Data de Detenção Column -->
+  <ng-container matColumnDef="detencaoData">
+    <th mat-header-cell *matHeaderCellDef>Data de Detenção</th>
+    <td mat-cell *matCellDef="let element">{{element.detencaoData | date:'dd/MM/yyyy'}}</td>
+  </ng-container>
+
+  <!-- Data de Condenação Column -->
+  <ng-container matColumnDef="condenacaoData">
+    <th mat-header-cell *matHeaderCellDef>Data de Condenação</th>
+    <td mat-cell *matCellDef="let element">{{element.condenacaoData | date:'dd/MM/yyyy'}}</td>
+  </ng-container>
+
+  <!-- Local da Prisão Column -->
+  <ng-container matColumnDef="localPrisao">
+    <th mat-header-cell *matHeaderCellDef>Local da Prisão</th>
+    <td mat-cell *matCellDef="let element">{{element.localPrisao}}</td>
+  </ng-container>
+
+  <!-- Data de Soltura Column -->
+  <ng-container matColumnDef="solturaData">
+    <th mat-header-cell *matHeaderCellDef>Data de Soltura</th>
+    <td mat-cell *matCellDef="let element">{{element.solturaData | date:'dd/MM/yyyy'}}</td>
+  </ng-container>
+
+  <!-- Nº do Documento de Soltura Column -->
+  <ng-container matColumnDef="numDocSoltura">
+    <th mat-header-cell *matHeaderCellDef>Nº Doc. Soltura</th>
+    <td mat-cell *matCellDef="let element">{{element.numDocSoltura}}</td>
+  </ng-container>
+
+  <!-- Actions Column -->
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Ações</th>
+    <td mat-cell *matCellDef="let element; let i = index">
+      <button mat-icon-button type="button"color="primary"
+              (click)="editSitCrim(i)"
+              [disabled]="!canPerformActions()"
+              matTooltip="Editar">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button type="button"color="warn"
+              (click)="deleteSitCrim(i)"
+              [disabled]="!canPerformActions()"
+              matTooltip="Excluir">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="['orgao','infraccao','numProcesso','processodata','pena','detencaoData','condenacaoData','localPrisao','solturaData','numDocSoltura','actions']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['orgao','infraccao','numProcesso','processodata','pena','detencaoData','condenacaoData','localPrisao','solturaData','numDocSoltura','actions']; let i = index"
+      [class.selected]="selectedSitCrimIndex === i"
+      (click)="selectSitCrim(i)"></tr>
+</table>
+
+
+
+
+
+
+
+
+            </div>
+          </div>
+              </mat-tab>
+
+              <!-- Tab: Situação Disciplinar -->
+              <mat-tab label="Situação Disciplinar">
+
+                    <div class="tab-content">
+            <div class="section-header">
+              <h3 class="section-title">
+                <mat-icon>school</mat-icon>
+                situações disciplinares
+              </h3>
+              <button mat-raised-button color="primary"
+                      type="button"
+                      (click)="addSitDisc()"
+                      [disabled]="!canPerformActions()">
+                <mat-icon>add</mat-icon>
+                Adicionar situação disciplinar
+              </button>
+            </div>
+
+            <div class="table-container"><table mat-table [dataSource]="sitDiscDataSource" class="data-table">
+  <!-- Órgão Column -->
+  <ng-container matColumnDef="orgao">
+    <th mat-header-cell *matHeaderCellDef>Órgão</th>
+    <td mat-cell *matCellDef="let element">{{element.orgao}}</td>
+  </ng-container>
+
+  <!-- Nº OS Column -->
+  <ng-container matColumnDef="numOS">
+    <th mat-header-cell *matHeaderCellDef>Nº OS</th>
+    <td mat-cell *matCellDef="let element">{{element.numOS}}</td>
+  </ng-container>
+
+  <!-- Infração Column -->
+  <ng-container matColumnDef="infracao">
+    <th mat-header-cell *matHeaderCellDef>Infração</th>
+    <td mat-cell *matCellDef="let element">{{element.infracao}}</td>
+  </ng-container>
+
+  <!-- Nº Processo Column -->
+  <ng-container matColumnDef="numProcesso">
+    <th mat-header-cell *matHeaderCellDef>Nº Processo</th>
+    <td mat-cell *matCellDef="let element">{{element.numProcesso}}</td>
+  </ng-container>
+
+  <!-- Data Processo Column -->
+  <ng-container matColumnDef="dataProcesso">
+    <th mat-header-cell *matHeaderCellDef>Data Processo</th>
+    <td mat-cell *matCellDef="let element">{{element.dataProcesso | date:'dd/MM/yyyy'}}</td>
+  </ng-container>
+
+  <!-- Medidas Tomadas Column -->
+  <ng-container matColumnDef="medTomadas">
+    <th mat-header-cell *matHeaderCellDef>Medidas Tomadas</th>
+    <td mat-cell *matCellDef="let element">{{element.medTomadas}}</td>
+  </ng-container>
+
+  <!-- Data Início Medida Column -->
+  <ng-container matColumnDef="dataInicioMedida">
+    <th mat-header-cell *matHeaderCellDef>Data Início Medida</th>
+    <td mat-cell *matCellDef="let element">{{element.dataInicioMedida | date:'dd/MM/yyyy'}}</td>
+  </ng-container>
+
+  <!-- Data Término Medida Column -->
+  <ng-container matColumnDef="dataTerminoMedida">
+    <th mat-header-cell *matHeaderCellDef>Data Término Medida</th>
+    <td mat-cell *matCellDef="let element">{{element.dataTerminoMedida | date:'dd/MM/yyyy'}}</td>
+  </ng-container>
+
+  <!-- Data Fim Medida Column -->
+  <ng-container matColumnDef="dataFimMedida">
+    <th mat-header-cell *matHeaderCellDef>Data Fim Medida</th>
+    <td mat-cell *matCellDef="let element">{{element.dataFimMedida | date:'dd/MM/yyyy'}}</td>
+  </ng-container>
+
+  <!-- Local Column -->
+  <ng-container matColumnDef="local">
+    <th mat-header-cell *matHeaderCellDef>Local</th>
+    <td mat-cell *matCellDef="let element">{{element.local}}</td>
+  </ng-container>
+
+  <!-- Actions Column -->
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>Ações</th>
+    <td mat-cell *matCellDef="let element; let i = index">
+      <button mat-icon-button type="button"color="primary"
+              (click)="editSitDisc(i)"
+              [disabled]="!canPerformActions()"
+              matTooltip="Editar">
+        <mat-icon>edit</mat-icon>
+      </button>
+      <button mat-icon-button type="button"color="warn"
+              (click)="deleteSitDisc(i)"
+              [disabled]="!canPerformActions()"
+              matTooltip="Excluir">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="['orgao','numOS','infracao','numProcesso','dataProcesso','medTomadas','dataInicioMedida','dataTerminoMedida','dataFimMedida','local','actions']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['orgao','numOS','infracao','numProcesso','dataProcesso','medTomadas','dataInicioMedida','dataTerminoMedida','dataFimMedida','local','actions']; let i = index"
+      [class.selected]="selectedSitDiscIndex === i"
+      (click)="selectSitDisc(i)"></tr>
+</table>
+
+
+
+
+
+
+
+            </div>
+          </div>
+              </mat-tab>
+
+            </mat-tab-group>
           </div>
         </mat-tab>
 

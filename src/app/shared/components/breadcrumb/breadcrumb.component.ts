@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, HostListener, Input, OnDestroy, OnInit, ViewEncapsulation, inject } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewEncapsulation, inject } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
-import { AuthService, Usuario } from '@core';
+import { Usuario } from '@core';
 import { MenuService } from '@core/bootstrap/menu.service';
 import { environment } from '@env/environment';
 import { TranslateModule } from '@ngx-translate/core';
 import { selectsprocura } from 'app/classes/CampoSessoes';
+import { SecureStorageService } from 'app/core/services/secure-storage.service';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -20,6 +21,8 @@ import { Observable } from 'rxjs';
 export class BreadcrumbComponent implements OnInit,OnDestroy {
   private readonly router = inject(Router);
   private readonly menu = inject(MenuService);
+  private readonly secureStorage = inject(SecureStorageService);
+
   @Input() nav: string[] = [];
   constructor() {}
   ngOnInit() {
@@ -33,12 +36,10 @@ export class BreadcrumbComponent implements OnInit,OnDestroy {
     return navLink;
   }
   isAutenticated() {
-    return (localStorage.getItem('usuario')) !== null ? true : false;
+    return this.secureStorage.hasItem('usuario');
   }
    obterSessao() {
-    const dataGuardar = localStorage.getItem('usuario');
-    const utilizador = JSON.parse(dataGuardar!);
-    return utilizador;
+    return this.secureStorage.getItem('usuario');
   }
   CheckVersion(){
   // const meta = document.querySelector(`meta[name="viewport"]`);

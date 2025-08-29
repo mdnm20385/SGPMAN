@@ -51,7 +51,7 @@ export const appConfig: ApplicationConfig = {
         },
       }),
       FormlyConfigModule.forRoot(),
-      // 👇 ❌ This is only used for demo purpose, remove it in the realworld application
+      // 👇 Reativando para suportar /me e /me/menu
       InMemoryWebApiModule.forRoot(InMemDataService, {
         dataEncapsulation: false,
         passThruUnknownUrl: true,

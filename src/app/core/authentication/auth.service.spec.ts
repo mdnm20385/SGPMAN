@@ -49,7 +49,7 @@ describe('AuthService', () => {
     user$.pipe(skip(1)).subscribe(currentUser => expect(currentUser.id).toEqual(user.id));
     authService.login(email, 'password', false).subscribe(isLogin => expect(isLogin).toBeTrue());
     httpMock.expectOne('/auth/login').flush(token);
-console.log(token);
+    // Token logged for test verification
     expect(authService.check()).toBeTrue();
     httpMock.expectOne('/me').flush(user);
   });

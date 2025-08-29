@@ -1,10 +1,10 @@
-import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { inject, Injectable } from '@angular/core';
+import { AuthService, CamposRetornadosSessao, Usuario } from '@core';
 import { environment } from '@env/environment';
 import { selects, selectsprocura } from 'app/classes/CampoSessoes';
 import { Resposta } from 'app/classes/Resposta';
-import { finalize, Observable } from 'rxjs';
-import { AuthService, CamposRetornadosSessao, Usuario } from '@core';
+import { Observable } from 'rxjs';
 
 export interface PeriodicElement {
   name: string;
@@ -83,8 +83,8 @@ if(this.auth.isAutenticated()==false){
       ordem: 'orgaostamp'
     };
 
-    console.log(`Ver o usuário e o param`);
-    console.log(user);
+    // Verificando usuário para totais
+    // User data being processed
   const g= this.GetTotais2(user)
      .subscribe( (res)=>
     {

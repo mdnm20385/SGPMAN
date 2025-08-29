@@ -4,7 +4,7 @@ import { BehaviorSubject, Subject, Subscription, share, timer } from 'rxjs';
 import { LocalStorageService } from '@shared';
 import { currentTimestamp, filterObject } from './helpers';
 import { Token } from './interface';
-import { BaseToken, SimpleToken } from './token';
+import { BaseToken } from './token';
 import { TokenFactory } from './token-factory.service';
 
 @Injectable({
@@ -26,10 +26,18 @@ export class TokenService implements OnDestroy {
   public _token?: BaseToken;
 
   public get token(): BaseToken | undefined {
-    if (!this._token) {
-      this._token = this.factory.create(this.store.get(this.key));
+    try {
+      if (!this._token) {
+        const storedToken = this.store.get(this.key);
+        if (storedToken) {
+          this._token = this.factory.create(storedToken);
+        }
+      }
+      return this._token;
+    } catch (error) {
+      console.error('Error getting token:', error);
+      return undefined;
     }
-    return this._token;
   }
 
 
@@ -55,15 +63,30 @@ export class TokenService implements OnDestroy {
   }
 
   valid() {
-    return this.token?.valid() ?? false;
+    try {
+      return this.token?.valid() ?? false;
+    } catch (error) {
+      console.error('Error checking token validity:', error);
+      return false;
+    }
   }
 
   getBearerToken() {
-    return this.token?.getBearerToken() ?? '';
+    try {
+      return this.token?.getBearerToken() ?? '';
+    } catch (error) {
+      console.error('Error getting bearer token:', error);
+      return '';
+    }
   }
 
   getRefreshToken() {
-    return this.token?.refresh_token;
+    try {
+      return this.token?.refresh_token;
+    } catch (error) {
+      console.error('Error getting refresh token:', error);
+      return undefined;
+    }
   }
 
   ngOnDestroy(): void {
@@ -71,32 +94,68 @@ export class TokenService implements OnDestroy {
   }
 
   public save(token?: Token) {
-    this._token = undefined;
-    if (!token) {
-      this.store.remove(this.key);
-    } else {
-      const value = Object.assign({ access_token: '', token_type: 'Bearer' }, token, {
-        exp: token.expires_in ? currentTimestamp() + token.expires_in : null,
-      },);
-      this.store.set(this.key, filterObject(value));
-    }
+    try {
+      this._token = undefined;
 
-    this.change$.next(this.token);
-    this.buildRefresh();
+      if (!token) {
+        this.store.remove(this.key);
+      } else {
+        // Verificar se token tem as propriedades necessárias
+        const safeToken = {
+          access_token: token.access_token || '',
+          token_type: token.token_type || 'Bearer',
+          expires_in: token.expires_in,
+          refresh_token: token.refresh_token,
+          usuario: token.usuario // Preservar dados do usuário
+        };
+
+        const value = Object.assign(
+          { access_token: '', token_type: 'Bearer' },
+          safeToken,
+          {
+            exp: safeToken.expires_in ? currentTimestamp() + safeToken.expires_in : null,
+          }
+        );
+
+        this.store.set(this.key, filterObject(value));
+      }
+
+      this.change$.next(this.token);
+      this.buildRefresh();
+    } catch (error) {
+      console.error('Error saving token:', error);
+      // Em caso de erro, limpar token
+      this._token = undefined;
+      this.store.remove(this.key);
+      this.change$.next(undefined);
+    }
   }
 
   public buildRefresh() {
-    this.clearRefresh();
-    if (this.token?.needRefresh()) {
-      this.timer$ = timer(this.token.getRefreshTime() * 1000).subscribe(() => {
-        this.refresh$.next(this.token);
-      });
+    try {
+      this.clearRefresh();
+
+      if (this.token?.needRefresh()) {
+        const refreshTime = this.token.getRefreshTime();
+        if (refreshTime > 0) {
+          this.timer$ = timer(refreshTime * 1000).subscribe(() => {
+            this.refresh$.next(this.token);
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error building refresh timer:', error);
+      this.clearRefresh();
     }
   }
 
   public clearRefresh() {
-    if (this.timer$ && !this.timer$.closed) {
-      this.timer$.unsubscribe();
+    try {
+      if (this.timer$ && !this.timer$.closed) {
+        this.timer$.unsubscribe();
+      }
+    } catch (error) {
+      console.error('Error clearing refresh timer:', error);
     }
   }
 }

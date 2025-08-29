@@ -7,12 +7,12 @@ import { MatGridListModule } from '@angular/material/grid-list';
 import { MatListModule } from '@angular/material/list';
 import { MatTableModule } from '@angular/material/table';
 import { MatTabsModule } from '@angular/material/tabs';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService, Usuario } from '@core';
 import { MtxProgressModule } from '@ng-matero/extensions/progress';
-import { BreadcrumbComponent, PageHeaderComponent } from '@shared';
+import { PageHeaderComponent } from '@shared';
 import { selectsprocura } from 'app/classes/CampoSessoes';
-import Swal from 'sweetalert2';
+import { SecureStorageService } from 'app/core/services/secure-storage.service';
 
 @Component({
   selector: 'app-paginainicial',
@@ -34,6 +34,8 @@ import Swal from 'sweetalert2';
 })
 
 export class PaginainicialComponent implements AfterViewInit,OnInit{
+  private readonly secureStorage = inject(SecureStorageService);
+
 login(nome:string) {
   switch(nome){
 case 'naohomologadas':
@@ -80,11 +82,9 @@ case 'naohomologadas':
   return se;
   }
   isAutenticated() {
-    return (localStorage.getItem('usuario')) !== null ? true : false;
+    return this.secureStorage.hasItem('usuario');
   }
    obterSessao() {
-    const dataGuardar = localStorage.getItem('usuario');
-    const utilizador = JSON.parse(dataGuardar!);
-    return utilizador;
+    return this.secureStorage.getItem('usuario');
   }
 }

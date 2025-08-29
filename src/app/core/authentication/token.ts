@@ -16,28 +16,59 @@ export abstract class BaseToken {
     return this.attributes.exp;
   }
   valid(): boolean {
-    return this.hasAccessToken() && !this.isExpired();
+    try {
+      return this.hasAccessToken() && !this.isExpired();
+    } catch (error) {
+      console.error('Error checking token validity:', error);
+      return false;
+    }
   }
+
   getBearerToken(): string {
-    return this.access_token
-      ? [capitalize(this.token_type), this.access_token].join(' ').trim()
-      : '';
+    try {
+      return this.access_token
+        ? [capitalize(this.token_type), this.access_token].join(' ').trim()
+        : '';
+    } catch (error) {
+      console.error('Error getting bearer token:', error);
+      return '';
+    }
   }
 
   needRefresh(): boolean {
-    return this.exp !== undefined && this.exp >= 0;
+    try {
+      return this.exp !== undefined && this.exp >= 0;
+    } catch (error) {
+      console.error('Error checking if token needs refresh:', error);
+      return false;
+    }
   }
 
   getRefreshTime(): number {
-    return timeLeft((this.exp ?? 0) - 5);
+    try {
+      return timeLeft((this.exp ?? 0) - 5);
+    } catch (error) {
+      console.error('Error getting refresh time:', error);
+      return 0;
+    }
   }
 
   private hasAccessToken(): boolean {
-    return !!this.access_token;
+    try {
+      return !!this.access_token;
+    } catch (error) {
+      console.error('Error checking access token:', error);
+      return false;
+    }
   }
 
   private isExpired(): boolean {
-    return this.exp !== undefined && this.exp - currentTimestamp() <= 0;
+    try {
+      return this.exp !== undefined && this.exp - currentTimestamp() <= 0;
+    } catch (error) {
+      console.error('Error checking token expiration:', error);
+      return true; // Assumir expirado em caso de erro
+    }
   }
 }
 
@@ -48,11 +79,25 @@ export class JwtToken extends SimpleToken {
 
   static is(accessToken: string): boolean {
     try {
-      const [_header] = accessToken.split('.');
+      if (!accessToken || typeof accessToken !== 'string') {
+        return false;
+      }
+
+      const parts = accessToken.split('.');
+      if (parts.length !== 3) {
+        return false;
+      }
+
+      const [_header] = parts;
+      if (!_header) {
+        return false;
+      }
+
       const header = JSON.parse(base64.decode(_header));
 
-      return header.typ.toUpperCase().includes('JWT');
+      return header && header.typ && header.typ.toUpperCase().includes('JWT');
     } catch (e) {
+      console.error('Error checking if token is JWT:', e);
       return false;
     }
   }
@@ -70,16 +115,41 @@ export class JwtToken extends SimpleToken {
       return this._payload;
     }
 
-    const [, payload] = this.access_token.split('.');
+    try {
+      const [, payload] = this.access_token.split('.');
 
-    const data = JSON.parse(base64.decode(payload));
-    if (!data.exp) {
-      data.exp = this.attributes.exp;
+      if (!payload) {
+        console.error('Token payload is empty');
+        return {};
+      }
+
+      const data = JSON.parse(base64.decode(payload));
+
+      if (!data.exp) {
+        data.exp = this.attributes.exp;
+      }
+
+      // Verificar e criar objeto user se não existir
+      if (!data.user) {
+
+        data.user = {};
+      }
+      // Verificar se attributes.usuario existe antes de acessar suas propriedades
+      if (this.attributes.usuario) {
+        data.user.username = this.attributes.usuario.login || '';
+        data.user.name = this.attributes.usuario.nome || '';
+        data.user.email = this.attributes.usuario.email || `${this.attributes.usuario.login}@gmail.com`;
+      } else {
+        // Valores padrão caso usuario não exista
+        data.user.username = '';
+        data.user.name = '';
+        data.user.email = '';
+      }
+
+      return (this._payload = data);
+    } catch (error) {
+      console.error('Error parsing token payload:', error);
+      return {};
     }
-data.user.username=this.attributes.usuario?.login;
-data.user.name=this.attributes.usuario?.nome;
-data.user.email=`${this.attributes.usuario?.login}@gmail.com`;
-
-    return (this._payload = data);
   }
 }

@@ -1,21 +1,22 @@
 import { BidiModule } from '@angular/cdk/bidi';
 import { BreakpointObserver } from '@angular/cdk/layout';
 import { NgClass } from '@angular/common';
+import { HttpClient } from '@angular/common/http';
 import {
-  Component,
-  HostBinding,
-  HostListener,
-  OnDestroy,
-  ViewChild,
-  ViewEncapsulation,
-  inject,
+    Component,
+    HostBinding,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewEncapsulation,
+    inject
 } from '@angular/core';
 import { MatSidenav, MatSidenavContent, MatSidenavModule } from '@angular/material/sidenav';
 import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { NgProgressComponent } from 'ngx-progressbar';
-import { Subscription, filter } from 'rxjs';
+import { Subscription, catchError, filter, of } from 'rxjs';
 
-import { AppSettings, AuthService, SettingsService } from '@core';
+import { AppSettings, SettingsService } from '@core';
 import { CustomizerComponent } from '../customizer/customizer.component';
 import { HeaderComponent } from '../header/header.component';
 import { SidebarNoticeComponent } from '../sidebar-notice/sidebar-notice.component';
@@ -45,15 +46,20 @@ const MONITOR_MEDIAQUERY = 'screen and (min-width: 960px)';
     CustomizerComponent,
   ],
 })
-export class AdminLayoutComponent implements OnDestroy {
+export class AdminLayoutComponent implements OnInit, OnDestroy {
   @ViewChild('sidenav', { static: true }) sidenav!: MatSidenav;
   @ViewChild('content', { static: true }) content!: MatSidenavContent;
 
   private readonly breakpointObserver = inject(BreakpointObserver);
   private readonly router = inject(Router);
   private readonly settings = inject(SettingsService);
+  private readonly http = inject(HttpClient);
 
   options = this.settings.options;
+
+  // Dynamic footer properties
+  appVersion: string = '2.0.0';
+  currentYear: number = new Date().getFullYear();
 
   get themeColor() {
     return this.settings.themeColor;
@@ -102,6 +108,21 @@ export class AdminLayoutComponent implements OnDestroy {
         this.sidenav.close();
       }
       this.content.scrollTo({ top: 0 });
+    });
+  }
+
+  ngOnInit() {
+    this.loadAppVersion();
+  }
+
+  private loadAppVersion() {
+    this.http.get('/assets/Version.json').pipe(
+      catchError(error => {
+        console.error('Error loading version:', error);
+        return of({ version: '2.0.0' });
+      })
+    ).subscribe((data: any) => {
+      this.appVersion = data.version || '2.0.0';
     });
   }
 

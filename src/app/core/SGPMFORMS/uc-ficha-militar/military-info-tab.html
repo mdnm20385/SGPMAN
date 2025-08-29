@@ -1,0 +1,66 @@
+<!-- Military Information Tab -->
+<mat-tab label="Informações Militares">
+  <div class="tab-content">
+    <!-- Condecorações Section -->
+    <mat-card class="table-card">
+      <mat-card-header>
+        <mat-card-title>Condecorações</mat-card-title>
+        <button mat-mini-fab color="primary"
+                (click)="addConde()"
+                [disabled]="!canPerformActions()"
+                matTooltip="Adicionar condecoração">
+          <mat-icon>add</mat-icon>
+        </button>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="condeDataSource" class="mat-elevation-z8">
+          <!-- Galardoa Column -->
+          <ng-container matColumnDef="galardoa">
+            <th mat-header-cell *matHeaderCellDef>Galardoa</th>
+            <td mat-cell *matCellDef="let element">{{element.galardoa}}</td>
+          </ng-container>
+
+          <!-- Especie Column -->
+          <ng-container matColumnDef="especie">
+            <th mat-header-cell *matHeaderCellDef>Espécie</th>
+            <td mat-cell *matCellDef="let element">{{element.especie}}</td>
+          </ng-container>
+
+          <!-- Grau Medalha Column -->
+          <ng-container matColumnDef="grauMedalha">
+            <th mat-header-cell *matHeaderCellDef>Grau da Medalha</th>
+            <td mat-cell *matCellDef="let element">{{element.grauMedalha}}</td>
+          </ng-container>
+
+          <!-- Data Galardoacao Column -->
+          <ng-container matColumnDef="dataGalardoacao">
+            <th mat-header-cell *matHeaderCellDef>Data de Galardoação</th>
+            <td mat-cell *matCellDef="let element">{{element.dataGalardoacao | date}}</td>
+          </ng-container>
+
+          <!-- Actions Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Ações</th>
+            <td mat-cell *matCellDef="let element">
+              <button mat-icon-button color="primary"
+                      (click)="editConde(element)"
+                      [disabled]="!canPerformActions()"
+                      matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn"
+                      (click)="deleteConde(element)"
+                      [disabled]="!canPerformActions()"
+                      matTooltip="Excluir">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="condeColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: condeColumns;"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</mat-tab>

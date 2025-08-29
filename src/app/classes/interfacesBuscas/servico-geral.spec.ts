@@ -1,5 +1,5 @@
 import { HttpRequest } from '@angular/common/http';
-import { HttpTestingController, HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed, fakeAsync, tick } from '@angular/core/testing';
 import { AuthService, LoginService, TokenService, User } from '@core';
 import { LocalStorageService, MemoryStorageService } from '@shared';
@@ -52,7 +52,7 @@ describe('ServicoGeral', () => {
     user$.pipe(skip(1)).subscribe(currentUser => expect(currentUser.id).toEqual(user.id));
     authService.login(email, 'password', false).subscribe(isLogin => expect(isLogin).toBeTrue());
     httpMock.expectOne('/auth/login').flush(token);
-console.log(token);
+    // Token logged for test verification
     expect(authService.check()).toBeTrue();
     httpMock.expectOne('/me').flush(user);
   });

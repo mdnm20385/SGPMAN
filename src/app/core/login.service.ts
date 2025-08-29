@@ -1,26 +1,25 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, filter, map } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
-import { AuthService, Menu } from '@core';
-import { Token, User } from './interface';
+import { Menu } from '@core';
 import { environment } from '@env/environment';
-import { MatSnackBar } from '@angular/material/snack-bar';
-import { Router } from '@angular/router';
+import { busca } from 'app/classes/busca';
+import { EntradaProcesso } from 'app/classes/ClassesSIGEX';
 import { LoginModel } from 'app/classes/LoginModel';
 import { Resposta } from 'app/classes/Resposta';
 import { utilizador } from 'app/classes/utilizador';
-import { busca } from 'app/classes/busca';
-import { EntradaProcesso } from 'app/classes/ClassesSIGEX';
+import { Token, User } from './interface';
+import { SecureStorageService } from './services/secure-storage.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class LoginService {
   protected readonly http = inject(HttpClient);
+  private readonly secureStorage = inject(SecureStorageService);
 
-  constructor(
-      ) { }
+  constructor() { }
 
   private ApiUrl = `${environment.Apiurl}`;
   login(username: string, password: string, rememberMe = false){
@@ -56,23 +55,24 @@ export class LoginService {
   }
 
   isAutenticated() {
-    return (localStorage.getItem('usuario')) !== null ? true : false;
+    return this.secureStorage.hasItem('usuario');
   }
   isAutenticatedentradaStamp() {
-    return (localStorage.getItem('entradaStamp')) !== null ? true : false;
+    return this.secureStorage.hasItem('entradaStamp');
   }
 
   isAutenticatedTotais() {
-    return (localStorage.getItem('Totais')) !== null ? true : false;
+    return this.secureStorage.hasItem('Totais');
   }
 
   eliminarSessao() {
-    localStorage.removeItem('usuario');
-  } eliminarentradaStamp() {
-    localStorage.removeItem('entradaStamp');
+    this.secureStorage.removeItem('usuario');
+  }
+  eliminarentradaStamp() {
+    this.secureStorage.removeItem('entradaStamp');
   }
   eliminarTotais() {
-    localStorage.removeItem('Totais');
+    this.secureStorage.removeItem('Totais');
   }
   me() {
 

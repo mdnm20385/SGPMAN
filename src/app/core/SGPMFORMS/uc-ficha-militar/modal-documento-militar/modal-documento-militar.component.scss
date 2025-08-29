@@ -1,0 +1,76 @@
+// Linha dupla para datas
+.form-row.two-cols {
+  display: flex;
+  gap: 16px;
+}
+.half-width {
+  flex: 1 1 0;
+  min-width: 0;
+}
+.agregado-form {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 24px 16px;
+  background: #f7fafd;
+  border-radius: 8px;
+  box-sizing: border-box;
+}
+.ficha-militar-form {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+.modal-wrapper {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding: 24px 16px;
+  background: #f7fafd;
+  border-radius: 8px;
+}
+.form-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.form-title {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #1976d2;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.state-indicator {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #888;
+}
+.action-buttons-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 18px;
+}
+.action-buttons .action-button {
+  margin-left: 8px;
+}
+.form-content {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+.full-width {
+  width: 100%;
+  min-width: 0;
+}
+@media (max-width: 900px) {
+  .modal-wrapper, .agregado-form, .ficha-militar-form {
+    max-width: 100vw;
+    padding: 12px 4px;
+  }
+}

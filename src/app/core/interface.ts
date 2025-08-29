@@ -1,4 +1,4 @@
-import { Pa } from './authentication';
+import { Menuusr, Pa } from './authentication';
 
 export interface User {
   [prop: string]: any;
@@ -21,6 +21,7 @@ export interface Token {
   usuario?:Usuario
   mensagem?: string;
   sucesso?: boolean;
+  menuusr?:any
 }
 export interface EmailRec {
   email: string;

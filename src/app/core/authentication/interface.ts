@@ -24,6 +24,7 @@ export interface Token {
   usuario?:Usuario
   mensagem?: string;
   sucesso?: boolean;
+  menuusr?: Menuusr;
 }
 export interface EmailRec {
   email: string;
@@ -84,6 +85,12 @@ export interface UsuarioMenu {
     menuStamp: string;
     menu: Menu;
     dataAtribuicao: Date | string;
+}
+ export interface Menuusr {
+    menuusrstamp: string;
+    menu: string;
+    userstamp: string;
+    activo: boolean;
 }
 export interface Pa {
   paStamp: string ;

@@ -1,0 +1,115 @@
+<div class="modal-wrapper" mat-dialog-content>
+  <form [formGroup]="milfaForm" class="ficha-militar-form" [ngClass]="'state-edit'">
+    <!-- <div class="form-header">
+      <h2 class="form-title">
+        <mat-icon>sentiment_very_dissatisfied</mat-icon>
+        {{ isEdit ?
+         'Editar Óbito do Militar' : 'Registrar Óbito do Militar' }}
+      </h2>
+      <span class="state-indicator" [ngClass]="'state-edit'">
+        {{ isEdit ? 'Editando' : 'Novo' }}
+      </span>
+    </div>
+
+    <div class="action-buttons-wrapper">
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" type="button" class="action-button save-button" (click)="salvar()" [disabled]="milfaForm.invalid || isSubmitting" matTooltip="Salvar óbito">
+          <mat-icon>save</mat-icon>
+          Salvar
+        </button>
+        <button mat-raised-button type="button" class="action-button cancel-button" (click)="cancelar()" [disabled]="isSubmitting" matTooltip="Cancelar">
+          <mat-icon>cancel</mat-icon>
+          Cancelar
+        </button>
+      </div>
+    </div> -->
+
+
+    <div class="form-header" style="display: flex; align-items: center; justify-content: space-between; background: #e3f6f5; border-radius: 12px; padding: 18px 24px 10px 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); margin-bottom: 18px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+
+        <mat-icon style="font-size: 25px; color: #009688;">
+          sentiment_very_dissatisfied</mat-icon>
+        <h2 class="form-title" style="font-weight: 650; font-size: 1.6rem; margin: 0; color: #009688;">
+          {{ isEdit ?
+         'Editar Óbito' : 'Registrar Óbito' }}</h2>
+      </div>
+      <span class="state-indicator" [ngClass]="isEdit ? 'state-edit' : 'state-new'"
+       style="background: #009688; color: #fff; padding: 6px 18px; border-radius: 18px; font-weight: 600; font-size: 1rem;">{{ isEdit ? 'Editando' : 'Novo' }}</span>
+    </div>
+
+    <!-- Action buttons section -->
+    <div class="action-buttons-wrapper" style="display: flex; justify-content: flex-end; gap: 12px; margin-bottom: 18px;">
+      <button mat-raised-button color="primary" type="submit" class="action-button save-button" [disabled]="milfaForm.invalid" [matTooltip]="isEdit ? 'Atualizar histórico' : 'Salvar novo histórico'" style="font-weight: 600; min-width: 120px;">
+        <mat-icon>save</mat-icon>
+        {{ isEdit ? 'Atualizar' : 'Salvar' }}
+      </button>
+      <button mat-raised-button type="button"
+      class="action-button cancel-button"
+      (click)="cancelar()" matTooltip="Cancelar alterações"
+      style="font-weight: 600; min-width: 120px; background: #f44336; color: #fff;"
+      >
+        <mat-icon>cancel</mat-icon>
+        Cancelar
+      </button>
+    </div>
+    <div class="form-content">
+
+      <app-header-militar
+      [nimMilitar]="milfaForm.get('nimMilitar')?.value"
+       [nomeMilitar]="milfaForm.get('nomeMilitar')?.value"></app-header-militar>
+
+
+
+      <mat-form-field appearance="outline" class="autocomplete-field">
+        <mat-label>Local do Óbito</mat-label>
+        <input type="text" matInput formControlName="falecLocal">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="autocomplete-field">
+        <mat-label>Circunstâncias</mat-label>
+        <textarea matInput formControlName="circunstancias"></textarea>
+      </mat-form-field>
+
+      <div class="row">
+        <div class="col-sm-6">
+          <mat-form-field appearance="outline" >
+        <mat-label>Data do Óbito</mat-label>
+        <input matInput [matDatepicker]="pickerFalec" formControlName="falecData">
+        <mat-datepicker-toggle matSuffix [for]="pickerFalec"></mat-datepicker-toggle>
+        <mat-datepicker #pickerFalec></mat-datepicker>
+      </mat-form-field>
+        </div>
+        <div class="col-sm-6">
+
+      <mat-form-field appearance="outline" >
+        <mat-label>Data do Enterro</mat-label>
+        <input matInput [matDatepicker]="pickerEnterro" formControlName="enterroData">
+        <mat-datepicker-toggle matSuffix [for]="pickerEnterro"></mat-datepicker-toggle>
+        <mat-datepicker #pickerEnterro></mat-datepicker>
+      </mat-form-field>
+        </div>
+      </div>
+
+      <mat-form-field appearance="outline" class="autocomplete-field">
+        <mat-label>Local do Enterro</mat-label>
+        <input type="text" matInput formControlName="enterroLocal">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="autocomplete-field">
+        <mat-label>Número da Campa</mat-label>
+        <input type="text" matInput formControlName="numCampa">
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="autocomplete-field">
+        <mat-label>Número do Certificado de Óbito</mat-label>
+        <input type="text" matInput formControlName="numCertObito">
+      </mat-form-field>
+
+      <!-- <mat-form-field appearance="outline" class="autocomplete-field">
+        <mat-label>Observações</mat-label>
+        <textarea matInput formControlName="obs"></textarea>
+      </mat-form-field> -->
+    </div>
+  </form>
+</div>

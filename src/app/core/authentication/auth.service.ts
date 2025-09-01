@@ -1564,6 +1564,16 @@ const formato = `${ano}-${mes}-${dia}`;
     };
     return this.http.post<any>(`${this.ApiUrl}Proc2/GetEntityWithChildrenfgfgfg`, request);
   }
+
+   GetEntityObject(entityStamp: string, tableName: string,
+  stampColumnName: string): Observable<any> {
+    const request = {
+      EntityStamp: entityStamp,
+      TableName: tableName,
+      StampColumnName: stampColumnName,
+    };
+    return this.http.post<any>(`${this.ApiUrl}Proc2/GetEntityWithChildrenfgfgfg`, request);
+  }
  showSnackBar(message: string): void {
     this.snackBar.open(message, 'Fechar', {
       duration: 3000,

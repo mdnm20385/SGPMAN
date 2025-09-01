@@ -15,7 +15,6 @@ import { PageHeaderComponent } from '@shared';
 import { Procura } from 'app/classes/Procura';
 import { TablesRemoteDataService } from 'app/routes/tables/remote-data/remote-data.service';
 import { finalize } from 'rxjs';
-import { FrmModalOrgaoComponent } from '../frm-modal-orgao/frm-modal-orgao.component';
 import { AuthService, Usuario } from '@core/authentication';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';

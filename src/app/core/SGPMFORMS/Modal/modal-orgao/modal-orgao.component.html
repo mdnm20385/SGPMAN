@@ -1,0 +1,206 @@
+
+
+
+<div mat-dialog-actions align="end">
+
+  <button mat-raised-button mat-dialog-close color="warn" (click)="dialogRef.close()">Close
+    <mat-icon matSuffix>close</mat-icon>
+  </button>
+
+</div>
+<!-- <div mat-dialog-content>
+  <div class="d-flex w-full h-full">
+    <mat-card class="m-auto" >
+      <mat-card-header class="m-b-24">
+        <mat-card-title>
+          Dados do órgão...
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <form class="form-field-full" [formGroup]="registerForm">
+          <mat-form-field   appearance="outline">
+            <mat-label>Código do órgão</mat-label>
+            <input matInput [readonly]="true"  formControlName="codOrgao">
+            <mat-icon matSuffix>info</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Descrição do órgão</mat-label>
+            <input matInput formControlName="descricao" required >
+          </mat-form-field>
+
+          <mat-form-field *ngIf="visivel">
+            <mat-label></mat-label>
+            <input matInput formControlName="orgaoStamp"  [hidden]="true">
+          </mat-form-field>
+
+          <button class="w-full m-y-16" mat-raised-button color="primary"
+          [disabled]="!!registerForm.invalid" (click)="login()">
+          Salvar <mat-icon matSuffix>save</mat-icon>
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+</div> -->
+
+
+
+<div mat-dialog-content>
+  <div class="d-flex w-full h-full">
+    <mat-card class="m-auto">
+      <mat-card-header class="m-b-24">
+        <mat-card-title>Órgão Militar</mat-card-title>
+      </mat-card-header>
+
+      <mat-card-content>
+        <form class="form-field-full" [formGroup]="orgaoForm">
+
+          <!-- Código e Nome -->
+          <mat-form-field appearance="outline">
+            <mat-label>Código</mat-label>
+            <input matInput formControlName="codOrgao" readonly>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Nome do Órgão</mat-label>
+            <input matInput formControlName="descricao">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Orgânica</mat-label>
+            <input matInput formControlName="organica">
+          </mat-form-field>
+
+          <!-- Efetivo Oficiais Gerais -->
+          <h3>Efetivo de Oficiais Generais</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Oficiais</mat-label>
+            <input matInput type="number" formControlName="totalOf">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Oficiais Generais</mat-label>
+            <input matInput type="number" formControlName="totalOfGen">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Generais/Almirante</mat-label>
+            <input matInput type="number" formControlName="totalGenEx">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Tenente-Generais/Vice-Almirante</mat-label>
+            <input matInput type="number" formControlName="totalTteGen">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Major-Generais/Contra-Almirante</mat-label>
+            <input matInput type="number" formControlName="totalMajGen">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Brigadeiro/Comodoro</mat-label>
+            <input matInput type="number" formControlName="totalBrigadeiro">
+          </mat-form-field>
+
+          <!-- Efetivo Oficiais Superiores -->
+          <h3>Efetivo de Oficiais Superiores</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>Total Oficiais Superiores</mat-label>
+            <input matInput type="number" formControlName="totalOfSup">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total Coronéis/Capitão-de-Mar-e-Guerra</mat-label>
+            <input matInput type="number" formControlName="totalCor">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total Tte-Coronel/Capitão-de-Fragata</mat-label>
+            <input matInput type="number" formControlName="totalTteCor">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total Major/Capitão-Tenente</mat-label>
+            <input matInput type="number" formControlName="totalMaj">
+          </mat-form-field>
+
+          <!-- Efetivo Oficiais Subalternos -->
+          <h3>Efetivo de Oficiais Subalternos</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Oficiais Subalternos</mat-label>
+            <input matInput type="number" formControlName="totalOfSub">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Capitão/1º Tenente</mat-label>
+            <input matInput type="number" formControlName="totalCap">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Tenente/2º Tenente</mat-label>
+            <input matInput type="number" formControlName="totalTte">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Tenente Mil./2º Tenente Mili.</mat-label>
+            <input matInput type="number" formControlName="totalTteMil">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Alferes/Guarda-Marinha/Subtenente</mat-label>
+            <input matInput type="number" formControlName="totalAlf">
+          </mat-form-field>
+
+          <!-- Efetivo Sargentos -->
+          <h3>Efetivo de Sargentos</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Sargentos</mat-label>
+            <input matInput type="number" formControlName="totalSarg">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Intendente</mat-label>
+            <input matInput type="number" formControlName="totalInt">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Subintendente</mat-label>
+            <input matInput type="number" formControlName="totalSub">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de 1º Sargento</mat-label>
+            <input matInput type="number" formControlName="totalPriSar">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de 2º Sargento</mat-label>
+            <input matInput type="number" formControlName="totalSegSar">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de 3º Sargento</mat-label>
+            <input matInput type="number" formControlName="totalTerSar">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Furriel/Subsargento</mat-label>
+            <input matInput type="number" formControlName="totalFur">
+          </mat-form-field>
+
+          <!-- Efetivo Praças -->
+          <h3>Efetivo de Praças</h3>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Praças</mat-label>
+            <input matInput type="number" formControlName="totalPra">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de 1º Cabo/Cabo</mat-label>
+            <input matInput type="number" formControlName="totalPriCab">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de 2º Cabo/Marinheiro</mat-label>
+            <input matInput type="number" formControlName="totalSegCab">
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Total de Soldado/Grumete</mat-label>
+            <input matInput type="number" formControlName="totalSold">
+          </mat-form-field>
+
+          <!-- Botão -->
+          <button class="w-full m-y-16" mat-raised-button color="primary"
+                  [disabled]="!!orgaoForm.invalid" (click)="salvar()">
+            Salvar <mat-icon matSuffix>save</mat-icon>
+          </button>
+
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

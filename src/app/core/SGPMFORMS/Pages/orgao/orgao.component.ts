@@ -15,35 +15,37 @@ import { MtxDialog } from '@ng-matero/extensions/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
 import { TranslateService } from '@ngx-translate/core';
-import { FrmModalOrgaoComponent } from '../frm-modal-orgao/frm-modal-orgao.component';
 import { AuthService, Usuario } from '@core/authentication';
 import { condicoesprocura } from 'app/classes/CampoSessoes';
 import { Orgao } from 'app/classes/ClassesSIGEX';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatIconModule } from '@angular/material/icon';
+import { ModalOrgaoComponent } from '@core/SGPMFORMS/Modal/modal-orgao/modal-orgao.component';
+
 
 @Component({
-  selector: 'app-frm-lista-orgao',
-  templateUrl: './frm-lista-orgao.component.html',
-  styleUrl: './frm-lista-orgao.component.scss',
-  providers: [TablesRemoteDataService],
+  selector: 'app-orgao',
   standalone: true,
   imports: [
-    FormsModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MtxGridModule,
-    MatInputModule,
-    MatOptionModule,
-    MatSelectModule,
-    PageHeaderComponent,
-    MatCheckboxModule,
-    MatRadioModule,
-    MatIconModule,
-    MatSlideToggleModule,
+     FormsModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        MtxGridModule,
+        MatInputModule,
+        MatOptionModule,
+        MatSelectModule,
+        PageHeaderComponent,
+        MatCheckboxModule,
+        MatRadioModule,
+        MatIconModule,
+        MatSlideToggleModule
   ],
+  templateUrl: './orgao.component.html',
+  styleUrl: './orgao.component.scss',
+   providers: [TablesRemoteDataService],
 })
-export class FrmListaOrgaoComponent implements OnInit {
+export class OrgaoComponent {
+
   private readonly remoteSrv = inject(TablesRemoteDataService);
 
   private readonly translate = inject(TranslateService);
@@ -122,7 +124,7 @@ export class FrmListaOrgaoComponent implements OnInit {
             totalSegCab: 0,
             totalSold: 0,
           };
-          const dialogRef = this.dialog.originalOpen(FrmModalOrgaoComponent, {
+          const dialogRef = this.dialog.originalOpen(ModalOrgaoComponent, {
             width: '600px',
             disableClose: true,
             autoFocus: false,
@@ -139,14 +141,7 @@ export class FrmListaOrgaoComponent implements OnInit {
         }
       });
   }
-  columns: MtxGridColumn[] = [
-    // {
-    //   header: 'Name',
-    //   field: 'name',
-    //   formatter: (data: any) => `<a href="${data.html_url}" target="_blank">${data.name}</a>`,
-    // },
-    // { header: 'Owner', field: 'owner.login' },
-    // { header: 'Owner Avatar', field: 'owner.avatar_url', type: 'image' },
+  columns: MtxGridColumn[] = [   
     { header: 'Código', field: 'codOrgao', type: 'number' },
     { header: 'Descrição', field: 'descricao' },
 
@@ -178,25 +173,6 @@ export class FrmListaOrgaoComponent implements OnInit {
         },
       ],
     },
-    // { header: 'Stars', field: 'stargazers_count', type: 'number' },
-    // { header: 'Forks', field: 'forks_count', type: 'number' },
-    // { header: 'Score', field: 'score', type: 'number' },
-    // { header: 'Issues', field: 'open_issues', type: 'number' },
-    // { header: 'Language', field: 'language' },
-    // { header: 'License', field: 'license.name' },
-    // { header: 'Home Page', field: 'homepage', type: 'link' },
-    // { header: 'Is forked', field: 'fork', type: 'boolean' },
-    // {
-    //   header: 'Archived',
-    //   field: 'archived',
-    //   type: 'tag',
-    //   tag: {
-    //     true: { text: 'Yes', color: 'red-100' },
-    //     false: { text: 'No', color: 'green-100' },
-    //   },
-    // },
-    // { header: 'Created Date', field: 'created_at' },
-    // { header: 'Updated Date', field: 'updated_at' },
   ];
   list: any[] = [];
   total = 0;
@@ -273,7 +249,7 @@ export class FrmListaOrgaoComponent implements OnInit {
     this.requery();
   }
   edit(value: any) {
-    const dialogRef = this.dialog.originalOpen(FrmModalOrgaoComponent, {
+    const dialogRef = this.dialog.originalOpen(ModalOrgaoComponent, {
       width: '600px',
       data: { record: value },
     });

@@ -1,1 +1,42 @@
-<p>dist works!</p>
+<page-header [title]="'Distritos'"></page-header>
+
+
+<div id="btnright">
+  <form>
+    <div class="row demo-full-width">
+      <div class="col-sm-6 ">
+        <mat-form-field appearance="outline" class="demo-full-width">
+          <input matInput readonly="true"
+                 placeholder="Clica no botão + ou tecla F2 para adicionar nova saída!" />
+          <button matSuffix mat-raised-button color="accent" style="height: 35px;"
+                  class="m-x-4" mat-raised-button color="primary"
+                  (click)="AddNew()" type="button" class="btnpesquisa">
+            <mat-icon class="chevron">add</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="col-sm-6 ">
+        <mat-form-field appearance="outline" class="demo-full-width">
+          <input matInput [value]="query().q" name="q"
+                 placeholder="Filtragem através de órgão, direção, classificador,Assunto,Nº Doc,observação"
+                 class="inputpesquisa" />
+          <button matSuffix mat-raised-button color="accent" style="height: 35px;"
+                  (click)="search()" yup.class="btnpesquisa" type="button">
+            <mat-icon class='search-icon' color="primary">search</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</div>
+<mtx-grid [data]="list()"
+          [columns]="columns"
+          [loading]="isLoading()"
+          [pageOnFront]="false"
+          [length]="totalRecords()"
+          [pageSize]="5"
+          [pageSizeOptions]="[5, 10, 20]"
+          [columnResizable]="columnResizable()"
+          (selectionChange)="changeSelect($event)"
+          (page)="getPage($event)">
+</mtx-grid>

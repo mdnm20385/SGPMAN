@@ -13,11 +13,9 @@ import { Provincia } from 'app/classes/ClassesSIGEX';
 import { Objecto } from 'app/classes/Resposta';
 import { MtxDialog } from '@ng-matero/extensions/dialog';
 import { HttpErrorResponse } from '@angular/common/http';
-import { Pais } from 'app/classes/Facturacao/Facturacao';
-import { Procura } from 'app/classes/Procura';
 import { TablesRemoteDataService } from 'app/routes/tables/remote-data/remote-data.service';
-import { finalize } from 'rxjs';
 import { MatSelectModule } from '@angular/material/select';
+import { condicoesprocura, selects } from 'app/classes/CampoSessoes';
 
 @Component({
   selector: 'app-modal-prov',
@@ -31,7 +29,7 @@ import { MatSelectModule } from '@angular/material/select';
     MatButtonModule,
     MatIconModule,
     CommonModule,
-    MatSelectModule
+    MatSelectModule,
   ],
   templateUrl: './modal-prov.component.html',
   styleUrl: './modal-prov.component.scss',
@@ -46,7 +44,9 @@ export class ModalProvComponent implements OnInit {
   private readonly remoteSrv = inject(TablesRemoteDataService);
   isSubmitting = signal(false);
 
-  //paises = signal<Pais[]>([]);
+  selectorgaoprocede: selects[] = [];
+  selectdirecoesproced: selects[] = [];
+  selectorgaos: selects[] = [];
 
   provForm = this.fb.nonNullable.group({
     provinciaStamp: [''],
@@ -69,17 +69,26 @@ export class ModalProvComponent implements OnInit {
       });
     }
 
-
     this.carregarPaises();
   }
-  paises: { paisStamp: string, descricao: string }[] = [];
+  paises: { paisStamp: string; descricao: string }[] = [];
+  
   carregarPaises() {
-this.paises = [
-    { paisStamp: '1', descricao: 'Angola' },
-    { paisStamp: '2', descricao: 'Brasil' },
-    { paisStamp: '3', descricao: 'Portugal' }
-  ];
-    
+    const se: condicoesprocura = {
+      tabela: 'Pais',
+      campo1: 'descricao',
+      campo2: 'codPais',
+      condicao: 'vazio',
+      campochave: 'paisStamp',
+    };
+    this.remoteSrv.getSelection(se).subscribe({
+      next: data => {
+        if (data.sucesso) {
+          this.selectorgaoprocede = this.selectorgaos = data.dados.selects;
+        }
+      },
+      error: e => {},
+    });
   }
 
   gravar() {

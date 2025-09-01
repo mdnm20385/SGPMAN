@@ -15,7 +15,6 @@ import { PageHeaderComponent } from '@shared';
 import { Procura } from 'app/classes/Procura';
 import { TablesRemoteDataService } from 'app/routes/tables/remote-data/remote-data.service';
 import { finalize } from 'rxjs';
-import { FrmModalOrgaoComponent } from '../frm-modal-orgao/frm-modal-orgao.component';
 import { FrmModalDirecaoComponent } from '../frm-modal-direcao/frm-modal-direcao.component';
 import { Unidade } from 'app/classes/ClassesSIGEX';
 import { AuthService, Usuario } from '@core/authentication';

@@ -130,10 +130,8 @@ export class ProvComponent implements OnInit {
     },
   ];
 
-  distrito(record: any): void {    
-    debugger;
- this.router.navigate(['listadist', record.provinciaStamp]);
-   
+  distrito(record: any): void {
+ this.router.navigate(['parametrizacao/listadist', record.provinciaStamp]);
   }
 
   requery() {

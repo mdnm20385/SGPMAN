@@ -10,7 +10,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Data, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '@core/auth.service';
 import { Usuario } from '@core/interface';
 import { MtxButtonModule } from '@ng-matero/extensions/button';
@@ -19,7 +19,6 @@ import { MtxSelectModule } from '@ng-matero/extensions/select';
 import { TranslateModule } from '@ngx-translate/core';
 import { Pais } from 'app/classes/Facturacao/Facturacao';
 import { Objecto } from 'app/classes/Resposta';
-import { sign } from 'crypto';
 
 @Component({
   selector: 'app-modal-pais',
@@ -58,10 +57,6 @@ export class ModalPaisComponent implements OnInit {
     paisStamp: ['', [Validators.required]],
     codPais: [0],
     descricao: ['', [Validators.required]],
-    inseriu: '',
-    inseriuDataHora: [''],
-    alterou: '',
-    alterouDataHora: [''],
     abreviatura: '',
     nacional: false,
     pordefeito: false,
@@ -69,6 +64,7 @@ export class ModalPaisComponent implements OnInit {
   
 
   ngOnInit(): void {
+    
     this.paisForm.patchValue({
       paisStamp: this.data.record.paisStamp,
       codPais: this.data.record.codPais,
@@ -78,6 +74,7 @@ export class ModalPaisComponent implements OnInit {
       pordefeito: this.data.record.pordefeito,      
     });
   }
+
 
   gravar() {
     if (this.auth.isAutenticated() === false) {

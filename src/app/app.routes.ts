@@ -10,6 +10,8 @@ import { LoginComponent } from './routes/sessions/login/login.component';
 import { PaginainicialComponent } from '@theme/admin-layout/paginainicial/paginainicial.component';
 import { RegisterComponent } from '../../schematics/ng-add/files/module-files/app/routes/sessions/register/register.component';
 
+
+
 export const routes: Routes = [
   {
     path: '',

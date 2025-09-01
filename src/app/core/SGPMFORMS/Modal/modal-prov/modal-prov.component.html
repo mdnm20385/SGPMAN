@@ -27,7 +27,7 @@
           <mat-form-field appearance="outline">
             <mat-label>País</mat-label>
             <mat-select formControlName="paisStamp" required>
-              <mat-option *ngFor="let pais of paises" [value]="pais.paisStamp">
+              <mat-option *ngFor="let pais of selectorgaoprocede" [value]="pais.chave">
                 {{ pais.descricao }}
               </mat-option>
             </mat-select>

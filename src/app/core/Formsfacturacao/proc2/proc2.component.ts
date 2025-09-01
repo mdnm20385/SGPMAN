@@ -123,7 +123,6 @@ implements OnInit {
 
   ngOnInit() {
 
-
     this.Requery();
   }
 Requery(){

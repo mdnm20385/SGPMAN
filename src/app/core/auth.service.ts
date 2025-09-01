@@ -284,10 +284,8 @@ selects!:selectsprocura[];
     }
 
     InserirAlterarObjecto(valor: Objecto): Observable<Resposta<Unidade>>{
-    return this.http.post<Resposta<Unidade>>(`${this.ApiUrl}Save/InserirAlterarObjectos`,valor);
+    return this.http.post<Resposta<Unidade>>(`${this.ApiUrl}Save/InserirAlterarObjecto`,valor);
     }
-
-    
     SqlCmd(valor: Selects): Observable<Resposta<Selects>>{
       return this.http.post<Resposta<Selects>>(`${this.ApiUrl}EntradaProcesso/SqlCmd`,valor);
       }

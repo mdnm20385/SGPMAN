@@ -47,20 +47,6 @@
       "icon": "book",
       "children": [
         {
-          "route": "listapais",
-          "name": "listapais",
-          "type": "link"
-        },{
-          "route": "listaprov",
-          "name": "listaprov",
-          "type": "link"
-        },
-        {
-          "route": "listadist",
-          "name": "listadist",
-          "type": "link"
-        },
-        {
           "route": "configurao",
           "name": "configurao",
           "type": "sub",
@@ -70,15 +56,14 @@
               "route": "TipoPerfil/:45",
               "name": "TipoPerfil/:45",
               "type": "link"
-            }, 
-            {
-              "route": "Exemplo/:45",
-              "name": "Exemplo/:46",
-              "type": "link"
             }
           ]
         },
-        
+        {
+          "route": "listaorgao",
+          "name": "listaorgao",
+          "type": "link"
+        },
         {
           "route": "listadirecao",
           "name": "listadirecao",

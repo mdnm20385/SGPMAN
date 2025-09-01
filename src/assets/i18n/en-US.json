@@ -31,11 +31,7 @@
 
     "parametrizacao": "Parametrização",
      "parametrizacao.TipoPerfil/:45": "Tipo de Perfil ",
-     "parametrizacao.Exemplo/:45": "Aniva ",
      "parametrizacao.listaorgao": "Órgão",
-     "parametrizacao.listapais": "País",
-     "parametrizacao.listaprov": "Província",
-     "parametrizacao.listadist": "Distrito",
     "parametrizacao.listadirecao": "Direcção/Unidade",
     "parametrizacao.configurao": "Configução",
        "parametrizacao.configurao.TipoPerfil/:45": "Tipo de Perfil ",

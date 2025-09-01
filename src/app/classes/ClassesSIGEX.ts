@@ -1,66 +1,72 @@
 import { Pa } from '@core';
 
+
+
 export interface EntradaProcesso {
-  entradaStamp: string;
-  conselhoColectivos: string;
-  conselhoCoodenador: boolean;
-  conselhoDefesaNaciona: boolean;
-  conselhoTecnicoGeral: boolean;
-  consultivo: boolean;
-  conselhoDireccao: boolean;
-  numeroEntrada: number;
-  docPdf: string;
-  remetente: string;
-  orgaoProcedencia: string;
-  direcProcedencia: string;
-  depProcedencia: string;
-  dataEntrada: Date | string;
-  inseriu: string | null;
-  inseriuDataHora: Date | string;
-  alterou: string | null;
-  alterouDataHora: Date | string | null;
-  recebido: boolean | null;
-  tipoDoc: string;
-  direcaoOrigem: string;
-  direcaoOrigemStamp: string;
-  orgaoOrigem: string;
-  orgaoOrigemstamp: string;
-  grauClassifi: string;
-  nvlUrgencia: string;
-  despacho: string;
-  numeroOrdem: number | null;
-  dataDocumento: Date | string | null;
-  endereco: string;
-  observacao: string;
-  qtdFolhas: string;
-  qtdExemplares: string;
-  qtdAnexo: string;
-  orgaoUtilizador: string;
-  direcUtilizador: string;
-  depUtilizador: string;
-  orgaostamp: string;
-  departamentostamp: string;
-  direcaostamp: string;
-  tdocAniva: string;
-  detalhesAssunto: string;
-  vindoDeQuemquem: string;
-  paraquem: string;
-  pathPdf: string;
-  path: string;
-  arquivo: Arquivo;
-  path1: string;
-  processoStamp: string;
-  saidaStamp: string | null;
-  processo: Processo;
-  provProveniencia: string;
-  numero: string;
-  documento: string;
-  proveniencia: string;
-  ano: Date | string | null;
-  saidaProcesso: SaidaProcesso[];
+    entradaStamp: string;
+    conselhoColectivos: string;
+    conselhoCoodenador: boolean;
+    conselhoDefesaNaciona: boolean;
+    conselhoTecnicoGeral: boolean;
+    consultivo: boolean;
+    conselhoDireccao: boolean;
+    numeroEntrada: number;
+    docPdf: string;
+    remetente: string;
+    orgaoProcedencia: string;
+    direcProcedencia: string;
+    depProcedencia: string;
+    dataEntrada: Date | string;
+    inseriu: string | null;
+    inseriuDataHora: Date | string;
+    alterou: string | null;
+    alterouDataHora: Date | string | null;
+    recebido: boolean | null;
+    tipoDoc: string;
+    direcaoOrigem: string;
+    direcaoOrigemStamp: string;
+    orgaoOrigem: string;
+    orgaoOrigemstamp: string;
+    grauClassifi: string;
+    nvlUrgencia: string;
+    despacho: string;
+    numeroOrdem: number | null;
+    dataDocumento: Date | string | null;
+    endereco: string;
+    observacao: string;
+    qtdFolhas: string;
+    qtdExemplares: string;
+    qtdAnexo: string;
+    orgaoUtilizador: string;
+    direcUtilizador: string;
+    depUtilizador: string;
+    orgaostamp: string;
+    departamentostamp: string;
+    direcaostamp: string;
+    tdocAniva: string;
+    detalhesAssunto: string;
+    vindoDeQuemquem: string;
+    paraquem: string;
+    pathPdf: string;
+    path: string;
+    arquivo: Arquivo;
+    path1: string;
+    processoStamp: string;
+    saidaStamp: string | null;
+    processo: Processo;
+    provProveniencia: string;
+    numero: string;
+    documento: string;
+    proveniencia: string;
+    ano: Date | string | null;
+    saidaProcesso: SaidaProcesso[];
   classificador: string;
-  assunto: string;
+  assunto:string;
 }
+
+
+
+
 
 export interface ScanDoc {
   scanStamp: string;
@@ -74,7 +80,7 @@ export interface ScanDoc {
   alterou: string | null;
   alterouDataHora: string | null;
   saidaStamp: string | null;
-  arquivoStamp: string;
+  arquivoStamp: string
 }
 
 export interface Arquivo {
@@ -83,7 +89,7 @@ export interface Arquivo {
   localizacao: string;
   dataArquivo: string;
   numeroArquivo: number;
-  inseriu: string | null;
+  inseriu: string|null;
   inseriuDataHora: string;
   alterou: string;
   alterouDataHora: string;
@@ -158,51 +164,56 @@ export interface Directorio {
 // listaDestinatarios: Unidade[];
 // }
 
+
+
 export interface SaidaProcesso {
-  saidaStamp: string;
-  entradaStamp: string;
-  pathPdf: string;
-  numeroSaida: number;
-  docPDF: string;
-  destinatario: string;
-  orgaoDest: string;
-  direcDest: string;
-  depDest: string;
-  dataSaida: Date | string;
-  inseriu: string | null;
-  inseriuDataHora: Date | string;
-  alterou: string | null;
-  alterouDataHora: Date | string;
-  entregue: boolean;
-  direcaoOrigem: string;
-  orgaoorigem: string;
-  direcaoOrigemNaSaida: string;
-  orgaoorigemNaSaida: string;
-  numeroOrdem: string;
-  despacho: string;
-  dataDocumento: Date | string | null;
-  endereco: string;
-  observacao: string;
-  assunto: string;
-  qtdFolhas: string;
-  qtdExemplares: string;
-  qtdAnexo: string;
-  path1: string;
-  paraquem: string | null;
-  processoStamp: string | null;
-  tdocAniva: string;
-  visado: string | null;
-  grauClassifi: string | null;
-  nvlUrgencia: string | null;
-  processo: Processo;
-  listaDestinatarios: Unidade[];
-  recebeu: string;
-  numero: string;
-  protocolo: number | null;
-  ano: Date | string | null;
-  entradaProcesso: EntradaProcesso;
-  classificador: string;
+    saidaStamp: string;
+    entradaStamp: string;
+    pathPdf: string;
+    numeroSaida: number;
+     docPDF:string;
+    destinatario: string;
+    orgaoDest: string;
+    direcDest: string;
+    depDest: string;
+    dataSaida: Date | string;
+    inseriu: string | null;
+    inseriuDataHora: Date | string;
+    alterou: string | null;
+    alterouDataHora: Date | string;
+    entregue: boolean;
+    direcaoOrigem: string;
+    orgaoorigem: string;
+    direcaoOrigemNaSaida: string;
+    orgaoorigemNaSaida: string;
+    numeroOrdem: string;
+    despacho: string;
+    dataDocumento: Date | string | null;
+    endereco: string;
+    observacao: string;
+    assunto: string;
+    qtdFolhas: string;
+    qtdExemplares: string;
+    qtdAnexo: string;
+    path1: string;
+    paraquem: string | null;
+    processoStamp: string | null;
+    tdocAniva: string;
+    visado: string | null;
+    grauClassifi: string | null;
+    nvlUrgencia: string | null;
+    processo: Processo;
+    listaDestinatarios:Unidade[];
+    recebeu: string;
+    numero: string;
+    protocolo: number | null;
+    ano: Date | string | null;
+    entradaProcesso: EntradaProcesso;
+    classificador:string;
 }
+
+
+
 
 export interface Unidade {
   unidadeStamp: string | null;
@@ -349,52 +360,17 @@ export interface Subunidade {
   unidadeStamp: string | null;
 }
 
-export interface Provincia {
-  provinciaStamp: string;
-  codProv?: string;
-  descricao: string;
-  inseriu: string;
-  inseriuDataHora: string;
-  alterou?: string;
-  alterouDataHora?: string;
-  paisStamp: string;
-}
 
-export interface Distrito {
-  distritoStamp: string;        
-  codDistrito?: string;         
-  descricao: string;           
-  codProv: string;              
-  inseriu: string;              
-  inseriuDataHora: string;      
-  alterou?: string;             
-  alterouDataHora?: string;     
-  provinciaStamp: string;     
-}
 
-export interface PostAdm {
-  postAdmStamp: string;       
-  codPostoAdm?: string;      
-  descricao: string;          
-  codDistrito: string;        
-  inseriu: string;            
-  inseriuDataHora: string;    
-  alterou?: string;          
-  alterouDataHora?: string;   
-  distritoStamp: string;      
-}
 
-export interface Localidade {
-  localidadeStamp: string;     
-  codLocalidade?: string;      
-  descricao: string;           
-  codPostoAdm: string;        
-  inseriu: string;            
-  inseriuDataHora: string;    
-  alterou?: string;            
-  alterouDataHora?: string;    
-  postAdmStamp: string;        
-}
+
+
+
+
+
+
+
+
 export interface EspecieDocumental {
   especieStamp: string | null;
   descricao: string | null;
@@ -429,27 +405,27 @@ export interface EspecieDocumental {
 // }
 
 export interface Processo {
-  processoStamp: string;
-  numero: number;
-  tipoDoc: string;
-  assunto: string | null;
-  inseriu: string | null;
-  inseriuDataHora: Date | string;
-  alterou: string | null;
-  alterouDataHora: Date | string;
-  orgao: string | null;
-  direcao: string | null;
-  departamento: string | null;
-  orgaostamp: string | null;
-  departamentostamp: string | null;
-  direcaostamp: string | null;
-  estado: string;
-  visado: string;
-  usrstamp: string;
-  homologado: string;
-  paStamp: string;
-  pa: Pa;
-  entradaProcesso: EntradaProcesso[];
+    processoStamp: string;
+    numero: number;
+    tipoDoc: string;
+    assunto: string | null;
+    inseriu: string | null;
+    inseriuDataHora: Date | string;
+    alterou: string | null;
+    alterouDataHora: Date | string;
+    orgao: string | null;
+    direcao: string | null;
+    departamento: string | null;
+    orgaostamp: string | null;
+    departamentostamp: string | null;
+    direcaostamp: string | null;
+    estado: string;
+    visado: string;
+    usrstamp: string;
+    homologado: string;
+     paStamp: string;
+       pa: Pa;
+    entradaProcesso: EntradaProcesso[];
 }
 export interface Destruicao {
   arquivoStamp: string;
@@ -470,13 +446,13 @@ type ProdutoVenda = {
   preco: number;
   quantidade: number;
 };
-export interface Vendas {
+export interface Vendas  {
   cliente: string;
   data: string;
   centroCusto: string;
   clienteId: string;
   produtos: ProdutoVenda[];
-  total: number;
+  total:number
 }
 type Venda = {
   cliente: string;
